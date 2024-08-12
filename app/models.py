@@ -32,5 +32,5 @@ class Step(models.Model):
     #作り方の写真
     steps_images = models.ImageField(upload_to='steps/', blank=True, null=True)
     #作り方の動画
-    steps_video = models.FieldFile(upload_to='videos/', blank=True, null=True)
+    steps_video = models.FileField(upload_to='videos/', blank=True, null=True)
 

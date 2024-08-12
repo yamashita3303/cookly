@@ -12,3 +12,13 @@ def recipe(request):
     context = {'recipe_all': recipes}
     template = loader.get_template("app/home.html")
     return HttpResponse(template.render(context, request))
+
+def detail(request, post_id):
+    recipes = Recipe.objects.get(id=post_id)
+    ingredient_text = recipes.ingredient.all()
+    context = {
+        "recipe_chose": recipes,
+        "ingredient_text": ingredient_text,
+    }
+    template = loader.get_template("app/recipe.html")
+    return HttpResponse(template.render(context, request))

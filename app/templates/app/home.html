@@ -1,0 +1,8 @@
+<div>
+    <!-- views.pyのrecipe(メソッド)で指定したrecipe_allを呼び出し -->
+    {% for i in recipe_all %}
+        <!-- modelのRecipeで指定したrecipe_titleを呼び出し -->
+        {{ i.recipe_title }}
+    <!-- for文を閉じる -->
+    {% endfor %}
+</div>

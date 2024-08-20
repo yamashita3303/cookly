@@ -9,16 +9,15 @@ class Recipe(models.Model):
     #詳細を開かれた回数
     vote = models.IntegerField(default=0, verbose_name="閲覧回数")
     #主菜/副菜/主食/菓子
-    genre = models.CharField(max_length=100, verbose_name="ジャンル")
     #料理説明
     detail_text = models.TextField(max_length=200, verbose_name="料理説明")
-
     #主菜/副菜/主食/菓子
     class Genre(models.TextChoices):
         MAIN_DISH = 'main', '主菜'
         SIDE_DISH = 'side', '副菜'
         MAIN_COURSE = 'course', '主食'
         DESSERT = 'dessert', '菓子'
+    genre = models.CharField(max_length=10, choices=Genre.choices, verbose_name="ジャンル")
 
 #材料のテーブル
 class Ingredient(models.Model):

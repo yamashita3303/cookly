@@ -1,4 +1,6 @@
 ここはhome.htmlです。<br>
+<!-- 検索ページへのリンク -->
+<a href="{% url 'app:searchrecipes' %}">検索へ</a>
 <div>
     <!-- views.pyのrecipe(メソッド)で指定したrecipe_allを呼び出し -->
     {% for i in recipe_all %}

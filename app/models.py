@@ -8,7 +8,6 @@ class Recipe(models.Model):
     recipe_image = models.ImageField(upload_to='recipes/', verbose_name="料理写真")
     #詳細を開かれた回数
     vote = models.IntegerField(default=0, verbose_name="閲覧回数")
-    #主菜/副菜/主食/菓子
     #料理説明
     detail_text = models.TextField(max_length=200, verbose_name="料理説明")
     #主菜/副菜/主食/菓子
@@ -18,6 +17,10 @@ class Recipe(models.Model):
         MAIN_COURSE = 'course', '主食'
         DESSERT = 'dessert', '菓子'
     genre = models.CharField(max_length=10, choices=Genre.choices, verbose_name="ジャンル")
+    #作成日
+    created_at = models.DateTimeField(auto_now_add=True)
+    #更新日
+    updated_at = models.DateField(verbose_name="更新日", auto_now=True)
 
 #材料のテーブル
 class Ingredient(models.Model):

@@ -1,3 +1,6 @@
+{% extends "base/base.html" %}
+{% block body %}
+
 ここはrecipe.htmlです。<br>
 <!-- views.pyのdetail(メソッド)で指定したrecipe_choseを呼び出し.modelのrecipeで指定したrecipe_titleを呼び出し -->
 {{ recipe_chose.recipe_title }}<br>
@@ -8,3 +11,5 @@
     {{ i.material }}
 <!-- for文を閉じる -->
 {% endfor %}
+
+{% endblock %}

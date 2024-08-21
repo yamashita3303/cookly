@@ -4,7 +4,7 @@
 </form>
 
 {% for i in search_recipes %}
-    <a href="recipe/{{i.id}}">
+    <a href="{% url 'app:detail' post_id=i.id %}">
     <!-- modelのRecipeで指定したrecipe_titleを呼び出し -->
     {{ i.recipe_title }}
     <img src="{{ i.recipe_image.url }}">

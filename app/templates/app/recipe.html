@@ -3,9 +3,11 @@
 
 ここはrecipe.htmlです。<br>
 <!-- views.pyのdetail(メソッド)で指定したrecipe_choseを呼び出し.modelのrecipeで指定したrecipe_titleを呼び出し -->
-{{ recipe_chose.recipe_title }}<br>
+<p>料理名: {{ recipe_chose.recipe_title }}</p>
+<p>閲覧回数: {{ recipe_chose.vote }}</p>
 
 <!-- views.pyのdetail(メソッド)で指定したingredient_textを呼び出し -->
+<h2>材料</h2>
 {% for i in ingredient_text %}
     <!-- modelのIngredienrで指定したmaterialを呼び出し -->
     {{ i.material }}

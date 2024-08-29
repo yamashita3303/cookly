@@ -19,6 +19,10 @@ def recipe(request):
 def detail(request, post_id):
     recipes = Recipe.objects.get(id=post_id)
     ingredient_text = recipes.ingredient.all()
+
+    recipes.vote += 1
+    recipes.save()
+
     context = {
         "recipe_chose": recipes,
         "ingredient_text": ingredient_text,

@@ -7,6 +7,17 @@
     <a href="{% url 'app:searchrecipes' %}" class="btn btn-link">検索へ</a>
     <a href="{% url 'app:recipe_create' %}" class="btn btn-link">料理追加</a>
     
+    <form method="get" class="mb-4" id="genreForm">
+        <label for="genre">ジャンルで絞る:</label>
+        <select name="genre" id="genre" class="form-control">
+            <option value="" {% if selected_genre == "" %}selected{% endif %}>すべて</option>
+            <option value="main" {% if selected_genre == 'main' %}selected{% endif %}>主菜</option>
+            <option value="side" {% if selected_genre == 'side' %}selected{% endif %}>副菜</option>
+            <option value="course" {% if selected_genre == 'course' %}selected{% endif %}>主食</option>
+            <option value="dessert" {% if selected_genre == 'dessert' %}selected{% endif %}>菓子</option>
+        </select>
+    </form>
+
     <div class="row">
         <!-- views.pyのrecipe(メソッド)で指定したrecipe_allを呼び出し -->
         {% for i in recipe_all %}
@@ -23,6 +34,12 @@
         {% endfor %}
     </div>
 </div>
+
+<script>
+    document.getElementById('genre').addEventListener('change', function() {
+        document.getElementById('genreForm').submit();
+    });
+</script>
 
 <!-- BootstrapのJSと依存するPopper.jsをインクルード -->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>

@@ -10,10 +10,17 @@ def index(request):
     return render(request, "app/index.html")
 
 def recipe(request):
-    # インスタンス化
-    recipes = Recipe.objects.all()
+    selected_genre = request.GET.get('genre')
+
+    if selected_genre:
+        # 選択されたジャンルでフィルターをかける
+        recipes = Recipe.objects.filter(genre=selected_genre).order_by('-vote')
+    else:
+        # すべてのレシピを取得
+        recipes = Recipe.objects.all().order_by('-vote')
+
     # リストに似たオブジェクトになっている。
-    context = {'recipe_all': recipes}
+    context = {'recipe_all': recipes, 'selected_genre': selected_genre}
     return render(request, "app/home.html", context)
 
 def detail(request, post_id):

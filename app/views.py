@@ -65,7 +65,7 @@ class RecipeCreateView(View):
         # データの保存
         form = RecipeForm(request.POST, request.FILES)
         if form.is_valid():
-            # 必須項目が埋まっていたら保存後、ホームへ戻る
+            # 必須項目が埋まっていたら保存後、詳細入力ページへ
             recipe = form.save()
             return redirect('app:detail_create', recipe_id=recipe.id)
         return render(request, 'app/form.html', {'form': form})

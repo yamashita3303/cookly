@@ -3,13 +3,40 @@
     <head>
         <meta charset="utf-8"/>
         <title>cooking_create</title>
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     </head>
     <body>
-        <h2>ここはform.htmlです</h2>
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">次へ</button>
-        </form>
+        <div class="container mt-5">
+            <h2>ここはform.htmlです</h2>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- 料理タイトル -->
+                <div class="form-group">
+                    <label for="id_recipe_title">料理タイトル</label>
+                    {{ form.recipe_title }}
+                </div>
+
+                <!-- 完成後の写真 -->
+                <div class="form-group">
+                    <label for="id_recipe_image">料理写真</label>
+                    {{ form.recipe_image }}
+                </div>
+
+                <!-- 説明欄 -->
+                <div class="form-group">
+                    <label for="id_detail_text">料理説明</label>
+                    {{ form.detail_text }}
+                </div>
+
+                <!-- 主菜・副菜・主食・菓子 -->
+                <div class="form-group">
+                    <label for="id_genre">ジャンル</label>
+                    {{ form.genre }}
+                </div>
+                
+                <button type="submit" class="btn btn-primary">次へ</button>
+            </form>
+        </div>
     </body>
 </html>

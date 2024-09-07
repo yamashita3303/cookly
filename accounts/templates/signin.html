@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ログイン</title>
+</head>
+<body>
+    <h2>ログイン</h2>
+
+    {% if error_message %}
+    <div style="color: red;">
+        {{ error_message }}
+    </div>
+    {% endif %}
+
+    <form action="{% url 'signin' %}" method="post">
+        {% csrf_token %}
+        <input type="email" name="email" placeholder="Email" required />
+        <input type="password" name="password" placeholder="Password" required />
+        <input type="submit" value="ログイン" />
+    </form>
+
+    <p>新しいアカウントを作成しますか？ <a href="{% url 'signup' %}">新規登録はこちら</a></p>
+</body>
+</html>

@@ -14,4 +14,12 @@
 <!-- for文を閉じる -->
 {% endfor %}
 
+<h2>コメント</h2>
+{% for i in comments %}
+    <p>コメント: {{ i.comment }}</p>
+{% empty %}
+    <p>コメントがありません。</p>
+{% endfor %}
+<a href="{% url 'app:comments' recipe_chose.id %}">コメント追加</a>
+
 {% endblock %}

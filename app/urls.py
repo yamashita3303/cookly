@@ -12,4 +12,5 @@ urlpatterns = [
     path("recipe/<int:post_id>", views.detail, name="detail"),
     path("recipe/create/", views.recipe_create, name="recipe_create"),
     path("recipe/<int:recipe_id>/detail/", views.detail_create, name="detail_create"),
+    path("comment/<int:recipe_id>", views.comments, name="comments"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

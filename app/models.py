@@ -43,3 +43,21 @@ class Step(models.Model):
     #作り方の動画   blank=True, null=Trueは任意で登録できるように
     step_video = models.FileField(upload_to='videos/', blank=True, null=True, verbose_name="作り方の動画")
 
+
+#コメント機能
+class Comment(models.Model):
+    recipe = models.ForeignKey(Recipe, related_name='comment', on_delete=models.CASCADE)
+
+    #コメントしたユーザー名
+    #日時
+    created_at = models.DateTimeField(auto_now_add=True)
+    #コメント
+    comment = models.TextField(max_length=200)
+    #評価
+    class Review(models.TextChoices):
+        ONE_STAR = 'one', '★'
+        TWO_STAR = 'two', '★★'
+        THREE_STAR = 'three', '★★★'
+        FOUR_STAR = 'four', '★★★★'
+        FIVE_STAR = 'five', '★★★★★'
+    review = models.CharField(max_length=10, choices=Review.choices, verbose_name="レビュー")

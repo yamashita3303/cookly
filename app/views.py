@@ -2,8 +2,8 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from django.db.models import Q
 from django.views import View
-from .models import Recipe, Ingredient, Step
-from .forms import RecipeForm, IngredientForm, StepForm
+from .models import Recipe, Ingredient, Step, Comment
+from .forms import RecipeForm, IngredientForm, StepForm, CommentForm
 
 # 今は使ってない
 def index(request):
@@ -33,6 +33,8 @@ def detail(request, post_id):
     recipes = Recipe.objects.get(id=post_id)
     # レシピに関連する材料の取得
     ingredient_text = recipes.ingredient.all()
+    # コメントを取得
+    comments = recipes.comment.all()
 
     # 閲覧数を1増やして保存
     recipes.vote += 1
@@ -41,6 +43,7 @@ def detail(request, post_id):
     context = {
         "recipe_chose": recipes,
         "ingredient_text": ingredient_text,
+        "comments": comments,
     }
     return render(request, "app/recipe.html", context)
 
@@ -64,6 +67,32 @@ def search_recipes(request):
     
     return render(request, 'app/searchrecipes.html', {'search_recipes': search_recipes})
 
+class CommentCreateView(View):
+    # GETリクエストの処理
+    def get(self, request, recipe_id):
+        recipe = get_object_or_404(Recipe, id=recipe_id)
+        form = CommentForm()
+        context = {
+            'form': form,
+            'recipe': recipe
+        }
+        return render(request, 'app/comment.html', context)
+
+    # POSTリクエストの処理
+    def post(self, request, recipe_id):
+        recipe = get_object_or_404(Recipe, id=recipe_id)
+        form = CommentForm(request.POST, request.FILES)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.recipe = recipe
+            comment.save()
+            return redirect('app:detail', post_id=recipe.id)
+        else:
+            context = {
+                'form': form,
+                'recipe': recipe
+            }
+            return render(request, 'app/comment.html', context)
 
 # 料理の基本情報(タイトル、画像など)を追加するフォーム(form.html) 
 class RecipeCreateView(View):
@@ -135,5 +164,6 @@ class DetailCreateView(View):
         step.save()
 
 # classをview関数に変換
+comments = CommentCreateView.as_view()
 recipe_create = RecipeCreateView.as_view()
 detail_create = DetailCreateView.as_view()

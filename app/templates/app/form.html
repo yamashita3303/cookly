@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>cooking_create</title>
+    </head>
+    <body>
+        <h2>ここはform.htmlです</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">次へ</button>
+        </form>
+    </body>
+</html>

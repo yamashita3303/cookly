@@ -1,6 +1,7 @@
 ここはhome.htmlです。<br>
 <!-- 検索ページへのリンク -->
-<a href="{% url 'app:searchrecipes' %}">検索へ</a>
+<a href="{% url 'app:searchrecipes' %}">検索へ</a><br>
+<a href="{% url 'app:recipe_create' %}">料理追加</a><br>
 <div>
     <!-- views.pyのrecipe(メソッド)で指定したrecipe_allを呼び出し -->
     {% for i in recipe_all %}

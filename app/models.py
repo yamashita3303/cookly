@@ -1,4 +1,8 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+
+class CustomUser(AbstractUser):
+    pass
 
 #料理全般の情報のテーブル
 class Recipe(models.Model):

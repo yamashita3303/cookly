@@ -1,0 +1,14 @@
+{% if user.is_authenticated %}
+<div>
+  <h3>{{ user }}さんこんにちは！<h3>
+  <form action="signout" method="post">
+    {% csrf_token %}
+    <input type="submit" value="ログアウト" />
+  </form>
+</div>
+{% else %}
+<div>
+  <a href="signup">新規登録</a></p>
+  <a href="signin">ログイン</a></p>
+</div>
+{% endif %}

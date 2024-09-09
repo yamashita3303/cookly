@@ -1,16 +1,50 @@
 from django.shortcuts import redirect
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from .models import Recipe, Ingredient, Step
 from django.contrib import messages
 from django.db.models import Q
 from .forms import RecipeForm, IngredientForm, StepForm
-
+from django.contrib.auth import login, logout
+from .models import CustomUser
 
 def index(request):
-    template = loader.get_template("app/index.html")
-    return HttpResponse(template.render({}, request))
+    context = {'user': request.user}
+    return render(request, 'index.html', context)
+
+def signup(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        email = request.POST['email']
+        password = request.POST['password']
+        new_user = CustomUser(username=username, email=email, password=password)
+        new_user.save()
+        return HttpResponse('ユーザーの作成に成功しました')
+    else:
+        return render(request, 'signup.html')
+
+def signin(request):
+    if request.method == 'POST':
+        email = request.POST['email']
+        password = request.POST['password']
+
+        try:
+            user = CustomUser.objects.get(email=email)
+        except CustomUser.DoesNotExist:
+            return render(request, 'signin.html', {'error_message': 'ユーザーが存在しません。'})
+
+        if user.password == password:
+            login(request, user)
+            return HttpResponseRedirect('/app/home')
+        else:
+            return render(request, 'signin.html', {'error_message': 'パスワードが正しくありません。'})
+    else:
+        return render(request, 'signin.html')
+
+def signout(request):
+    logout(request)
+    return HttpResponseRedirect('/app')
 
 def recipe(request):
     #インスタンス化

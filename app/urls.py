@@ -6,7 +6,10 @@ from django.conf.urls.static import static
 app_name = 'app'
 
 urlpatterns = [
-    path("", views.index, name="index"),
+    path('', views.index, name='index'),
+    path('signup', views.signup, name='signup'),
+    path('signin', views.signin, name='signin'),
+    path('signout', views.signout, name='signout'),
     path("home", views.recipe, name="recipe"),
     path("search/", views.search_recipes, name="searchrecipes"),
     path("recipe/<int:post_id>", views.detail, name="detail"),

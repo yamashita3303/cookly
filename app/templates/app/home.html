@@ -1,0 +1,13 @@
+ここはhome.htmlです。<br>
+<div>
+    <!-- views.pyのrecipe(メソッド)で指定したrecipe_allを呼び出し -->
+    {% for i in recipe_all %}
+        <!-- 詳細ページへのURLの指定 -->
+        <a href="recipe/{{i.id}}">
+            <!-- modelのRecipeで指定したrecipe_titleを呼び出し -->
+            {{ i.recipe_title }}
+            <img src="{{ i.recipe_image.url }}">
+        </a>
+    <!-- for文を閉じる -->
+    {% endfor %}
+</div>

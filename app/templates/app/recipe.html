@@ -1,0 +1,10 @@
+ここはrecipe.htmlです。<br>
+<!-- views.pyのdetail(メソッド)で指定したrecipe_choseを呼び出し.modelのrecipeで指定したrecipe_titleを呼び出し -->
+{{ recipe_chose.recipe_title }}<br>
+
+<!-- views.pyのdetail(メソッド)で指定したingredient_textを呼び出し -->
+{% for i in ingredient_text %}
+    <!-- modelのIngredienrで指定したmaterialを呼び出し -->
+    {{ i.material }}
+<!-- for文を閉じる -->
+{% endfor %}

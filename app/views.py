@@ -1,9 +1,12 @@
+from django.shortcuts import redirect
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from django.template import loader
 from .models import Recipe, Ingredient, Step
 from django.contrib import messages
 from django.db.models import Q
+from .forms import RecipeForm, IngredientForm, StepForm
+
 
 def index(request):
     template = loader.get_template("app/index.html")
@@ -43,3 +46,58 @@ def search_recipes(request):
         # 検索キーワードがない場合
         messages.error(request, '検索キーワードが指定されていません。')
         return render(request, 'app/searchrecipes.html', {'search_recipes': recipes})
+    
+def recipe_create(request):
+    if request.method == "POST":
+        form = RecipeForm(request.POST, request.FILES)
+        if form.is_valid():
+            # 次へボタンを押したら詳細入力ページへ
+            recipe = form.save()
+            return redirect('app:detail_create', recipe_id=recipe.id)
+        else:
+            # 入力していない項目あれば進まない
+            template = loader.get_template("app/form.html")
+            return HttpResponse(template.render({"form": form}, request))
+    else:
+        form = RecipeForm()
+        template = loader.get_template("app/form.html")
+        return HttpResponse(template.render({"form": form}, request))
+
+def detail_create(request, recipe_id):
+    recipe = Recipe.objects.get(id=recipe_id)
+
+    if request.method == "POST":
+        ingredient_form = IngredientForm(request.POST)
+        step_form = StepForm(request.POST, request.FILES)
+
+        if ingredient_form.is_valid() and step_form.is_valid():
+            # `Ingredient` の保存
+            ingredient = ingredient_form.save(commit=False)
+            ingredient.recipe = recipe  # レシピに関連付ける
+            ingredient.save()
+
+            # `Step` の保存
+            step = step_form.save(commit=False)
+            step.recipe = recipe  # レシピに関連付ける
+            step.save()
+
+            # 保存後、別のページにリダイレクト（例えば、詳細ページ）
+            return redirect('app:detail', post_id=recipe.id)
+        else:
+            # フォームが無効な場合、エラーメッセージと共にフォームを再表示
+            template = loader.get_template("app/form_detail.html")
+            return HttpResponse(template.render({
+                "ingredient_form": ingredient_form,
+                "step_form": step_form,
+                "recipe": recipe
+            }, request))
+
+    else:
+        ingredient_form = IngredientForm()
+        step_form = StepForm()
+        template = loader.get_template("app/form_detail.html")
+        return HttpResponse(template.render({
+            "ingredient_form": ingredient_form,
+            "step_form": step_form,
+            "recipe": recipe
+        }, request))

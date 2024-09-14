@@ -1,123 +1,87 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8"/>
-        <title>料理情報の入力</title>
-        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
-        <script>
-            let stepCount = 1;  // ステップのカウントを初期化
+{% extends "base/base.html" %}
+{% load static %}
 
-            function addStep() {
-                // 新しいステップを追加するためのHTMLを作成
-                stepCount++;  // ステップのカウントを増加
+<!-- 追加のCSSを読み込むブロック -->
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'app/css/form.css' %}">
+{% endblock %}
 
-                const stepFormContainer = document.getElementById("step-form-container");
+{% block body %}
+    <div class="container mt-5">
+        <h2>ここはform.htmlです</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %} <!-- 絶対必要 -->
+            
+            <!-- 料理タイトル -->
+            <div class="form-group">
+                <label for="id_recipe_title">料理タイトル</label>
+                {{ form.recipe_title }}
+            </div>
 
-                const newStepDiv = document.createElement("div");
-                newStepDiv.classList.add("form-group");
+            <!-- 完成後の写真 -->
+            <div class="form-group">
+                <label for="id_recipe_image">料理写真</label>
+                {{ form.recipe_image }}
+            </div>
 
-                // ステップ番号の入力フィールド
-                const stepNumberLabel = document.createElement("label");
-                stepNumberLabel.setAttribute("for", "id_step_number_" + stepCount);
-                stepNumberLabel.innerText = "ステップ番号";
-                
-                const stepNumberInput = document.createElement("input");
-                stepNumberInput.type = "number";
-                stepNumberInput.name = "step_number";
-                stepNumberInput.classList.add("form-control");
+            <!-- 説明欄 -->
+            <div class="form-group">
+                <label for="id_detail_text">料理説明</label>
+                {{ form.detail_text }}
+            </div>
 
-                // 作り方の入力フィールド
-                const stepTextLabel = document.createElement("label");
-                stepTextLabel.setAttribute("for", "id_step_text_" + stepCount);
-                stepTextLabel.innerText = "作り方 " + stepCount;
+            <!-- 主菜・副菜・主食・菓子 -->
+            <div class="form-group">
+                <label for="id_genre">ジャンル</label>
+                {{ form.genre }}
+            </div>
 
-                const stepTextInput = document.createElement("input");
-                stepTextInput.type = "text";
-                stepTextInput.name = "step_text";
-                stepTextInput.classList.add("form-control");
 
-                // フォームに追加
-                newStepDiv.appendChild(stepNumberLabel);
-                newStepDiv.appendChild(stepNumberInput);
-                newStepDiv.appendChild(stepTextLabel);
-                newStepDiv.appendChild(stepTextInput);
+            <!-- 材料フォーム -->
+            <h3>材料</h3>
+            <div class="form-group">
+                <label for="id_material">材料名</label>
+                {{ ingredient_form.material }}
+            </div>
 
-                stepFormContainer.appendChild(newStepDiv);
-            }
-        </script>
-    </head>
-    <body>
-        <!-- 中央によせたコンテナ -->
-        <div class="container mt-5">
-            <h2>ここはform.htmlです</h2>
-            <form method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                
-                <!-- 料理タイトル -->
+            <div class="form-group">
+                <label for="id_amount">分量</label>
+                {{ ingredient_form.amount }}
+            </div>
+
+
+            <!-- ステップフォーム -->
+            <h3>作り方</h3>
+            <div id="step-form-container">
                 <div class="form-group">
-                    <!-- form-groupではlabelとform.○○の内容が関連付けられる -->
-                    <label for="id_recipe_title">料理タイトル</label>
-                    {{ form.recipe_title }}
+                     <!-- ステップ番号のフィールドは隠しておく -->
+                    <input type="hidden" name="step_number" value="1">
+                    <label for="id_step_text">作り方 1</label>
+                    {{ step_form.step_text }}
                 </div>
+            </div>
 
-                <!-- 完成後の写真 -->
-                <div class="form-group">
-                    <label for="id_recipe_image">料理写真</label>
-                    {{ form.recipe_image }}
-                </div>
+            <div class="form-group">
+                <label for="id_step_image">作り方の写真</label>
+                {{ step_form.step_image }}
+            </div>
 
-                <!-- 説明欄 -->
-                <div class="form-group">
-                    <label for="id_detail_text">料理説明</label>
-                    {{ form.detail_text }}
-                </div>
+            <div class="form-group">
+                <label for="id_step_video">作り方の動画</label>
+                {{ step_form.step_video }}
+            </div>
+            
 
-                <!-- 主菜・副菜・主食・菓子 -->
-                <div class="form-group">
-                    <label for="id_genre">ジャンル</label>
-                    {{ form.genre }}
-                </div>
+             <!-- ステップ追加ボタン -->
+            <button type="button" class="btn btn-secondary" onclick="addStep()">+ ステップを追加</button>
+            
+             <!-- フォーム送信ボタン -->
+            <button type="submit" class="btn btn-primary">保存</button>
+        </form>
+    </div>
+{% endblock %}
 
-                <!-- 材料フォーム -->
-                <h3>材料</h3>
-                <div class="form-group">
-                    <label for="id_material">材料名</label>
-                    {{ ingredient_form.material }}
-                </div>
-    
-                <div class="form-group">
-                    <label for="id_amount">分量</label>
-                    {{ ingredient_form.amount }}
-                </div>
-    
-                <!-- ステップフォーム -->
-                <h3>作り方</h3>
-                <div id="step-form-container">
-                    <div class="form-group">
-                        <label for="id_step_number">ステップ番号</label>
-                        {{ step_form.step_number }}
-                    </div>
-    
-                    <div class="form-group">
-                        <label for="id_step_text">作り方 1</label>
-                        {{ step_form.step_text }}
-                    </div>
-                </div>
-    
-                <div class="form-group">
-                    <label for="id_step_image">作り方の写真</label>
-                    {{ step_form.step_image }}
-                </div>
-    
-                <div class="form-group">
-                    <label for="id_step_video">作り方の動画</label>
-                    {{ step_form.step_video }}
-                </div>
-                
-                <button type="button" class="btn btn-secondary" onclick="addStep()">+ ステップを追加</button>
-                
-                <button type="submit" class="btn btn-primary">保存</button>
-            </form>
-        </div>
-    </body>
-</html>
+ <!-- 追加のjsを読み込むブロック -->
+{% block extra_scripts %}
+    <script src="{% static 'app/js/form.js' %}"></script>
+{% endblock %}

@@ -101,9 +101,11 @@ class CommentCreateView(View):
 class RecipeCreateView(View):
     # GETリクエストの処理
     def get(self, request):
+        # インスタンスの作成
         recipe_form = RecipeForm()
         ingredient_form = IngredientForm()
         step_form = StepForm()
+
         context = {
             'form': recipe_form,
             'ingredient_form': ingredient_form,
@@ -113,13 +115,19 @@ class RecipeCreateView(View):
 
     # POSTリクエストの処理
     def post(self, request):
+        # インスタンスの作成
         recipe_form = RecipeForm(request.POST, request.FILES)
         ingredient_form = IngredientForm(request.POST)
+
+        # ステップ情報を取得
         step_numbers = request.POST.getlist('step_number')
         step_texts = request.POST.getlist('step_text')
         step_images = request.FILES.getlist('step_image')
         step_videos = request.FILES.getlist('step_video')
 
+        step_form = StepForm()
+
+        # フォームが有効かチェック
         if recipe_form.is_valid() and ingredient_form.is_valid():
             # 料理情報を保存
             recipe = recipe_form.save()

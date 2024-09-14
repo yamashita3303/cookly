@@ -33,6 +33,8 @@ def detail(request, post_id):
     recipes = Recipe.objects.get(id=post_id)
     # レシピに関連する材料の取得
     ingredient_text = recipes.ingredient.all()
+    # ステップデータを取得
+    steps = recipes.step.all()
     # コメントを取得
     comments = recipes.comment.all()
 
@@ -43,6 +45,7 @@ def detail(request, post_id):
     context = {
         "recipe_chose": recipes,
         "ingredient_text": ingredient_text,
+        'steps': steps,
         "comments": comments,
     }
     return render(request, "app/recipe.html", context)
@@ -127,15 +130,38 @@ class DetailCreateView(View):
         recipe = get_object_or_404(Recipe, id=recipe_id)
         # フォームの表示
         ingredient_form = IngredientForm(request.POST)
-        step_form = StepForm(request.POST, request.FILES)
+        step_numbers = request.POST.getlist('step_number')  # ステップ番号のリスト
+        step_texts = request.POST.getlist('step_text')      # 作り方テキストのリスト
+        step_images = request.FILES.getlist('step_image')   # 作り方の写真リスト
+        step_videos = request.FILES.getlist('step_video')   # 作り方の動画リスト
         
         # それぞれのフォームが有効ならば保存後、レシピ一覧ページへ
-        if ingredient_form.is_valid() and step_form.is_valid():
-            self.save_forms(ingredient_form, step_form, recipe)
-            return redirect('app:recipe')
+        if ingredient_form.is_valid():
+            # 材料の保存
+            ingredient = ingredient_form.save(commit=False)
+            ingredient.recipe = recipe
+            ingredient.save()
         
+            # 複数のステップを保存
+            for i, (step_number, step_text) in enumerate(zip(step_numbers, step_texts)):
+                # 対応する画像と動画を取得（存在しない場合はNone）
+                step_image = step_images[i] if i < len(step_images) else None
+                step_video = step_videos[i] if i < len(step_videos) else None
+
+                # ステップの保存
+                step = Step(
+                    recipe=recipe,
+                    step_number=step_number,
+                    step_text=step_text,
+                    step_image=step_image,   # 画像を保存
+                    step_video=step_video    # 動画を保存
+                )
+                step.save()
+
+            return redirect('app:recipe')
+
         # フォームが無効なら再度フォームを表示
-        return self.render_form(request, recipe_id, ingredient_form, step_form)
+        return self.render_form(request, recipe_id)
 
 
     # get()から呼び出されるメソッド
@@ -150,18 +176,6 @@ class DetailCreateView(View):
             'recipe': recipe,
         }
         return render(request, 'app/form_detail.html', context)
-
-    # post()から呼び出されるメソッド
-    # 材料と手順を保存する
-    def save_forms(self, ingredient_form, step_form, recipe):
-        # 材料、ステップの保存
-        ingredient = ingredient_form.save(commit=False)
-        ingredient.recipe = recipe
-        ingredient.save()
-
-        step = step_form.save(commit=False)
-        step.recipe = recipe
-        step.save()
 
 # classをview関数に変換
 comments = CommentCreateView.as_view()

@@ -5,9 +5,31 @@
         <title>Cookly</title>
         <!-- BootstrapのCSSをインクルード -->
         <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            /* ヘッダーの背景色をシアンに設定 */
+            header {
+                background-color: #00bcd4; /* シアン色 */
+                padding: 10px 0; /* 上下のパディングを追加 */
+            }
+            /* リンクのスタイルをカスタマイズ */
+            .navbar-brand {
+                color: white; /* テキストカラーを白に設定 */
+                text-decoration: none; /* 下線を消す */
+                font-size: 1.5rem; /* 文字の大きさを調整 */
+                font-weight: bold; /* 文字を太くする */
+            }
+            .navbar-brand:hover, .navbar-brand:focus {
+                color: white; /* ホバー時のテキストカラーも白に設定 */
+                text-decoration: none; /* ホバー時の下線を消す */
+            }
+        </style>
     </head>
     <body>
-        <h1><a href="{% url 'app:recipe' %}">Cookly</a></h1>
+        <header>
+            <nav class="navbar navbar-dark">
+                <a class="navbar-brand" href="{% url 'app:recipe' %}">Cookly</a>
+            </nav>
+        </header>
         {% block body %}
         {% endblock %}
     </body>

@@ -1,10 +1,41 @@
+{% extends "base/base.html" %}
+{% block body %}
+
 ここはrecipe.htmlです。<br>
 <!-- views.pyのdetail(メソッド)で指定したrecipe_choseを呼び出し.modelのrecipeで指定したrecipe_titleを呼び出し -->
-{{ recipe_chose.recipe_title }}<br>
+<p>料理名: {{ recipe_chose.recipe_title }}</p>
+<p>閲覧回数: {{ recipe_chose.vote }}</p>
 
 <!-- views.pyのdetail(メソッド)で指定したingredient_textを呼び出し -->
+<h2>材料</h2>
 {% for i in ingredient_text %}
     <!-- modelのIngredienrで指定したmaterialを呼び出し -->
     {{ i.material }}
 <!-- for文を閉じる -->
 {% endfor %}
+
+<h2>作り方</h2>
+{% for step in steps %}
+    <p>ステップ {{ step.step_number }}: {{ step.step_text }}</p>
+    {% if step.step_image %}
+        <img src="{{ step.step_image.url }}" alt="Step Image" style="max-width: 300px;">
+    {% endif %}
+    {% if step.step_video %}
+        <video controls style="max-width: 300px;">
+            <source src="{{ step.step_video.url }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    {% endif %}
+{% empty %}
+    <p>作り方がありません。</p>
+{% endfor %}
+
+<h2>コメント</h2>
+{% for i in comments %}
+    <p>コメント: {{ i.comment }}</p>
+{% empty %}
+    <p>コメントがありません。</p>
+{% endfor %}
+<a href="{% url 'app:comments' recipe_chose.id %}">コメント追加</a>
+
+{% endblock %}

@@ -5,6 +5,7 @@ from django.views import View
 from .models import Recipe, Ingredient, Step, Comment
 from .forms import RecipeForm, IngredientForm, StepForm, CommentForm
 from django.contrib.auth import login, logout
+from django.http import HttpResponse, HttpResponseRedirect
 from .models import CustomUser
 # 今は使ってない
 def index(request):
@@ -153,6 +154,8 @@ class RecipeCreateView(View):
         recipe_form = RecipeForm(request.POST, request.FILES)
         ingredient_form = IngredientForm(request.POST)
 
+        materials = request.POST.getlist('material')
+        amounts = request.POST.getlist('amount')
         # ステップ情報を取得
         step_numbers = request.POST.getlist('step_number')
         step_texts = request.POST.getlist('step_text')
@@ -167,9 +170,13 @@ class RecipeCreateView(View):
             recipe = recipe_form.save()
 
             # 材料情報を保存
-            ingredient = ingredient_form.save(commit=False)
-            ingredient.recipe = recipe
-            ingredient.save()
+            for material, amount in zip(materials, amounts):
+                ingredient = Ingredient(
+                    recipe=recipe,
+                    material=material,
+                    amount=amount
+                )
+                ingredient.save()
 
             # ステップ情報を保存
             for i, (step_number, step_text) in enumerate(zip(step_numbers, step_texts)):

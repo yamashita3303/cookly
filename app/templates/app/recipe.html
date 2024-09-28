@@ -8,11 +8,14 @@
 
 <!-- views.pyのdetail(メソッド)で指定したingredient_textを呼び出し -->
 <h2>材料</h2>
-{% for i in ingredient_text %}
-    <!-- modelのIngredienrで指定したmaterialを呼び出し -->
-    {{ i.material }}
-<!-- for文を閉じる -->
-{% endfor %}
+<ul>
+    {% for ingredient in ingredient_text %}
+        <!-- modelのIngredientで指定したmaterialとamountを呼び出し -->
+        <li>{{ ingredient.material }}: {{ ingredient.amount }}</li>
+    {% empty %}
+        <p>材料がありません。</p>
+    {% endfor %}
+</ul>
 
 <h2>作り方</h2>
 {% for step in steps %}

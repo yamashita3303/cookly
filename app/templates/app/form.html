@@ -39,16 +39,20 @@
 
             <!-- 材料フォーム -->
             <h3>材料</h3>
-            <div class="form-group">
-                <label for="id_material">材料名</label>
-                {{ ingredient_form.material }}
+            <div id="ingredient-form-container">
+                <div class="form-group">
+                    <label for="id_material">材料名</label>
+                    {{ ingredient_form.material }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_amount">分量</label>
+                    {{ ingredient_form.amount }}
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="id_amount">分量</label>
-                {{ ingredient_form.amount }}
-            </div>
-
+            <!-- 材料追加ボタン -->
+            <button type="button" class="btn btn-secondary" onclick="addIngredient()">+ 材料を追加</button>
 
             <!-- ステップフォーム -->
             <h3>作り方</h3>
@@ -59,11 +63,11 @@
                     <label for="id_step_text">作り方 1</label>
                     {{ step_form.step_text }}
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label for="id_step_image">作り方の写真</label>
-                {{ step_form.step_image }}
+                <div class="form-group">
+                    <label for="id_step_image">作り方の写真</label>
+                    {{ step_form.step_image }}
+                </div>
             </div>
 
             <div class="form-group">
@@ -73,7 +77,7 @@
             
 
              <!-- ステップ追加ボタン -->
-            <button type="button" class="btn btn-secondary" onclick="addStep()">+ ステップを追加</button>
+            <button type="button" class="btn btn-secondary" onclick="addStep()">+ ステップを追加</button><br>
             
              <!-- フォーム送信ボタン -->
             <button type="submit" class="btn btn-primary">保存</button>

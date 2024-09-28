@@ -150,6 +150,8 @@ class RecipeCreateView(View):
 
     # POSTリクエストの処理
     def post(self, request):
+        print(request.POST)
+        print(request.FILES)
         # インスタンスの作成
         recipe_form = RecipeForm(request.POST, request.FILES)
         ingredient_form = IngredientForm(request.POST)
@@ -179,15 +181,17 @@ class RecipeCreateView(View):
                 ingredient.save()
 
             # ステップ情報を保存
-            for i, (step_number, step_text) in enumerate(zip(step_numbers, step_texts)):
+            for i in range(len(step_texts)):
+                step_text = step_texts[i]
                 step_image = step_images[i] if i < len(step_images) else None
                 step_video = step_videos[i] if i < len(step_videos) else None
+                
                 step = Step(
                     recipe=recipe,
-                    step_number=step_number,
+                    step_number=i + 1,
                     step_text=step_text,
-                    step_image=step_image,
-                    step_video=step_video
+                    step_image=step_image if step_image else None,
+                    step_video=step_video if step_video else None
                 )
                 step.save()
 

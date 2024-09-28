@@ -1,10 +1,7 @@
-let ingredientCount = 1;  // 材料のカウントを初期化
 let stepCount = 1;  // ステップのカウントを初期化
 
 // 新しい材料を追加する関数
 function addIngredient() {
-    ingredientCount++;  // 材料のカウントを増加
-
     // 材料フォームコンテナを取得
     const ingredientFormContainer = document.getElementById("ingredient-form-container");
 
@@ -60,11 +57,12 @@ function addStep() {
     // ステップ番号の表示
     const stepTextLabel = document.createElement("label");
     stepTextLabel.innerText = "作り方 " + stepCount;
+    stepTextLabel.classList.add('step-number-label');
 
     // 入力フィールドを作成
     const stepTextInput = document.createElement("input");
     stepTextInput.type = "text";
-    stepTextInput.name = "step_text_" + stepCount; // ステップごとに名前を変更
+    stepTextInput.name = "step_text"; // ステップごとに名前を変更
     stepTextInput.classList.add("form-control");
 
     // 作り方の写真のラベル作成
@@ -74,7 +72,7 @@ function addStep() {
     // 画像の入力フィールドを作成
     const stepImageInput = document.createElement("input");
     stepImageInput.type = "file";
-    stepImageInput.name = "step_image_" + stepCount; // ステップごとに名前を変更
+    stepImageInput.name = "step_image"; // ステップごとに名前を変更
     stepImageInput.classList.add("form-control");
 
     // 新しいliに要素を追加
@@ -91,5 +89,26 @@ function addStep() {
 // Sortableを初期化
 new Sortable(document.getElementById('step-form-container'), {
     handle: '.srt_hndl', // ドラッグハンドルをアイコンに変更
-    animation: 150 // アニメーションのスピードを設定
+    animation: 150, // アニメーションのスピードを設定
+
+    onEnd: function () {
+        // 並び替え後の要素を取得
+        const stepItems = document.querySelectorAll('#step-form-container li');
+
+        // 各ステップ番号を再割り当て
+        stepItems.forEach((item, index) => {
+            const stepNumberLabel = item.querySelector('.step-number-label');
+            const stepNumberInput = item.querySelector('input[name^="step_number"]');
+            
+            // stepNumberLabelが存在する場合のみ更新
+            if (stepNumberLabel) {
+                stepNumberLabel.innerText = `作り方 ${index + 1}`; // 番号を更新
+            }
+
+            // 隠しフィールドに新しい番号を保存
+            if (stepNumberInput) {
+                stepNumberInput.value = index + 1;
+            }
+        });
+    }
 });

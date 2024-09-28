@@ -49,44 +49,47 @@ function addStep() {
     // ステップフォームコンテナの取得
     const stepFormContainer = document.getElementById("step-form-container");
 
-    // 新しいステップ用のdivを作成、適用
-    const newStepDiv = document.createElement("div");
-    newStepDiv.classList.add("form-group");
+    // 新しいステップ用のliを作成
+    const newStepLi = document.createElement("li");
 
-    // ステップ番号の入力フィールドを作成（表示はさせない）
-    const stepNumberInput = document.createElement("input");
-    stepNumberInput.type = "hidden";
-    stepNumberInput.name = "step_number";
-    stepNumberInput.value = stepCount; // ステップ番号を設定
-
-    // ステップテキストのラベル作成
+    // ドラッグハンドルの作成
+    const dragHandle = document.createElement("span");
+    dragHandle.classList.add("srt_hndl");
+    dragHandle.innerText = "♥"; // ドラッグハンドルの表示内容
+    
+    // ステップ番号の表示
     const stepTextLabel = document.createElement("label");
-    stepTextLabel.setAttribute("for", "id_step_text_" + stepCount);
     stepTextLabel.innerText = "作り方 " + stepCount;
 
     // 入力フィールドを作成
     const stepTextInput = document.createElement("input");
     stepTextInput.type = "text";
-    stepTextInput.name = "step_text";
+    stepTextInput.name = "step_text_" + stepCount; // ステップごとに名前を変更
     stepTextInput.classList.add("form-control");
 
     // 作り方の写真のラベル作成
     const stepImageLabel = document.createElement("label");
-    stepImageLabel.setAttribute("for", "id_step_image_" + stepCount);
-    stepImageLabel.innerText = "作り方の写真 " + stepCount;
+    stepImageLabel.innerText = "作り方の写真"
 
     // 画像の入力フィールドを作成
     const stepImageInput = document.createElement("input");
     stepImageInput.type = "file";
-    stepImageInput.name = "step_image";
+    stepImageInput.name = "step_image_" + stepCount; // ステップごとに名前を変更
     stepImageInput.classList.add("form-control");
 
-    // 定義したフィールドをnewStepDivに追加
-    newStepDiv.appendChild(stepNumberInput);
-    newStepDiv.appendChild(stepTextLabel);
-    newStepDiv.appendChild(stepTextInput);
-    newStepDiv.appendChild(stepImageLabel);
-    newStepDiv.appendChild(stepImageInput);
+    // 新しいliに要素を追加
+    newStepLi.appendChild(dragHandle); // ドラッグハンドルを追加
+    newStepLi.appendChild(stepTextLabel);
+    newStepLi.appendChild(stepTextInput);
+    newStepLi.appendChild(stepImageLabel);
+    newStepLi.appendChild(stepImageInput);
 
-    stepFormContainer.appendChild(newStepDiv);
+    // ステップフォームコンテナに新しいliを追加
+    stepFormContainer.appendChild(newStepLi);
 }
+
+// Sortableを初期化
+new Sortable(document.getElementById('step-form-container'), {
+    handle: '.srt_hndl', // ドラッグハンドルを指定
+    animation: 150 // アニメーションのスピードを設定
+});

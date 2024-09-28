@@ -6,8 +6,8 @@
 /* ラベルのスタイル */
 .form-group label {
     display: block;
-    font-weight: bold;
     margin-bottom: 0.5rem;
+    font-weight: normal; 
 }
 
 /* 入力フィールドのスタイル */
@@ -20,11 +20,17 @@
     line-height: 1.5;
     border: 1px solid #ced4da;
     border-radius: 0.25rem;
+    font-weight: normal;
 }
 
 /* 入力フィールド下部にスペースを確保 */
 .form-group input[type="text"] {
     margin-bottom: 0.5rem;
+}
+
+/* なぜか反映されない */
+#step-form-container li {
+    list-style-type: none; /* リストのドットを消す */
 }
 
 /* ボタンの間隔調整 */

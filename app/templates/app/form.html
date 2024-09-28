@@ -56,19 +56,16 @@
 
             <!-- ステップフォーム -->
             <h3>作り方</h3>
-            <div id="step-form-container">
-                <div class="form-group">
-                     <!-- ステップ番号のフィールドは隠しておく -->
-                    <input type="hidden" name="step_number" value="1">
-                    <label for="id_step_text">作り方 1</label>
-                    {{ step_form.step_text }}
-                </div>
-
-                <div class="form-group">
+            <ul id="step-form-container" class="samplelist" style="list-style: none;">
+                <li class="form-group">
+                    <span class="srt_hndl">♥</span> <!-- ドラッグハンドル -->
+                    <label for="id_step_text" style="display: inline;">作り方 1</label>
+                    <input type="text" name="step_text_1" class="form-control" id="id_step_text">
+                    
                     <label for="id_step_image">作り方の写真</label>
-                    {{ step_form.step_image }}
-                </div>
-            </div>
+                    <input type="file" name="step_image_1" class="form-control" id="id_step_image">
+                </li>
+            </ul>
 
             <div class="form-group">
                 <label for="id_step_video">作り方の動画</label>
@@ -87,5 +84,6 @@
 
  <!-- 追加のjsを読み込むブロック -->
 {% block extra_scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="{% static 'app/js/form.js' %}"></script>
 {% endblock %}

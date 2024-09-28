@@ -55,7 +55,7 @@ function addStep() {
     // ドラッグハンドルの作成
     const dragHandle = document.createElement("span");
     dragHandle.classList.add("srt_hndl");
-    dragHandle.innerText = "♥"; // ドラッグハンドルの表示内容
+    dragHandle.innerHTML = '<i class="fa-solid fa-grip-lines"></i>' // ドラッグハンドルの表示内容
     
     // ステップ番号の表示
     const stepTextLabel = document.createElement("label");
@@ -90,6 +90,6 @@ function addStep() {
 
 // Sortableを初期化
 new Sortable(document.getElementById('step-form-container'), {
-    handle: '.srt_hndl', // ドラッグハンドルを指定
+    handle: '.srt_hndl', // ドラッグハンドルをアイコンに変更
     animation: 150 // アニメーションのスピードを設定
 });

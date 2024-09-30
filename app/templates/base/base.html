@@ -14,34 +14,93 @@
         <!-- 共通のCSSを書き込む -->
         <style>
             /* ヘッダーの背景色 */
-            header {
+            .header__flex {
+                display: flex;
+                align-items: center;
                 background-color: #00bcd4;
-                padding: 10px 0;
+                padding: 10px 30px;
             }
 
-            h2 {
-                margin-top: 1rem; /* ヘッダーを少し下げる */
-            }
-
-            /* リンクのスタイル */
             .navbar-brand {
                 color: white; /* テキストカラーを白に設定 */
                 text-decoration: none; /* 下線を消す */
-                font-size: 1.5rem; /* 文字の大きさを調整 */
-                font-weight: bold; /* 文字を太くする */
+                font-size: 2.0rem; /* ロゴのサイズ */
+                font-weight: bold; /* ロゴを太く */
             }
-            .navbar-brand:hover, .navbar-brand:focus {
+            .navbar-brand:hover {
                 color: white; /* ホバー時のテキストカラーも白に設定 */
                 text-decoration: none; /* ホバー時の下線を消す */
             }
+
+            .header__flex nav {
+                margin-left: auto; /* 自動で左側のスペースを埋める */
+            }
+
+            .search-box {
+                display: flex; /* フレックスボックスを使用 */
+                margin-left: 20px; /* ナビゲーションからの間隔 */
+                margin-right: 10px; /* 検索ボタンとの間隔を追加 */
+            }
+
+            .search-box input {
+                height: 38px; /* テキストボックスの高さ */
+                margin-left: 50px; /* 左側に隙間を追加 */
+                border-radius: 0.25rem 0 0 0.25rem; /* 角を丸く */
+                border: 1px solid #ced4da; /* ボーダーを設定 */
+                padding: 0 10px; /* テキストボックス内のパディング */
+            }
+
+            .search-box button {
+                margin-top: 0;
+                margin-left: 10px; /* ボタンの左側に隙間を追加 */
+                height: 38px; /* ボタンの高さをテキストボックスと揃える */
+                border-radius: 0 0.25rem 0.25rem 0; /* 角を丸く */
+                background-color: transparent; /* ボタンの背景色 */
+                color: white; /* ボタンの文字色 */
+            }
+
+            .header__flex ul {
+                list-style: none; /* リストのスタイルをなしに */
+                display: flex; /* 横並び */
+                margin: 0; /* マージンをリセット */
+                padding: 0; /* パディングをリセット */
+                height: 30px; /* ナビゲーションの高さを設定 */
+                align-items: center; /* 垂直方向の中央揃え */
+            }
+
+            .header__flex ul li {
+                margin-left: 20px; /* 各リスト項目の間隔 */
+            }
+
+            .header__flex ul li a {
+                color: white; /* リンクの色 */
+                text-decoration: none; /* 下線を消す */
+            }
+
+            .header__flex ul li a:hover {
+                color: white; /* ホバー時の色 */
+                text-decoration: none; /* ホバー時の下線を消す */
+            }
+
         </style>
     </head>
     <body>
         <!-- ヘッダー部分 -->
         <header>
-            <nav class="navbar navbar-dark">
-                <a class="navbar-brand" href="{% url 'app:recipe' %}">Cookly</a>
-            </nav>
+            <div class="header__flex">
+                <a href="{% url 'app:recipe' %}" class="navbar-brand">Cookly</a>
+                <form action="{% url 'app:searchrecipes' %}" method="GET" class="search-box">
+                    <input type="text" name="query" placeholder="Search（料理名で検索）" required>
+                    <button type="submit" class="btn btn-outline-light">検索</button>
+                </form>
+                <nav>
+                    <ul>
+                        <li><a href="{% url 'app:recipe' %}">ホーム</a></li>
+                        <li><a href="#">食材登録</a></li>
+                        <li><a href="#">マイページ</a></li>
+                    </ul>
+                </nav>
+            </div>
         </header>
 
         <!-- メイン部分 -->

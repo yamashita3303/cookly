@@ -53,6 +53,8 @@
 
             <!-- 材料追加ボタン -->
             <button type="button" class="btn btn-secondary" onclick="addIngredient()">+ 材料を追加</button>
+            <!-- 材料削除ボタン -->
+            <button type="button" class="btn btn-secondary" onclick="subIngredient()">+ 材料を削除</button><br>
 
             <!-- ステップフォーム -->
             <h3>作り方</h3>
@@ -67,14 +69,16 @@
                 </li>
             </ul>
 
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <label for="id_step_video">作り方の動画</label>
                 {{ step_form.step_video }}
-            </div>
+            </div> -->
             
 
              <!-- ステップ追加ボタン -->
-            <button type="button" class="btn btn-secondary" onclick="addStep()">+ ステップを追加</button><br>
+            <button type="button" class="btn btn-secondary" onclick="addStep()">+ ステップを追加</button>
+            <!-- ステップ削除ボタン -->
+            <button type="button" class="btn btn-secondary" onclick="subStep()">+ ステップを削除</button><br><br>
             
              <!-- フォーム送信ボタン -->
             <button type="submit" class="btn btn-primary">保存</button>

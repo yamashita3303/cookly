@@ -39,6 +39,14 @@ function addIngredient() {
     ingredientFormContainer.appendChild(newIngredientDiv);
 }
 
+function subIngredient() {
+    const ingredientFormContainer = document.getElementById("ingredient-form-container");
+
+    if (ingredientFormContainer.children.length > 2) {
+        ingredientFormContainer.removeChild(ingredientFormContainer.lastElementChild);
+    }
+}
+
 // 新しいステップを追加する関数
 function addStep() {
     stepCount++;  // ステップのカウントを増加
@@ -84,6 +92,15 @@ function addStep() {
 
     // ステップフォームコンテナに新しいliを追加
     stepFormContainer.appendChild(newStepLi);
+}
+
+function subStep() {
+    const stepFormContainer = document.getElementById("step-form-container");
+
+    if (stepFormContainer.children.length > 1) {
+        stepFormContainer.removeChild(stepFormContainer.lastElementChild);
+        stepCount--;  // ステップカウントを減らす
+    }
 }
 
 // Sortableを初期化

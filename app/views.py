@@ -50,16 +50,26 @@ def recipe(request):
     # GETリクエストからジャンルを取得
     selected_genre = request.GET.get('genre')
 
-    # ジャンルでのフィルタリングと同時に閲覧数の多い順に並べる
+    # 人気料理、最新の料理の上位10個だけ取得
+    # 評価の星はもうちょっと考えたいからいったん閲覧数順で並び替え
+    popular_recipes = Recipe.objects.all().order_by('-vote')[:10]
+    latest_recipes = Recipe.objects.all().order_by('-created_at')[:10]
+
+    # ジャンルでのフィルタリング
     if selected_genre:
         # 選択されたジャンルでフィルターをかける
-        recipes = Recipe.objects.filter(genre=selected_genre).order_by('-vote')
+        all_recipes = Recipe.objects.filter(genre=selected_genre)
     else:
         # すべてのレシピを取得
-        recipes = Recipe.objects.all().order_by('-vote')
+        all_recipes = Recipe.objects.all()
 
     # リストに似たオブジェクトになっている。
-    context = {'recipe_all': recipes, 'selected_genre': selected_genre}
+    context = {
+        'popular_recipes': popular_recipes,
+        'latest_recipes': latest_recipes,
+        'all_recipes': all_recipes,
+        'selected_genre': selected_genre,
+    }
     return render(request, "app/home.html", context)
 
 # レシピの詳細ページ(recipe.html)

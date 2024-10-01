@@ -1,6 +1,19 @@
 {% extends "base/base.html" %}
 {% block body %}
 
+<style>
+    .card {
+        min-height: 100%;
+    }
+
+    .card-text {
+        height: 80px; /* 必要に応じて調整 */
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+</style>
+
 <div class="container mt-4">
     <h1>ここはhome.htmlです。</h1>
     <!-- 検索ページへのリンクと料理追加ページのリンク -->
@@ -23,7 +36,7 @@
     <!-- レシピ一覧 -->
     <div class="row">
         <!-- views.pyで参照回数順に並び替え、recipe_allを繰り返し処理で表示 -->
-        {% for i in recipe_all %}
+        {% for i in all_recipes %}
         <!-- 列の高さを統一 -->
         <div class="col-md-4 mb-4 d-flex align-items-stretch">
             <!-- 仮にカード形式にした -->

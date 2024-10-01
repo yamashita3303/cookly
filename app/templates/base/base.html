@@ -11,75 +11,78 @@
         {% block extra_styles %}
         {% endblock %}
 
-        <!-- 共通のCSSを書き込む -->
+        <!-- ヘッダーのCSS -->
         <style>
-            /* ヘッダーの背景色 */
-            .header__flex {
+            /* 背景色 */
+            header {
+                background-color: #00ccb2; /* 背景色を設定 */
+            }
+
+            /* 背景色の幅は100%で、内部コンテンツだけ中央に配置 */
+            .header-top {
+                background-color: white; /* 上側の背景色を白に */
                 display: flex;
                 align-items: center;
-                background-color: #00bcd4;
+                justify-content: center;
                 padding: 10px 30px;
+                border-bottom: 1px solid #ddd; /* 下に境界線を追加 */
             }
 
-            .navbar-brand {
-                color: white; /* テキストカラーを白に設定 */
-                text-decoration: none; /* 下線を消す */
-                font-size: 2.0rem; /* ロゴのサイズ */
-                font-weight: bold; /* ロゴを太く */
+            .header-top .navbar-brand {
+                color: #333;                /* ロゴの色をダークに */
+                font-size: 2.0rem;
+                font-weight: bold;
+                text-decoration: none;
             }
-            .navbar-brand:hover {
-                color: white; /* ホバー時のテキストカラーも白に設定 */
-                text-decoration: none; /* ホバー時の下線を消す */
-            }
-
-            .header__flex nav {
-                margin-left: auto; /* 自動で左側のスペースを埋める */
+            .header-top .navbar-brand:hover {
+                color: #333;
             }
 
-            .search-box {
-                display: flex; /* フレックスボックスを使用 */
-                margin-left: 20px; /* ナビゲーションからの間隔 */
-                margin-right: 10px; /* 検索ボタンとの間隔を追加 */
+
+            /* 検索ボックス */
+            .header-top .search-box {
+                display: flex;                 /* フレックスボックスを使用 */
+                margin-left: 70px;             /* ここでボックスの位置調整 */
+                margin-right: 10px;            /* 右はなくてもいい気もする */
             }
 
-            .search-box input {
-                height: 38px; /* テキストボックスの高さ */
-                margin-left: 50px; /* 左側に隙間を追加 */
-                border-radius: 0.25rem 0 0 0.25rem; /* 角を丸く */
-                border: 1px solid #ced4da; /* ボーダーを設定 */
-                padding: 0 10px; /* テキストボックス内のパディング */
+            .header-top .search-box input {
+                height: 38px;                  /* テキストボックスの高さ（てきとー） */
+                border-radius: 0.25rem;        /* 角を丸く */
+                border: 1px solid #ced4da;   /* 枠線の色を設定 */
+                padding: 0 10px;               /* テキストボックス内に余白をつける */
             }
 
-            .search-box button {
-                margin-top: 0;
-                margin-left: 10px; /* ボタンの左側に隙間を追加 */
-                height: 38px; /* ボタンの高さをテキストボックスと揃える */
-                border-radius: 0 0.25rem 0.25rem 0; /* 角を丸く */
-                background-color: transparent; /* ボタンの背景色 */
-                color: white; /* ボタンの文字色 */
+            .header-top .search-box button {
+                margin-top: 0;                 /* form.cssで変更したボタンの設定を修正 */
+                margin-left: 10px;              /* ボタンの左側に隙間を追加 */
+                height: 38px;                   /* テキストボックスの高さと揃える */
+                border-radius: 0.25rem;         /* 角を丸く */
+                padding: 0 15px;
             }
 
-            .header__flex ul {
-                list-style: none; /* リストのスタイルをなしに */
-                display: flex; /* 横並び */
-                margin: 0; /* マージンをリセット */
-                padding: 0; /* パディングをリセット */
-                height: 30px; /* ナビゲーションの高さを設定 */
-                align-items: center; /* 垂直方向の中央揃え */
+
+             /* 下側ヘッダーのスタイル */
+             .header-bottom {
+                background-color: #00ccb2; /* 下側の背景色を元の色に */
+                padding: 10px 0;           /* 上下に余白をつける */
             }
 
-            .header__flex ul li {
-                margin-left: 20px; /* 各リスト項目の間隔 */
+            .header-bottom .container text-center {
+                max-width: 1200px;
+                margin: 0 auto;
+                display: flex;
+                justify-content: center;    /* リンクを中央に配置 */
             }
 
-            .header__flex ul li a {
-                color: white; /* リンクの色 */
-                text-decoration: none; /* 下線を消す */
+            .header-bottom .nav-link {
+                color: white;                 /* リンクの色 */
+                text-decoration: none;          /* 下線を消す */
             }
 
-            .header__flex ul li a:hover {
-                color: white; /* ホバー時の色 */
-                text-decoration: none; /* ホバー時の下線を消す */
+            .header-bottom .nav-link:hover {
+                color: white;                 /* ホバー時の色 */
+                text-decoration: none;          /* ホバー時の下線を消す */
             }
 
         </style>
@@ -87,19 +90,33 @@
     <body>
         <!-- ヘッダー部分 -->
         <header>
-            <div class="header__flex">
+            <!-- 上側のヘッダー -->
+            <div class="header-top">
                 <a href="{% url 'app:recipe' %}" class="navbar-brand">Cookly</a>
                 <form action="{% url 'app:searchrecipes' %}" method="GET" class="search-box">
                     <input type="text" name="query" placeholder="Search（料理名で検索）" required>
-                    <button type="submit" class="btn btn-outline-light">検索</button>
+                    <button type="submit" class="btn btn-outline-success">検索</button>
                 </form>
-                <nav>
-                    <ul>
-                        <li><a href="{% url 'app:recipe' %}">ホーム</a></li>
-                        <li><a href="#">食材登録</a></li>
-                        <li><a href="#">マイページ</a></li>
-                    </ul>
-                </nav>
+            </div>
+
+            <!-- 下側のヘッダー -->
+            <div class="header-bottom">
+                <div class="container text-center">
+                    <div class="row">
+                        <div class="col">
+                            <a href="{% url 'app:recipe' %}" class="nav-link">ホーム</a>
+                        </div>
+                        <div class="col">
+                            <a href="#" class="nav-link">食材登録</a>
+                        </div>
+                        <div class="col">
+                            <a href="#" class="nav-link">食材管理</a>
+                        </div>
+                        <div class="col">
+                            <a href="#" class="nav-link">マイページ</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -109,13 +126,13 @@
             {% endblock %}
         </main>
 
-        <!-- 追加のjsを読み込むブロック -->
-        {% block extra_scripts %}
-        {% endblock %}
-
         <!-- BootstrapのJSと依存するライブラリ（jQuery、Popper.js） -->
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+        <!-- 追加のjsを読み込むブロック -->
+        {% block extra_scripts %}
+        {% endblock %}
     </body>
 </html>

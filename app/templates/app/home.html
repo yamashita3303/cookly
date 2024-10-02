@@ -1,61 +1,80 @@
 {% extends "base/base.html" %}
+{% load static %}
+
+<!-- 追加のCSSを読み込むブロック -->
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'app/css/home.css' %}">
+{% endblock %}
+
 {% block body %}
+<!-- 検索ページへのリンクと料理追加ページのリンク -->
+<a href="{% url 'app:searchrecipes' %}" class="btn btn-link">検索へ</a>
+<a href="{% url 'app:recipe_create' %}" class="btn btn-link">料理追加</a>
 
-<style>
-    .card {
-        min-height: 100%;
-    }
+<!-- ジャンルごとに料理を絞るためのフォーム -->
+<form method="get" class="mb-4" id="genreForm">
+    <label for="genre">ジャンルで絞る:</label>
+    <select name="genre" id="genre" class="form-control">
+        <!-- 選択された値は維持するようにしてるがリンクをまたぐと表記がおかしくなる -->
+        <option value="" {% if selected_genre == "" %}selected{% endif %}>すべて</option>
+        <option value="main" {% if selected_genre == 'main' %}selected{% endif %}>主菜</option>
+        <option value="side" {% if selected_genre == 'side' %}selected{% endif %}>副菜</option>
+        <option value="course" {% if selected_genre == 'course' %}selected{% endif %}>主食</option>
+        <option value="dessert" {% if selected_genre == 'dessert' %}selected{% endif %}>菓子</option>
+    </select>
+</form>
 
-    .card-text {
-        height: 80px; /* 必要に応じて調整 */
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+<!-- レシピ一覧 -->
+<div class="row">
+    {% for i in all_recipes %}
+    <!-- 3列で表示したかったらcol-md-4、4列ならcol-md-3 -->
+    <div class="col-md-4 mb-4 d-flex align-items-stretch">
+        <!-- いったんカード形式 -->
+        <div class="card" style="width: 100%; position: relative;">
+            <!-- 画像は高さを指定し、サイズ調整する -->
+            <img src="{{ i.recipe_image.url }}" class="card-img-top" alt="{{ i.recipe_title }}" style="height: 200px; object-fit: cover;">
+            
+            <div class="card-body d-flex flex-column">
+                <!-- 上部にはジャンルと星評価を横並びで配置 -->
+                <div class="d-flex justify-content-between mt-0">
+                    <!-- ジャンル表示 -->
+                    {% if i.genre == 'main' %}
+                        <p class="badge badge-pill badge-main">{{ i.get_genre_display }}</p>
+                    {% elif i.genre == 'side' %}
+                        <p class="badge badge-pill badge-side">{{ i.get_genre_display }}</p>
+                    {% elif i.genre == 'course' %}
+                        <p class="badge badge-pill badge-course">{{ i.get_genre_display }}</p>
+                    {% elif i.genre == 'dessert' %}
+                        <p class="badge badge-pill badge-dessert">{{ i.get_genre_display }}</p>
+                    {% endif %}
 
-</style>
+                    <!-- 星評価表示 -->
+                    <p class="card-text mb-0">
+                        <small class="text-body-secondary">ここに星評価が入る</small>
+                    </p>
+                </div>
 
-<div class="container mt-4">
-    <h1>ここはhome.htmlです。</h1>
-    <!-- 検索ページへのリンクと料理追加ページのリンク -->
-    <a href="{% url 'app:searchrecipes' %}" class="btn btn-link">検索へ</a>
-    <a href="{% url 'app:recipe_create' %}" class="btn btn-link">料理追加</a>
-    
-    <!-- ジャンルごとに料理を絞るためのフォーム -->
-    <form method="get" class="mb-4" id="genreForm">
-        <label for="genre">ジャンルで絞る:</label>
-        <select name="genre" id="genre" class="form-control">
-            <!-- 選択された値は維持するようにしてるがリンクをまたぐと表記がおかしくなる -->
-            <option value="" {% if selected_genre == "" %}selected{% endif %}>すべて</option>
-            <option value="main" {% if selected_genre == 'main' %}selected{% endif %}>主菜</option>
-            <option value="side" {% if selected_genre == 'side' %}selected{% endif %}>副菜</option>
-            <option value="course" {% if selected_genre == 'course' %}selected{% endif %}>主食</option>
-            <option value="dessert" {% if selected_genre == 'dessert' %}selected{% endif %}>菓子</option>
-        </select>
-    </form>
-
-    <!-- レシピ一覧 -->
-    <div class="row">
-        <!-- views.pyで参照回数順に並び替え、recipe_allを繰り返し処理で表示 -->
-        {% for i in all_recipes %}
-        <!-- 列の高さを統一 -->
-        <div class="col-md-4 mb-4 d-flex align-items-stretch">
-            <!-- 仮にカード形式にした -->
-            <div class="card" style="width: 100%;">
-                <!-- 画像の表示 -->
-                <img src="{{ i.recipe_image.url }}" class="card-img-top" alt="{{ i.recipe_title }}" style="height: 200px; object-fit: cover;">
+                <!-- 中央には料理名を配置 -->
+                <h5 class="card-title text-left mb-2">
+                    <a href="{% url 'app:detail' i.id %}" class="text-decoration-none">{{ i.recipe_title }}</a>
+                </h5>
                 
-                <!-- レシピのタイトルと説明の表示 -->
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">{{ i.recipe_title }}</h5>
-                    <!-- レシピの説明テキストは100文字だけ表示 -->
-                    <p class="card-text">{{ i.detail_text|truncatechars:100 }}</p>
-                    <!-- 詳細ページへのボタン -->
-                    <a href="{% url 'app:detail' i.id %}" class="btn btn-primary mt-auto">詳細を見る</a>
+                <!-- 下部にはユーザーと作成日を横並びで表示 -->
+                <div class="mt-auto d-flex justify-content-between">
+                    <!-- ユーザー表示 -->
+                    <p class="card-text mb-0">
+                        <small class="text-body-secondary">ここにユーザーが入る</small>
+                    </p>
+
+                    <!-- 作成日表示 -->
+                    <p class="card-text mb-0" style="margin-right: 0;">
+                        <small class="text-body-secondary">作成日：{{ i.created_at|date:"Y/m/d" }}</small>
+                    </p>
                 </div>
             </div>
         </div>
-        {% endfor %}
     </div>
+    {% endfor %}
 </div>
 
 <script>

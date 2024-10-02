@@ -1,5 +1,3 @@
-let stepCount = 1;  // ステップのカウントを初期化
-
 // 新しい材料を追加する関数
 function addIngredient() {
     // 材料フォームコンテナを取得
@@ -39,9 +37,11 @@ function addIngredient() {
     ingredientFormContainer.appendChild(newIngredientDiv);
 }
 
+// 材料を削除する関数
 function subIngredient() {
     const ingredientFormContainer = document.getElementById("ingredient-form-container");
 
+    // 最低一つは残るように調整
     if (ingredientFormContainer.children.length > 2) {
         ingredientFormContainer.removeChild(ingredientFormContainer.lastElementChild);
     }
@@ -49,8 +49,6 @@ function subIngredient() {
 
 // 新しいステップを追加する関数
 function addStep() {
-    stepCount++;  // ステップのカウントを増加
-
     // ステップフォームコンテナの取得
     const stepFormContainer = document.getElementById("step-form-container");
 
@@ -60,17 +58,18 @@ function addStep() {
     // ドラッグハンドルの作成
     const dragHandle = document.createElement("span");
     dragHandle.classList.add("srt_hndl");
-    dragHandle.innerHTML = '<i class="fa-solid fa-grip-lines"></i>' // ドラッグハンドルの表示内容
-    
+    dragHandle.innerHTML = '<i class="fa-solid fa-grip-lines"></i>';
+
     // ステップ番号の表示
     const stepTextLabel = document.createElement("label");
-    stepTextLabel.innerText = "作り方 " + stepCount;
+    const stepNumber = stepFormContainer.children.length + 1; // 現在の要素数に基づく番号
+    stepTextLabel.innerText = "作り方 " + stepNumber;
     stepTextLabel.classList.add('step-number-label');
 
     // 入力フィールドを作成
     const stepTextInput = document.createElement("input");
     stepTextInput.type = "text";
-    stepTextInput.name = "step_text"; // ステップごとに名前を変更
+    stepTextInput.name = "step_text"; 
     stepTextInput.classList.add("form-control");
 
     // 作り方の写真のラベル作成
@@ -80,11 +79,11 @@ function addStep() {
     // 画像の入力フィールドを作成
     const stepImageInput = document.createElement("input");
     stepImageInput.type = "file";
-    stepImageInput.name = "step_image"; // ステップごとに名前を変更
+    stepImageInput.name = "step_image"; 
     stepImageInput.classList.add("form-control");
 
     // 新しいliに要素を追加
-    newStepLi.appendChild(dragHandle); // ドラッグハンドルを追加
+    newStepLi.appendChild(dragHandle);
     newStepLi.appendChild(stepTextLabel);
     newStepLi.appendChild(stepTextInput);
     newStepLi.appendChild(stepImageLabel);
@@ -94,20 +93,22 @@ function addStep() {
     stepFormContainer.appendChild(newStepLi);
 }
 
+// ステップを削除する関数
 function subStep() {
     const stepFormContainer = document.getElementById("step-form-container");
 
+    // 最低一つは残るように調整
     if (stepFormContainer.children.length > 1) {
         stepFormContainer.removeChild(stepFormContainer.lastElementChild);
-        stepCount--;  // ステップカウントを減らす
     }
 }
 
 // Sortableを初期化
 new Sortable(document.getElementById('step-form-container'), {
-    handle: '.srt_hndl', // ドラッグハンドルをアイコンに変更
-    animation: 150, // アニメーションのスピードを設定
-
+    // ドラッグハンドルのクラスを教える
+    handle: '.srt_hndl',
+    // アニメーションの速さを設定(違いがわからん)
+    animation: 150,
     onEnd: function () {
         // 並び替え後の要素を取得
         const stepItems = document.querySelectorAll('#step-form-container li');
@@ -115,17 +116,7 @@ new Sortable(document.getElementById('step-form-container'), {
         // 各ステップ番号を再割り当て
         stepItems.forEach((item, index) => {
             const stepNumberLabel = item.querySelector('.step-number-label');
-            const stepNumberInput = item.querySelector('input[name^="step_number"]');
-            
-            // stepNumberLabelが存在する場合のみ更新
-            if (stepNumberLabel) {
-                stepNumberLabel.innerText = `作り方 ${index + 1}`; // 番号を更新
-            }
-
-            // 隠しフィールドに新しい番号を保存
-            if (stepNumberInput) {
-                stepNumberInput.value = index + 1;
-            }
+            stepNumberLabel.innerText = `作り方 ${index + 1}`;
         });
     }
 });

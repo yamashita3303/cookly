@@ -7,83 +7,79 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container mt-5">
-        <h2>ここはform.htmlです</h2>
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %} <!-- 絶対必要 -->
-            
-            <!-- 料理タイトル -->
-            <div class="form-group">
-                <label for="id_recipe_title">料理タイトル</label>
-                {{ form.recipe_title }}
-            </div>
-
-            <!-- 完成後の写真 -->
-            <div class="form-group">
-                <label for="id_recipe_image">料理写真</label>
-                {{ form.recipe_image }}
-            </div>
-
-            <!-- 説明欄 -->
-            <div class="form-group">
-                <label for="id_detail_text">料理説明</label>
-                {{ form.detail_text }}
-            </div>
-
-            <!-- 主菜・副菜・主食・菓子 -->
-            <div class="form-group">
-                <label for="id_genre">ジャンル</label>
-                {{ form.genre }}
-            </div>
-
-
-            <!-- 材料フォーム -->
-            <h3>材料</h3>
-            <div id="ingredient-form-container">
-                <div class="form-group">
-                    <label for="id_material">材料名</label>
-                    {{ ingredient_form.material }}
-                </div>
-
-                <div class="form-group">
-                    <label for="id_amount">分量</label>
-                    {{ ingredient_form.amount }}
-                </div>
-            </div>
-
-            <!-- 材料追加ボタン -->
-            <button type="button" class="btn btn-secondary" onclick="addIngredient()">+ 材料を追加</button>
-            <!-- 材料削除ボタン -->
-            <button type="button" class="btn btn-secondary" onclick="subIngredient()">+ 材料を削除</button><br>
-
-            <!-- ステップフォーム -->
-            <h3>作り方</h3>
-            <ul id="step-form-container" class="samplelist" style="list-style: none;">
-                <li class="form-group">
-                    <span class="srt_hndl"><i class="fa-solid fa-grip-lines"></i></span> <!-- ドラッグハンドル -->
-                    <label for="id_step_text" class="step-number-label" style="display: inline;">作り方 1</label>
-                    <input type="text" name="step_text" class="form-control" id="id_step_text">
-                    
-                    <label for="id_step_image">作り方の写真</label>
-                    <input type="file" name="step_image" class="form-control" id="id_step_image">
-                </li>
-            </ul>
-
-            <!-- <div class="form-group">
-                <label for="id_step_video">作り方の動画</label>
-                {{ step_form.step_video }}
-            </div> -->
-            
-
-             <!-- ステップ追加ボタン -->
-            <button type="button" class="btn btn-secondary" onclick="addStep()">+ ステップを追加</button>
-            <!-- ステップ削除ボタン -->
-            <button type="button" class="btn btn-secondary" onclick="subStep()">+ ステップを削除</button><br><br>
-            
-             <!-- フォーム送信ボタン -->
-            <button type="submit" class="btn btn-primary">保存</button>
-        </form>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %} <!-- 絶対必要 -->
+    
+    <!-- 料理タイトル -->
+    <div class="form-group">
+        <label for="id_recipe_title">料理タイトル</label>
+        {{ form.recipe_title }}
     </div>
+
+    <!-- 完成後の写真 -->
+    <div class="form-group">
+        <label for="id_recipe_image">料理写真</label>
+        {{ form.recipe_image }}
+    </div>
+
+    <!-- 説明欄 -->
+    <div class="form-group">
+        <label for="id_detail_text">料理説明</label>
+        {{ form.detail_text }}
+    </div>
+
+    <!-- 主菜・副菜・主食・菓子 -->
+    <div class="form-group">
+        <label for="id_genre">ジャンル</label>
+        {{ form.genre }}
+    </div>
+
+
+    <!-- 材料フォーム -->
+    <h3>材料</h3>
+    <div id="ingredient-form-container">
+        <div class="form-group">
+            <label for="id_material">材料名</label>
+            {{ ingredient_form.material }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_amount">分量</label>
+            {{ ingredient_form.amount }}
+        </div>
+    </div>
+
+    <!-- 材料追加ボタン -->
+    <button type="button" class="btn btn-secondary" onclick="addIngredient()">+ 材料を追加</button>
+    <!-- 材料削除ボタン -->
+    <button type="button" class="btn btn-secondary" onclick="subIngredient()">- 材料を削除</button><br>
+
+    <!-- ステップフォーム -->
+    <h3>作り方</h3>
+    <ul id="step-form-container" class="samplelist" style="list-style: none;">
+        <li class="form-group">
+            <span class="srt_hndl"><i class="fa-solid fa-grip-lines"></i></span> <!-- ドラッグハンドル -->
+            <label for="id_step_text" class="step-number-label" style="display: inline;">作り方 1</label>
+            <input type="text" name="step_text" class="form-control" id="id_step_text">
+            
+            <label for="id_step_image">作り方の写真</label>
+            <input type="file" name="step_image" class="form-control" id="id_step_image">
+        </li>
+    </ul>
+
+    <!-- <div class="form-group">
+        <label for="id_step_video">作り方の動画</label>
+        {{ step_form.step_video }}
+    </div> -->
+    
+    <!-- ステップ追加ボタン -->
+    <button type="button" class="btn btn-secondary" onclick="addStep()">+ ステップを追加</button>
+    <!-- ステップ削除ボタン -->
+    <button type="button" class="btn btn-secondary" onclick="subStep()">- ステップを削除</button><br><br>
+    
+        <!-- フォーム送信ボタン -->
+    <button type="submit" class="btn btn-primary">保存</button>
+</form>
 {% endblock %}
 
  <!-- 追加のjsを読み込むブロック -->

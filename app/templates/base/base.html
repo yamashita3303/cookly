@@ -3,8 +3,10 @@
     <head>
         <meta charset="utf-8" />
         <title>Cookly</title>
-        <!-- BootstrapのCSSをインクルード -->
+        <!-- BootstrapのCSSをインクルード(Bootstrap 4であることに注意) -->
         <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+        
+        <!-- Font Awesome(アイコン)のCSSをインクルード -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
         
         <!-- 追加のCSSを読み込むブロック -->
@@ -15,57 +17,56 @@
         <style>
             /* 背景色 */
             header {
-                background-color: #00ccb2; /* 背景色を設定 */
+                background-color: #00ccb2;
             }
 
-            /* 背景色の幅は100%で、内部コンテンツだけ中央に配置 */
+            /* 上側のヘッダー */
             .header-top {
-                background-color: white; /* 上側の背景色を白に */
+                background-color: white;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 padding: 10px 30px;
-                border-bottom: 1px solid #ddd; /* 下に境界線を追加 */
+                border-bottom: 1px solid white; /* 下に境界線を追加 */
             }
 
             .header-top .navbar-brand {
-                color: #333;                /* ロゴの色をダークに */
+                color: black;
                 font-size: 2.0rem;
                 font-weight: bold;
                 text-decoration: none;
             }
             .header-top .navbar-brand:hover {
-                color: #333;
+                color: black;
             }
 
 
             /* 検索ボックス */
             .header-top .search-box {
-                display: flex;                 /* フレックスボックスを使用 */
+                display: flex;
                 margin-left: 70px;             /* ここでボックスの位置調整 */
-                margin-right: 10px;            /* 右はなくてもいい気もする */
             }
 
             .header-top .search-box input {
                 height: 38px;                  /* テキストボックスの高さ（てきとー） */
                 border-radius: 0.25rem;        /* 角を丸く */
-                border: 1px solid #ced4da;   /* 枠線の色を設定 */
+                border: 1px solid white;
                 padding: 0 10px;               /* テキストボックス内に余白をつける */
             }
 
             .header-top .search-box button {
-                margin-top: 0;                 /* form.cssで変更したボタンの設定を修正 */
+                margin-top: 0;                  /* form.cssで変更したボタンの設定を修正 */
                 margin-left: 10px;              /* ボタンの左側に隙間を追加 */
                 height: 38px;                   /* テキストボックスの高さと揃える */
-                border-radius: 0.25rem;         /* 角を丸く */
+                border-radius: 0.25rem;
                 padding: 0 15px;
             }
 
 
              /* 下側ヘッダーのスタイル */
              .header-bottom {
-                background-color: #00ccb2; /* 下側の背景色を元の色に */
-                padding: 10px 0;           /* 上下に余白をつける */
+                background-color: #00ccb2;
+                padding: 10px 0;
             }
 
             .header-bottom .container text-center {
@@ -76,17 +77,17 @@
             }
 
             .header-bottom .nav-link {
-                color: white;                 /* リンクの色 */
-                text-decoration: none;          /* 下線を消す */
+                color: white;
+                text-decoration: none;
             }
 
             .header-bottom .nav-link:hover {
-                color: white;                 /* ホバー時の色 */
-                text-decoration: none;          /* ホバー時の下線を消す */
+                color: white;
+                text-decoration: none;
             }
-
         </style>
     </head>
+
     <body>
         <!-- ヘッダー部分 -->
         <header>
@@ -101,6 +102,7 @@
 
             <!-- 下側のヘッダー -->
             <div class="header-bottom">
+                <!-- グリッドで自動的に分割する -->
                 <div class="container text-center">
                     <div class="row">
                         <div class="col">
@@ -121,7 +123,7 @@
         </header>
 
         <!-- メイン部分 -->
-        <main>
+        <main class="container mt-4">
             {% block body %}
             {% endblock %}
         </main>

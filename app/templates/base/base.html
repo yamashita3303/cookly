@@ -4,7 +4,7 @@
         <meta charset="utf-8" />
         <title>Cookly</title>
         <!-- BootstrapのCSSをインクルード(Bootstrap 4であることに注意) -->
-        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         
         <!-- Font Awesome(アイコン)のCSSをインクルード -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
@@ -128,10 +128,7 @@
             {% endblock %}
         </main>
 
-        <!-- BootstrapのJSと依存するライブラリ（jQuery、Popper.js） -->
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
         <!-- 追加のjsを読み込むブロック -->
         {% block extra_scripts %}

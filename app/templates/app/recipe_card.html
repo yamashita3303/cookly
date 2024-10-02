@@ -1,0 +1,44 @@
+<!-- いったんカード形式 -->
+<div class="card" style="width: 100%; position: relative;">
+    <!-- 画像は高さを指定し、サイズ調整する -->
+    <img src="{{ i.recipe_image.url }}" class="card-img-top" alt="{{ i.recipe_title }}" style="height: 200px; object-fit: cover;">
+    
+    <div class="card-body d-flex flex-column">
+        <!-- 上部にはジャンルと星評価を横並びで配置 -->
+        <div class="d-flex justify-content-between mt-0">
+            <!-- ジャンル表示 -->
+            {% if i.genre == 'main' %}
+                <p class="badge badge-pill badge-main">{{ i.get_genre_display }}</p>
+            {% elif i.genre == 'side' %}
+                <p class="badge badge-pill badge-side">{{ i.get_genre_display }}</p>
+            {% elif i.genre == 'course' %}
+                <p class="badge badge-pill badge-course">{{ i.get_genre_display }}</p>
+            {% elif i.genre == 'dessert' %}
+                <p class="badge badge-pill badge-dessert">{{ i.get_genre_display }}</p>
+            {% endif %}
+
+            <!-- 星評価表示 -->
+            <p class="card-text mb-0">
+                <small class="text-body-secondary">ここに星評価が入る</small>
+            </p>
+        </div>
+
+        <!-- 中央には料理名を配置 -->
+        <h5 class="card-title text-left mb-2">
+            <a href="{% url 'app:detail' i.id %}" class="text-decoration-none">{{ i.recipe_title }}</a>
+        </h5>
+        
+        <!-- 下部にはユーザーと作成日を横並びで表示 -->
+        <div class="mt-auto d-flex justify-content-between">
+            <!-- ユーザー表示 -->
+            <p class="card-text mb-0">
+                <small class="text-body-secondary">ここにユーザーが入る</small>
+            </p>
+
+            <!-- 作成日表示 -->
+            <p class="card-text mb-0" style="margin-right: 0;">
+                <small class="text-body-secondary">作成日：{{ i.created_at|date:"Y/m/d" }}</small>
+            </p>
+        </div>
+    </div>
+</div>

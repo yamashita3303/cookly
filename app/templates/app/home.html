@@ -11,6 +11,28 @@
 <a href="{% url 'app:searchrecipes' %}" class="btn btn-link">検索へ</a>
 <a href="{% url 'app:recipe_create' %}" class="btn btn-link">料理追加</a>
 
+<!-- 人気ランキング -->
+ <h2>人気ランキング</h2>
+<div class="row">
+    {% for recipe in popular_recipes %}
+        <!-- 3列で表示したかったらcol-md-4、4列ならcol-md-3 -->
+        <div class="col-md-4 mb-4 d-flex align-items-stretch">
+            <!-- 何度も書くのは面倒だからrecipe_card.htmlに格納 -->
+            {% include 'app/recipe_card.html' with i=recipe %}
+        </div>
+    {% endfor %}
+</div>
+
+<!-- 最新のレシピ -->
+ <h2>最新のレシピ</h2>
+<div class="row">
+    {% for recipe in latest_recipes %}
+        <div class="col-md-4 mb-4 d-flex align-items-stretch">
+            {% include 'app/recipe_card.html' with i=recipe %}
+        </div>
+    {% endfor %}
+</div>
+
 <!-- ジャンルごとに料理を絞るためのフォーム -->
 <form method="get" class="mb-4" id="genreForm">
     <label for="genre">ジャンルで絞る:</label>
@@ -27,9 +49,7 @@
 <!-- レシピ一覧 -->
 <div class="row">
     {% for recipe in all_recipes %}
-        <!-- 3列で表示したかったらcol-md-4、4列ならcol-md-3 -->
         <div class="col-md-4 mb-4 d-flex align-items-stretch">
-            <!-- 何度も書くのは面倒だからrecipe_card.htmlに格納 -->
             {% include 'app/recipe_card.html' with i=recipe %}
         </div>
     {% endfor %}

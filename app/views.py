@@ -5,21 +5,26 @@ from django.views import View
 from .models import Recipe, Ingredient, Step, Comment
 from django.http import HttpResponse, HttpResponseRedirect
 from .forms import RecipeForm, IngredientForm, StepForm, CommentForm
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
 from .models import CustomUser
-# 今は使ってない
 def index(request):
     context = {'user': request.user}
     return render(request, 'index.html', context)
 
 def signup(request):
     if request.method == 'POST':
+        first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
         username = request.POST['username']
         email = request.POST['email']
         password = request.POST['password']
-        new_user = CustomUser(username=username, email=email, password=password)
+        new_user = CustomUser(first_name=first_name, last_name=last_name, username=username, email=email)
+        new_user.set_password(password)  # パスワードのハッシュ化
         new_user.save()
-        return HttpResponse('ユーザーの作成に成功しました')
+        
+        # signup_success.htmlでアラートを表示し、リダイレクトさせる
+        return render(request, 'signup_success.html', {'message': 'ユーザーの作成に成功しました'})
     else:
         return render(request, 'signup.html')
 
@@ -33,17 +38,21 @@ def signin(request):
         except CustomUser.DoesNotExist:
             return render(request, 'signin.html', {'error_message': 'ユーザーが存在しません。'})
 
-        if user.password == password:
+        user = authenticate(request, username=user.username, password=password)
+        if user is not None:
             login(request, user)
-            return HttpResponseRedirect('/app/home')
+            return HttpResponseRedirect('/home/')
         else:
             return render(request, 'signin.html', {'error_message': 'パスワードが正しくありません。'})
     else:
         return render(request, 'signin.html')
 
+# ログアウトビュー
+@login_required
 def signout(request):
     logout(request)
-    return HttpResponseRedirect('/app')
+    messages.success(request, "ログアウトしました。")
+    return redirect('app:index')
 
 # レシピ一覧ページ(home.html)
 def recipe(request):

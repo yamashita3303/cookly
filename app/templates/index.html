@@ -1,14 +1,22 @@
-{% if user.is_authenticated %}
-<div>
-  <h3>{{ user }}さんこんにちは！<h3>
-  <form action="signout" method="post">
-    {% csrf_token %}
-    <input type="submit" value="ログアウト" />
-  </form>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+{% load static %}
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'app/css/index.css' %}">
+    <title>Cookly</title>
+{% endblock %}
+</head>
+<body>
+<div class="center-content">
+  <a href="/">
+    <img src="media/recipes/cookly_icon.png" alt="cookly_icon" class="resize-image">
+  </a>
 </div>
-{% else %}
-<div>
-  <a href="signup">新規登録</a></p>
-  <a href="signin">ログイン</a></p>
+
+<div class="center-content">
+  <a href="signup">新規登録</a><br>
+  <a href="signin">ログイン</a>
 </div>
-{% endif %}
+</body>
+</html>

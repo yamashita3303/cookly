@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ユーザー登録成功</title>
+    <script>
+        window.onload = function() {
+            alert("{{ message }}");
+            setTimeout(function() {
+                window.location.href = "{% url 'app:signin' %}";
+            }, 800);  // 0.8秒後にリダイレクト
+        };
+    </script>
+</head>
+<body>
+    <p>ユーザーの作成に成功しました。リダイレクト中...</p>
+</body>
+</html>

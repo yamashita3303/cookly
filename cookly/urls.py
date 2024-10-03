@@ -21,7 +21,7 @@ from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls), # これは元からある
-    path("app/", include("app.urls")), # これを追加した
+    path("", include("app.urls")), # これを追加した
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

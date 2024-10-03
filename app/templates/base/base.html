@@ -2,6 +2,9 @@
 <html lang="ja">
     <head>
         <meta charset="utf-8" />
+        <a href="/home/">
+            <link rel="shortcut icon" href="media/recipes/cookly_icon.png" type="image/x-icon">
+        </a>
         <title>Cookly</title>
         <!-- BootstrapのCSSをインクルード -->
         <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
@@ -41,6 +44,9 @@
             <nav class="navbar navbar-dark">
                 <a class="navbar-brand" href="{% url 'app:recipe' %}">Cookly</a>
             </nav>
+            <li class="nav-item">
+                <a class="nav-link text-light" href="{% url 'app:signout' %}">ログアウト</a>
+            </li>
         </header>
 
         <!-- メイン部分 -->

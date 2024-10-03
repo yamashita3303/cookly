@@ -1,0 +1,13 @@
+.resize-image {
+    width: 150px;
+    height: auto; /* アスペクト比を維持しながら高さを自動調整 */
+}
+.center-content {
+    display: flex;
+    flex-direction: column;  /* 縦方向に配置 */
+    align-items: center;      /* 子要素を中央揃え */
+    text-align: center;       /* テキストを中央揃え */
+}
+.center-content a {
+    margin: 10px 0;  /* リンクに上下の余白を追加 */
+}

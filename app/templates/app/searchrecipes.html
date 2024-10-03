@@ -1,3 +1,5 @@
+{% extends "base/base.html" %}
+{% block body %}
 <a href="{% url 'app:recipe' %}">ホームに戻る</a>
 <form method="GET" action="{% url 'app:searchrecipes' %}">
     <input type="text" name="keyword">
@@ -11,3 +13,4 @@
     <img src="{{ i.recipe_image.url }}">
 </a>
 {% endfor %}
+{% endblock %}

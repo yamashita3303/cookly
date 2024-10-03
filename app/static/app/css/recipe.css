@@ -1,0 +1,103 @@
+/* Recipeの情報を入れるコンテナ */
+.recipe-container {
+    display: flex;
+    justify-content: space-between; /* 左右に分割 */
+    margin-bottom: 20px;
+    padding: 20px;
+    height: 350px;
+}
+
+/* 完成写真を張るフィールド */
+.recipe-left {
+    flex: 1;
+    max-width: 40%;
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.recipe-image {
+    width: auto;
+    max-width: 100%;
+    max-height: 300px;
+    height: auto;
+    object-fit: cover;
+}
+
+/* 料理名、説明文などを入れるフィールド */
+.recipe-right {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column; /* 縦に並べる */
+}
+
+/* とりあえず2:6:2の比率で並べる */
+.recipe-title {
+    flex: 2;
+    margin-top: 20px;
+}
+
+.recipe-detail {
+    flex: 6;
+    border: 0.5px solid black;
+}
+
+.view-count {
+    flex: 2;
+    margin-top: auto;
+}
+
+
+/* IngredientとStepを入れるコンテナ */
+.ingredient-step-container {
+    display: flex;
+    justify-content: space-between; /* 左右に分割 */
+    max-width: 1000px;
+    margin: 20px auto;
+}
+
+.ingredient-container,
+.step-container {
+    flex: 1;
+    margin: 0 10px;
+}
+
+.ingredient-title,
+.step-title {
+    text-align: center; /* タイトルを中央揃え */
+}
+
+/* タイトルの下の線 */
+.divider {
+    border-top: 2px solid black;
+    margin: 10px 0;
+}
+
+.ingredient-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ingredient-table th,
+.ingredient-table td {
+    border: none;
+    padding: 10px;
+}
+
+.ingredient-name {
+    text-align: left; /* 材料名を左端へ */
+}
+
+.ingredient-amount {
+    text-align: right; /* 量を右端へ */
+}
+
+.step-text {
+    margin-bottom: 5px;
+}
+
+.step-image {
+    max-width: 150px;
+    height: auto;
+    margin-bottom: 20px;
+}

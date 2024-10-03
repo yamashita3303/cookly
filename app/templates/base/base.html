@@ -50,7 +50,7 @@
             .header-top .search-box input {
                 height: 38px;                  /* テキストボックスの高さ（てきとー） */
                 border-radius: 0.25rem;        /* 角を丸く */
-                border: 1px solid white;
+                border: 1px solid black;
                 padding: 0 10px;               /* テキストボックス内に余白をつける */
             }
 
@@ -95,7 +95,7 @@
             <div class="header-top">
                 <a href="{% url 'app:recipe' %}" class="navbar-brand">Cookly</a>
                 <form action="{% url 'app:searchrecipes' %}" method="GET" class="search-box">
-                    <input type="text" name="query" placeholder="Search（料理名で検索）" required>
+                    <input type="text" name="query" placeholder="Search(料理名で検索)" required>
                     <button type="submit" class="btn btn-outline-success">検索</button>
                 </form>
             </div>

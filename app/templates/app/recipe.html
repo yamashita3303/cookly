@@ -1,44 +1,75 @@
 {% extends "base/base.html" %}
+{% load static %}
+
+<!-- 追加のCSSを読み込むブロック -->
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'app/css/recipe.css' %}">
+{% endblock %}
+
 {% block body %}
+<!-- Recipeの内容を入れるコンテナ -->
+<div class="recipe-container">
+    <!-- 左側には画像 -->
+    <div class="recipe-left">
+        <img src="{{ recipe_chose.recipe_image.url }}" alt="Recipe Image" class="recipe-image">
+    </div>
 
-ここはrecipe.htmlです。<br>
-<!-- views.pyのdetail(メソッド)で指定したrecipe_choseを呼び出し.modelのrecipeで指定したrecipe_titleを呼び出し -->
-<p>料理名: {{ recipe_chose.recipe_title }}</p>
-<p>閲覧回数: {{ recipe_chose.vote }}</p>
+    <!-- 右側には料理のタイトル、説明文、閲覧回数 -->
+    <div class="recipe-right">
+        <h2 class="recipe-title">{{ recipe_chose.recipe_title }}</h2>
+        <p class="recipe-detail">{{ recipe_chose.detail_text }}</p>
+        <p class="view-count">閲覧回数: {{ recipe_chose.vote }}</p>
+    </div>
+</div>
 
-<!-- views.pyのdetail(メソッド)で指定したingredient_textを呼び出し -->
-<h2>材料</h2>
-<ul>
-    {% for ingredient in ingredient_text %}
-        <!-- modelのIngredientで指定したmaterialとamountを呼び出し -->
-        <li>{{ ingredient.material }}: {{ ingredient.amount }}</li>
+<div class="ingredient-step-container">
+    <div class="ingredient-container">
+        <h2 class="ingredient-title">材料</h2>
+        <hr class="divider">
+        <table class="table table-striped ingredient-table">
+            <tbody>
+                {% for ingredient in ingredient_text %}
+                    <tr>
+                        <td class="ingredient-name">{{ ingredient.material }}</td>
+                        <td class="ingredient-amount">{{ ingredient.amount }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="2">材料がありません。</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="step-container">
+        <h2 class="step-title">作り方</h2>
+        <hr class="divider">
+        {% for step in steps %}
+            <div class="step">
+                <p class="step-text">ステップ {{ step.step_number }}: {{ step.step_text }}</p>
+
+                {% if step.step_image %}
+                    <img src="{{ step.step_image.url }}" alt="Step Image" class="step-image">
+                {% endif %}
+
+                <!-- 動画には対応させてないため省略 -->
+            </div>
+        {% empty %}
+            <p>作り方がありません。</p>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="comment-container">
+    <!-- comment.htmlとくっつける？一旦保留 -->
+    <h2>コメント</h2>
+    {% for comment in comments %}
+        <p>コメント: {{ comment.comment }}</p>
     {% empty %}
-        <p>材料がありません。</p>
+        <p>コメントがありません。</p>
     {% endfor %}
-</ul>
-
-<h2>作り方</h2>
-{% for step in steps %}
-    <p>ステップ {{ step.step_number }}: {{ step.step_text }}</p>
-    {% if step.step_image %}
-        <img src="{{ step.step_image.url }}" alt="Step Image" style="max-width: 300px;">
-    {% endif %}
-    {% if step.step_video %}
-        <video controls style="max-width: 300px;">
-            <source src="{{ step.step_video.url }}" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
-    {% endif %}
-{% empty %}
-    <p>作り方がありません。</p>
-{% endfor %}
-
-<h2>コメント</h2>
-{% for i in comments %}
-    <p>コメント: {{ i.comment }}</p>
-{% empty %}
-    <p>コメントがありません。</p>
-{% endfor %}
-<a href="{% url 'app:comments' recipe_chose.id %}">コメント追加</a>
+    <a href="{% url 'app:comments' recipe_chose.id %}">コメント追加</a>
+</div>
 
 {% endblock %}

@@ -12,7 +12,7 @@
 <a href="{% url 'app:recipe_create' %}" class="btn btn-link">料理追加</a>
 
 <!-- 人気ランキング -->
- <h2>人気ランキング</h2>
+<h3>人気ランキング</h3>
 <div class="row">
     {% for recipe in popular_recipes %}
         <!-- 3列で表示したかったらcol-md-4、4列ならcol-md-3 -->
@@ -24,7 +24,7 @@
 </div>
 
 <!-- 最新のレシピ -->
- <h2>最新のレシピ</h2>
+<h3>最新のレシピ</h3>
 <div class="row">
     {% for recipe in latest_recipes %}
         <div class="col-md-4 mb-4 d-flex align-items-stretch">

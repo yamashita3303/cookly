@@ -51,9 +51,10 @@
             /* 検索ボックス */
             .header-top .search-box {
                 display: flex;
-                margin-left: 70px;             /* ここでボックスの位置調整 */
+                margin-left: 70px;             /* アイコンと検索ボックスの間にスペースを追加 */
+                margin-right: 600px;             /* 検索ボックスとログアウトの間にスペースを追加 */
             }
-
+            
             .header-top .search-box input {
                 height: 38px;                  /* テキストボックスの高さ（てきとー） */
                 border-radius: 0.25rem;        /* 角を丸く */
@@ -108,6 +109,7 @@
                     <input type="text" name="keyword">
                     <button type="submit" class="btn btn-outline-success">検索</button>
                 </form>
+                <a href="{% url 'app:signout' %}" class="btn btn-outline-danger">ログアウト</a> <!-- ログアウトをボタンに -->
             </div>
 
             <!-- 下側のヘッダー -->

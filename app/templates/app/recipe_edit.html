@@ -1,0 +1,94 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+<!-- 追加のCSSを読み込むブロック -->
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'app/css/form.css' %}">
+{% endblock %}
+
+{% block body %}
+<h2>レシピを編集</h2>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %} <!-- 絶対必要 -->
+    
+    <!-- 料理タイトル -->
+    <div class="form-group">
+        <label for="id_recipe_title">料理タイトル</label>
+        {{ form.recipe_title }}
+    </div>
+
+    <!-- 完成後の写真 -->
+    <div class="form-group">
+        <label for="id_recipe_image">料理写真</label>
+        {{ form.recipe_image }}
+        {% if recipe_chose.recipe_image %}
+            <img src="{{ recipe_chose.recipe_image.url }}" alt="Recipe Image" class="preview-image">
+        {% endif %}
+    </div>
+
+    <!-- 説明欄 -->
+    <div class="form-group">
+        <label for="id_detail_text">料理説明</label>
+        {{ form.detail_text }}
+    </div>
+
+    <!-- 主菜・副菜・主食・菓子 -->
+    <div class="form-group">
+        <label for="id_genre">ジャンル</label>
+        {{ form.genre }}
+    </div>
+
+    <!-- 材料フォーム -->
+    <h3>材料</h3>
+    <div id="ingredient-form-container">
+        {% for ingredient in ingredients %}
+        <div class="form-group">
+            <label for="id_material">材料名</label>
+            <input type="text" name="ingredient_material" class="form-control" value="{{ ingredient.material }}">
+        </div>
+
+        <div class="form-group">
+            <label for="id_amount">分量</label>
+            <input type="text" name="ingredient_amount" class="form-control" value="{{ ingredient.amount }}">
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- 材料追加ボタン -->
+    <button type="button" class="btn btn-secondary" onclick="addIngredient()">+ 材料を追加</button>
+    <!-- 材料削除ボタン -->
+    <button type="button" class="btn btn-secondary" onclick="subIngredient()">- 材料を削除</button><br>
+
+    <!-- ステップフォーム -->
+    <h3>作り方</h3>
+    <ul id="step-form-container" class="samplelist" style="list-style: none;">
+        {% for step in steps %}
+        <li class="form-group">
+            <span class="srt_hndl"><i class="fa-solid fa-grip-lines"></i></span> <!-- ドラッグハンドル -->
+            <label for="id_step_text" class="step-number-label" style="display: inline;">作り方 {{ step.step_number }}</label>
+            <input type="text" name="step_text" class="form-control" value="{{ step.step_text }}">
+            
+            <label for="id_step_image">作り方の写真</label>
+            <input type="file" name="step_image" class="form-control" id="id_step_image">
+            {% if step.step_image %}
+                <img src="{{ step.step_image.url }}" alt="Step Image" class="preview-image">
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+
+    <!-- ステップ追加ボタン -->
+    <button type="button" class="btn btn-secondary" onclick="addStep()">+ ステップを追加</button>
+    <!-- ステップ削除ボタン -->
+    <button type="button" class="btn btn-secondary" onclick="subStep()">- ステップを削除</button><br><br>
+    
+    <!-- フォーム送信ボタン -->
+    <button type="submit" class="btn btn-primary">保存</button>
+</form>
+{% endblock %}
+
+<!-- 追加のjsを読み込むブロック -->
+{% block extra_scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="{% static 'app/js/form.js' %}"></script>
+{% endblock %}

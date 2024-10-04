@@ -105,6 +105,15 @@ def detail(request, post_id):
     }
     return render(request, "app/recipe.html", context)
 
+#レシピの消去
+def recipe_delete(request, post_id):
+    # 指定されたIDのレシピを取得
+    recipes = Recipe.objects.get(id=post_id)
+    #メッセージ表示
+    messages.success(request, "消去しました。")
+    recipes.delete()
+    return redirect("/home")
+
 # レシピ検索ページ(searchrecipes.html)
 def search_recipes(request):
     # Recipeモデルの全てのインスタンスを取得

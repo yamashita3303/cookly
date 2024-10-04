@@ -13,6 +13,7 @@ urlpatterns = [
     path("home/", views.recipe, name="recipe"),
     path("search/", views.search_recipes, name="searchrecipes"),
     path("recipe/<int:post_id>", views.detail, name="detail"),
+    path('delete/<int:post_id>', views.recipe_delete, name='delete'),
     path("recipe/create/", views.recipe_create, name="recipe_create"),
     path("comment/<int:recipe_id>", views.comments, name="comments"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

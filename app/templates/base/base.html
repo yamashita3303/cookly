@@ -134,6 +134,27 @@
                 </div>
             </div>
         </header>
+        {% if messages %}
+  <div class="mt-3">
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show d-flex align-items-center" role="alert">
+            {% if message.tags == 'success' %}
+            <i class="fas fa-check-circle me-2" style="font-size: 1.5em; color: green;"></i>
+            {% elif message.tags == 'error' %}
+            <i class="fas fa-times-circle me-2" style="font-size: 1.5em; color: red;"></i>
+            {% elif message.tags == 'info' %}
+            <i class="fas fa-info-circle me-2" style="font-size: 1.5em; color: blue;"></i>
+            {% elif message.tags == 'warning' %}
+            <i class="fas fa-exclamation-triangle me-2" style="font-size: 1.5em; color: orange;"></i>
+            {% endif %}
+            <div>
+            {{ message }}
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
         <!-- メイン部分 -->
         <main class="container mt-4">

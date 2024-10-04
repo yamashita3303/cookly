@@ -6,6 +6,7 @@ class CustomUser(AbstractUser):
 
 #料理全般の情報のテーブル
 class Recipe(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     #料理タイトル
     recipe_title = models.CharField(max_length=200, verbose_name="料理タイトル")
     #料理写真
@@ -50,6 +51,7 @@ class Step(models.Model):
 
 #コメント機能
 class Comment(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     recipe = models.ForeignKey(Recipe, related_name='comment', on_delete=models.CASCADE)
 
     #コメントしたユーザー名

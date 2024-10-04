@@ -4,6 +4,7 @@
 ここはrecipe.htmlです。<br>
 <!-- views.pyのdetail(メソッド)で指定したrecipe_choseを呼び出し.modelのrecipeで指定したrecipe_titleを呼び出し -->
 <p>料理名: {{ recipe_chose.recipe_title }}</p>
+<p>投稿者: {{ recipe_chose.user }}</p>
 <p>閲覧回数: {{ recipe_chose.vote }}</p>
 
 <!-- views.pyのdetail(メソッド)で指定したingredient_textを呼び出し -->

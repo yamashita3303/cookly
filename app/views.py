@@ -131,6 +131,7 @@ class CommentCreateView(View):
         form = CommentForm(request.POST, request.FILES)
         if form.is_valid():
             comment = form.save(commit=False)
+            comment.user = request.user  # ログインユーザーをセット
             comment.recipe = recipe
             comment.save()
             return redirect('app:detail', post_id=recipe.id)
@@ -175,6 +176,11 @@ class RecipeCreateView(View):
         if recipe_form.is_valid() and ingredient_form.is_valid():
             # 料理情報を保存
             recipe = recipe_form.save()
+
+            # 料理情報を保存、ユーザー情報も追加
+            recipe = recipe_form.save(commit=False)  # ここではまだ保存しない
+            recipe.user = request.user  # ログインユーザーをセット
+            recipe.save()
 
             # 材料情報を保存
             ingredient = ingredient_form.save(commit=False)

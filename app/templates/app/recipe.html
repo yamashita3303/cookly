@@ -66,10 +66,24 @@
     <!-- comment.htmlとくっつける？一旦保留 -->
     <h2>コメント</h2>
     {% for comment in comments %}
-        <p>コメント: {{ comment.comment }}</p>
+    <!-- 下部にはユーザーと作成日を横並びで表示 -->
+    <div class="mt-auto d-flex justify-content-between">
+        <!-- ユーザー表示 -->
+        <p class="card-text mb-0">
+            <small class="text-body-secondary">投稿者：{{ comment.user }}</small>
+        </p>
+
+        <!-- 作成日表示 -->
+        <p class="card-text mb-0" style="margin-right: 0;">
+            <small class="text-body-secondary">作成日：{{ comment.created_at|date:"Y/m/d" }}</small>
+        </p>
+    </div>
+
+    <p>{{ comment.comment }}</p>
     {% empty %}
         <p>コメントがありません。</p>
     {% endfor %}
+
     <a href="{% url 'app:comments' recipe_chose.id %}">コメント追加</a>
 </div>
 

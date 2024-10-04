@@ -10,11 +10,10 @@
 {% if search_recipes %}
 <h4>検索結果</h4>
     {% for i in search_recipes %}
-        <a href="{% url 'app:detail' post_id=i.id %}">
+    <div class="col-md-4 mb-4 d-flex align-items-stretch">
         <!-- modelのRecipeで指定したrecipe_titleを呼び出し -->
-        {{ i.recipe_title }}
-        <img src="{{ i.recipe_image.url }}">
-    </a>
+        {% include 'app/recipe_card.html' with i=i %}
+    </div>
     {% endfor %}
 
 {% else %}

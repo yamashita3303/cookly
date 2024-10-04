@@ -19,7 +19,15 @@ def signup(request):
         username = request.POST['username']
         email = request.POST['email']
         password = request.POST['password']
-        new_user = CustomUser(first_name=first_name, last_name=last_name, username=username, email=email)
+        user_icon = request.FILES.get('user_icon')  # アイコンファイルを取得
+        print(user_icon)
+        new_user = CustomUser(
+            first_name=first_name, 
+            last_name=last_name, 
+            username=username, 
+            email=email,
+            user_icon=user_icon  # アイコンを保存
+        )
         new_user.set_password(password)  # パスワードのハッシュ化
         new_user.save()
         
@@ -231,3 +239,13 @@ class RecipeCreateView(View):
 # classをview関数に変換
 comments = CommentCreateView.as_view()
 recipe_create = RecipeCreateView.as_view()
+
+@login_required
+def mypage(request):
+    user = request.user  # ログイン中のユーザーを取得
+    recipes = user.recipe_set.all()  # ユーザーが投稿した全ての料理を取得
+
+    return render(request, 'app/mypage.html', {
+        'user': user,
+        'recipes': recipes,
+    })

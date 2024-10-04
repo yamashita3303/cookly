@@ -15,4 +15,5 @@ urlpatterns = [
     path("recipe/<int:post_id>", views.detail, name="detail"),
     path("recipe/create/", views.recipe_create, name="recipe_create"),
     path("comment/<int:recipe_id>", views.comments, name="comments"),
+    path('mypage/', views.mypage, name='mypage'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

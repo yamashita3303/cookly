@@ -14,8 +14,11 @@
         <p style="color: red;">{{ error_message }}</p>
     {% endif %}
     
-    <form method="post">
+    <form method="post"  enctype="multipart/form-data">
         {% csrf_token %}
+        <label for="user_icon">アイコン写真:</label>
+        <input type="file" name="user_icon" id="user_icon"><br>
+
         <label for="first_name">名:</label>
         <input type="text" name="first_name" id="first_name" required><br>
         

@@ -1,59 +1,147 @@
 <!DOCTYPE html>
 <html lang="ja">
     <head>
+        
         <meta charset="utf-8" />
-        <a href="/home/">
-            <link rel="shortcut icon" href="media/recipes/cookly_icon.png" type="image/x-icon">
-        </a>
+        <link rel="shortcut icon" href="media/recipes/cookly_icon.png" type="image/x-icon">
         <title>Cookly</title>
-        <!-- BootstrapのCSSをインクルード -->
-        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+        <!-- BootstrapのCSSをインクルード(Bootstrap 4であることに注意) -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        
+        <!-- Font Awesome(アイコン)のCSSをインクルード -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
         
         <!-- 追加のCSSを読み込むブロック -->
         {% block extra_styles %}
         {% endblock %}
 
-        <!-- 共通のCSSを書き込む -->
+        <!-- ヘッダーのCSS -->
         <style>
-            /* ヘッダーの背景色 */
+            .resize-image {
+                width: 80px;
+                height: auto; /* アスペクト比を維持しながら高さを自動調整 */
+            }
+
+            /* 背景色 */
             header {
-                background-color: #00bcd4;
+                background-color: #00ccb2;
+            }
+
+            /* 上側のヘッダー */
+            .header-top {
+                background-color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 10px 30px;
+                border-bottom: 1px solid white; /* 下に境界線を追加 */
+            }
+
+            .header-top .navbar-brand {
+                color: black;
+                font-size: 2.0rem;
+                font-weight: bold;
+                text-decoration: none;
+            }
+            .header-top .navbar-brand:hover {
+                color: black;
+            }
+
+
+            /* 検索ボックス */
+            .header-top .search-box {
+                display: flex;
+                margin-left: 70px;             /* ここでボックスの位置調整 */
+            }
+
+            .header-top .search-box input {
+                height: 38px;                  /* テキストボックスの高さ（てきとー） */
+                border-radius: 0.25rem;        /* 角を丸く */
+                border: 1px solid black;
+                padding: 0 10px;               /* テキストボックス内に余白をつける */
+            }
+
+            .header-top .search-box button {
+                margin-top: 0;                  /* form.cssで変更したボタンの設定を修正 */
+                margin-left: 10px;              /* ボタンの左側に隙間を追加 */
+                height: 38px;                   /* テキストボックスの高さと揃える */
+                border-radius: 0.25rem;
+                padding: 0 15px;
+            }
+
+
+             /* 下側ヘッダーのスタイル */
+             .header-bottom {
+                background-color: #00ccb2;
                 padding: 10px 0;
             }
 
-            h2 {
-                margin-top: 1rem; /* ヘッダーを少し下げる */
+            .header-bottom .container text-center {
+                max-width: 1200px;
+                margin: 0 auto;
+                display: flex;
+                justify-content: center;    /* リンクを中央に配置 */
             }
 
-            /* リンクのスタイル */
-            .navbar-brand {
-                color: white; /* テキストカラーを白に設定 */
-                text-decoration: none; /* 下線を消す */
-                font-size: 1.5rem; /* 文字の大きさを調整 */
-                font-weight: bold; /* 文字を太くする */
+            .header-bottom .nav-link {
+                color: white;
+                text-decoration: none;
             }
-            .navbar-brand:hover, .navbar-brand:focus {
-                color: white; /* ホバー時のテキストカラーも白に設定 */
-                text-decoration: none; /* ホバー時の下線を消す */
+
+            .header-bottom .nav-link:hover {
+                color: white;
+                text-decoration: none;
             }
         </style>
     </head>
+
     <body>
         <!-- ヘッダー部分 -->
         <header>
-            <nav class="navbar navbar-dark">
-                <a class="navbar-brand" href="{% url 'app:recipe' %}">Cookly</a>
-            </nav>
-            <li class="nav-item">
-                <a class="nav-link text-light" href="{% url 'app:signout' %}">ログアウト</a>
-            </li>
+            <!-- 上側のヘッダー -->
+            <div class="header-top">
+                {% load static %}
+                <a href="/home/">
+                    <img src="/media/icon/cookly_icon.png" alt="cookly_icon" class="resize-image">
+                <a>
+                <form method="GET" action="{% url 'app:searchrecipes' %}" class="search-box">
+                    <input type="text" name="keyword">
+                    <button type="submit" class="btn btn-outline-success">検索</button>
+                </form>
+            </div>
+
+            <!-- 下側のヘッダー -->
+            <div class="header-bottom">
+                <!-- グリッドで自動的に分割する -->
+                <div class="container text-center">
+                    <div class="row">
+                        <div class="col">
+                            <a href="{% url 'app:recipe' %}" class="nav-link">ホーム</a>
+                        </div>
+                        <div class="col">
+                            <a href="{% url 'app:recipe_create' %}" class="nav-link">料理追加</a>
+                        </div>
+                        <div class="col">
+                            <a href="#" class="nav-link">食材登録</a>
+                        </div>
+                        <div class="col">
+                            <a href="#" class="nav-link">食材管理</a>
+                        </div>
+                        <div class="col">
+                            <a href="#" class="nav-link">マイページ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </header>
 
         <!-- メイン部分 -->
-        <main>
+        <main class="container mt-4">
             {% block body %}
             {% endblock %}
         </main>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
         <!-- 追加のjsを読み込むブロック -->
         {% block extra_scripts %}
@@ -63,5 +151,6 @@
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        
     </body>
 </html>

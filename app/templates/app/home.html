@@ -1,16 +1,49 @@
 {% extends "base/base.html" %}
-{% block body %}
+{% load static %}
 
-<div class="container mt-4">
-    <h1>ここはhome.htmlです。</h1>
-    <!-- 検索ページへのリンクと料理追加ページのリンク -->
-    <a href="{% url 'app:searchrecipes' %}" class="btn btn-link">検索へ</a>
-    <a href="{% url 'app:recipe_create' %}" class="btn btn-link">料理追加</a>
-    
+<!-- 追加のCSSを読み込むブロック -->
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'app/css/home.css' %}">
+{% endblock %}
+
+{% block body %}
+{% if search_recipes %}
+<h4>検索結果</h4>
+    {% for i in search_recipes %}
+        <a href="{% url 'app:detail' post_id=i.id %}">
+        <!-- modelのRecipeで指定したrecipe_titleを呼び出し -->
+        {{ i.recipe_title }}
+        <img src="{{ i.recipe_image.url }}">
+    </a>
+    {% endfor %}
+
+{% else %}
+    <!-- 人気ランキング -->
+    <h3>人気ランキング</h3>
+    <div class="row">
+        {% for recipe in popular_recipes %}
+            <!-- 3列で表示したかったらcol-md-4、4列ならcol-md-3 -->
+            <div class="col-md-4 mb-4 d-flex align-items-stretch">
+                <!-- 何度も書くのは面倒だからrecipe_card.htmlに格納 -->
+                {% include 'app/recipe_card.html' with i=recipe %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- 最新のレシピ -->
+    <h3>最新のレシピ</h3>
+    <div class="row">
+        {% for recipe in latest_recipes %}
+            <div class="col-md-4 mb-4 d-flex align-items-stretch">
+                {% include 'app/recipe_card.html' with i=recipe %}
+            </div>
+        {% endfor %}
+    </div>
+
     <!-- ジャンルごとに料理を絞るためのフォーム -->
     <form method="get" class="mb-4" id="genreForm">
         <label for="genre">ジャンルで絞る:</label>
-        <select name="genre" id="genre" class="form-control">
+        <select name="genre" id="genre" class="form-select">
             <!-- 選択された値は維持するようにしてるがリンクをまたぐと表記がおかしくなる -->
             <option value="" {% if selected_genre == "" %}selected{% endif %}>すべて</option>
             <option value="main" {% if selected_genre == 'main' %}selected{% endif %}>主菜</option>
@@ -22,36 +55,18 @@
 
     <!-- レシピ一覧 -->
     <div class="row">
-        <!-- views.pyで参照回数順に並び替え、recipe_allを繰り返し処理で表示 -->
-        {% for i in recipe_all %}
-        <!-- 列の高さを統一 -->
-        <div class="col-md-4 mb-4 d-flex align-items-stretch">
-            <!-- 仮にカード形式にした -->
-            <div class="card" style="width: 100%;">
-                <!-- 画像の表示 -->
-                <img src="{{ i.recipe_image.url }}" class="card-img-top" alt="{{ i.recipe_title }}" style="height: 200px; object-fit: cover;">
-                
-                <!-- レシピのタイトルと説明の表示 -->
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">{{ i.recipe_title }}</h5>
-                    <!-- レシピの説明テキストは100文字だけ表示 -->
-                    <p class="card-text">{{ i.detail_text|truncatechars:100 }}</p>
-                    <!-- レシピを登録したユーザー名を表示 -->
-                    <p class="card-text text-muted">投稿者: {{ i.user.username }}</p>
-                    <!-- 詳細ページへのボタン -->
-                    <a href="{% url 'app:detail' i.id %}" class="btn btn-primary mt-auto">詳細を見る</a>
-                </div>
+        {% for recipe in all_recipes %}
+            <div class="col-md-4 mb-4 d-flex align-items-stretch">
+                {% include 'app/recipe_card.html' with i=recipe %}
             </div>
-        </div>
         {% endfor %}
     </div>
-</div>
 
-<script>
-    // ジャンルを選択すると自動的にフォームを送信
-    document.getElementById('genre').addEventListener('change', function() {
-        document.getElementById('genreForm').submit();
-    });
-</script>
-
+    <script>
+        // ジャンルを選択すると自動的にフォームを送信
+        document.getElementById('genre').addEventListener('change', function() {
+            document.getElementById('genreForm').submit();
+        });
+    </script>
+{% endif %}
 {% endblock %}

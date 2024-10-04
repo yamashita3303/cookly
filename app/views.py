@@ -59,16 +59,26 @@ def recipe(request):
     # GETリクエストからジャンルを取得
     selected_genre = request.GET.get('genre')
 
-    # ジャンルでのフィルタリングと同時に閲覧数の多い順に並べる
+    # 人気料理、最新の料理の上位10個だけ取得
+    # 評価の星はもうちょっと考えたいからいったん閲覧数順で並び替え
+    popular_recipes = Recipe.objects.all().order_by('-vote')[:10]
+    latest_recipes = Recipe.objects.all().order_by('-created_at')[:10]
+
+    # ジャンルでのフィルタリング
     if selected_genre:
         # 選択されたジャンルでフィルターをかける
-        recipes = Recipe.objects.filter(genre=selected_genre).order_by('-vote')
+        all_recipes = Recipe.objects.filter(genre=selected_genre)
     else:
         # すべてのレシピを取得
-        recipes = Recipe.objects.all().order_by('-vote')
+        all_recipes = Recipe.objects.all()
 
     # リストに似たオブジェクトになっている。
-    context = {'recipe_all': recipes, 'selected_genre': selected_genre}
+    context = {
+        'popular_recipes': popular_recipes,
+        'latest_recipes': latest_recipes,
+        'all_recipes': all_recipes,
+        'selected_genre': selected_genre,
+    }
     return render(request, "app/home.html", context)
 
 # レシピの詳細ページ(recipe.html)
@@ -91,6 +101,7 @@ def detail(request, post_id):
         "ingredient_text": ingredient_text,
         'steps': steps,
         "comments": comments,
+        "user": recipes.user,
     }
     return render(request, "app/recipe.html", context)
 
@@ -112,7 +123,7 @@ def search_recipes(request):
         messages.error(request, '検索キーワードが指定されていません。')
         search_recipes = recipes
     
-    return render(request, 'app/searchrecipes.html', {'search_recipes': search_recipes})
+    return render(request, 'app/home.html', {'search_recipes': search_recipes})
 
 class CommentCreateView(View):
     # GETリクエストの処理
@@ -160,10 +171,14 @@ class RecipeCreateView(View):
 
     # POSTリクエストの処理
     def post(self, request):
+        print(request.POST)
+        print(request.FILES)
         # インスタンスの作成
         recipe_form = RecipeForm(request.POST, request.FILES)
         ingredient_form = IngredientForm(request.POST)
 
+        materials = request.POST.getlist('material')
+        amounts = request.POST.getlist('amount')
         # ステップ情報を取得
         step_numbers = request.POST.getlist('step_number')
         step_texts = request.POST.getlist('step_text')
@@ -175,28 +190,31 @@ class RecipeCreateView(View):
         # フォームが有効かチェック
         if recipe_form.is_valid() and ingredient_form.is_valid():
             # 料理情報を保存
-            recipe = recipe_form.save()
-
-            # 料理情報を保存、ユーザー情報も追加
-            recipe = recipe_form.save(commit=False)  # ここではまだ保存しない
-            recipe.user = request.user  # ログインユーザーをセット
+            recipe = recipe_form.save(commit=False)
+            recipe.user = request.user  # ログインしているユーザーを設定
             recipe.save()
 
             # 材料情報を保存
-            ingredient = ingredient_form.save(commit=False)
-            ingredient.recipe = recipe
-            ingredient.save()
+            for material, amount in zip(materials, amounts):
+                ingredient = Ingredient(
+                    recipe=recipe,
+                    material=material,
+                    amount=amount
+                )
+                ingredient.save()
 
             # ステップ情報を保存
-            for i, (step_number, step_text) in enumerate(zip(step_numbers, step_texts)):
+            for i in range(len(step_texts)):
+                step_text = step_texts[i]
                 step_image = step_images[i] if i < len(step_images) else None
                 step_video = step_videos[i] if i < len(step_videos) else None
+
                 step = Step(
                     recipe=recipe,
-                    step_number=step_number,
+                    step_number=i + 1,
                     step_text=step_text,
-                    step_image=step_image,
-                    step_video=step_video
+                    step_image=step_image if step_image else None,
+                    step_video=step_video if step_video else None
                 )
                 step.save()
 

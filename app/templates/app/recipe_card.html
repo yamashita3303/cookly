@@ -28,6 +28,7 @@
             <a href="{% url 'app:detail' i.id %}" class="text-decoration-none">{{ i.recipe_title }}</a>
         </h5>
         {% if i.user == request.user %}
+            <a href="{% url 'app:edit' i.id %}" class="text-decoration-none">編集</a>
             <a href="{% url 'app:delete' i.id %}" class="text-decoration-none">削除</a>
         {% endif %}
         

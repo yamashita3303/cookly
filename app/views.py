@@ -105,6 +105,24 @@ def detail(request, post_id):
     }
     return render(request, "app/recipe.html", context)
 
+def recipe_edit(request, post_id):
+    # 指定されたIDのレシピを取得
+    recipe = get_object_or_404(Recipe, id=post_id)
+
+    if request.method == "POST":
+        # フォームにPOSTデータをバインド
+        form = RecipeForm(request.POST, request.FILES, instance=recipe)
+        if form.is_valid():
+            # フォームが有効な場合、レシピを保存
+            form.save()
+            messages.success(request, "レシピが正常に更新されました。")
+            return redirect('app:detail', post_id=recipe.id)  # 編集後に詳細ページにリダイレクト
+    else:
+        # GETリクエストの場合、既存のレシピデータをフォームに渡す
+        form = RecipeForm(instance=recipe)
+
+    return render(request, 'app/recipe_edit.html', {'form': form, 'recipe': recipe})
+
 #レシピの消去
 def recipe_delete(request, post_id):
     # 指定されたIDのレシピを取得

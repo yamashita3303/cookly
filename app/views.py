@@ -2,7 +2,7 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from django.db.models import Q
 from django.views import View
-from .models import Recipe, Ingredient, Step, Comment
+from .models import Recipe, Ingredient, Step, Comment, Allergy
 from django.http import HttpResponse, HttpResponseRedirect
 from .forms import RecipeForm, IngredientForm, StepForm, CommentForm
 from django.contrib.auth import login, logout, authenticate
@@ -13,12 +13,15 @@ def index(request):
     return render(request, 'index.html', context)
 
 def signup(request):
+    allergy_object = Allergy.objects.all()
+    context = {"allergy_object":allergy_object}
     if request.method == 'POST':
         first_name = request.POST['first_name']
         last_name = request.POST['last_name']
         username = request.POST['username']
         email = request.POST['email']
         password = request.POST['password']
+        allergy = request.POST.getlist('allergy')
         user_icon = request.FILES.get('user_icon')  # アイコンファイルを取得
         print(user_icon)
         new_user = CustomUser(
@@ -26,15 +29,16 @@ def signup(request):
             last_name=last_name, 
             username=username, 
             email=email,
-            user_icon=user_icon  # アイコンを保存
+            user_icon=user_icon,  # アイコンを保存
+            allergy=allergy
         )
         new_user.set_password(password)  # パスワードのハッシュ化
         new_user.save()
         
         # signup_success.htmlでアラートを表示し、リダイレクトさせる
-        return render(request, 'signup_success.html', {'message': 'ユーザーの作成に成功しました'})
+        return render(request, 'signup_success.html', {'message': 'ユーザーの作成に成功しました'}, context)
     else:
-        return render(request, 'signup.html')
+        return render(request, 'signup.html', context)
 
 def signin(request):
     if request.method == 'POST':
@@ -61,6 +65,15 @@ def signout(request):
     logout(request)
     messages.success(request, "ログアウトしました。")
     return redirect('app:index')
+
+def allergy(request):
+    if request.method == 'POST':
+        allergy_name = request.POST['allergy_name']
+        allergy = Allergy(allergy_name = allergy_name)
+        allergy.save()
+        return render(request, 'app/home.html', {'message': 'アレルギーを追加しました。'})
+    else:
+        return render(request, 'app/allergy.html')
 
 # レシピ一覧ページ(home.html)
 def recipe(request):

@@ -1,0 +1,21 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% block extra_styles %}
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="media/recipes/cookly_icon.png" type="image/x-icon">
+    <title>allergy_add</title>
+</head>
+{% endblock %}
+
+{% block body %}
+    <form method="post"  enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="allergy_name">アレルギー:</label>
+        <input type="text" name="allergy_name"><br>
+
+        <button type="submit">追加</button>
+    </form>
+{% endblock %}

@@ -33,6 +33,10 @@
         
         <label for="password">パスワード:</label>
         <input type="password" name="password" id="password" required><br>
+
+        {% for i in allergy_object %}
+            <input type="checkbox" name="allergy" id="allergy" value="{{ i.allergy_name }}">{{ i.allergy_name }}
+        {% endfor %}
         
         <button type="submit">サインアップ</button>
     </form>

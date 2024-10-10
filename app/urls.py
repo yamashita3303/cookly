@@ -10,6 +10,7 @@ urlpatterns = [
     path('signin/', views.signin, name='signin'),
     path('signup/', views.signup, name='signup'),
     path('signout/', views.signout, name='signout'),
+    path('allergy/',views.allergy, name='allergy'),
     path("home/", views.recipe, name="recipe"),
     path("search/", views.search_recipes, name="searchrecipes"),
     path("recipe/<int:post_id>", views.detail, name="detail"),

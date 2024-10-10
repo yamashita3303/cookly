@@ -36,7 +36,7 @@ def signup(request):
         new_user.save()
         
         # signup_success.htmlでアラートを表示し、リダイレクトさせる
-        return render(request, 'signup_success.html', {'message': 'ユーザーの作成に成功しました'}, context)
+        return render(request, 'signup_success.html', {'message': 'ユーザーの作成に成功しました'})
     else:
         return render(request, 'signup.html', context)
 

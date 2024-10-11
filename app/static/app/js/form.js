@@ -1,3 +1,6 @@
+// フォーム画像の取得に必要
+let stepCount = 1;
+
 // 新しい材料を追加する関数
 function addIngredient() {
     // 材料フォームコンテナを取得
@@ -79,7 +82,7 @@ function addStep() {
     // 画像の入力フィールドを作成
     const stepImageInput = document.createElement("input");
     stepImageInput.type = "file";
-    stepImageInput.name = "step_image"; 
+    stepImageInput.name = `step_image_${stepCount + 1}`;  // step_image_2, step_image_3とすることでステップを判別可能に
     stepImageInput.classList.add("form-control");
 
     // 新しいliに要素を追加
@@ -91,6 +94,8 @@ function addStep() {
 
     // ステップフォームコンテナに新しいliを追加
     stepFormContainer.appendChild(newStepLi);
+
+    stepCount++;
 }
 
 // ステップを削除する関数

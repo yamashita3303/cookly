@@ -190,7 +190,6 @@ class RecipeCreateView(View):
         # ステップ情報を取得
         step_numbers = request.POST.getlist('step_number')
         step_texts = request.POST.getlist('step_text')
-        step_images = request.FILES.getlist('step_image')
         step_videos = request.FILES.getlist('step_video')
 
         step_form = StepForm()
@@ -214,7 +213,7 @@ class RecipeCreateView(View):
             # ステップ情報を保存
             for i in range(len(step_texts)):
                 step_text = step_texts[i]
-                step_image = step_images[i] if i < len(step_images) else None
+                step_image = request.FILES.get(f'step_image_{i+1}', None)
                 step_video = step_videos[i] if i < len(step_videos) else None
 
                 step = Step(

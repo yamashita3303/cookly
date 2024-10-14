@@ -122,6 +122,9 @@ new Sortable(document.getElementById('step-form-container'), {
         stepItems.forEach((item, index) => {
             const stepNumberLabel = item.querySelector('.step-number-label');
             stepNumberLabel.innerText = `作り方 ${index + 1}`;
+
+            const stepImageInput = item.querySelector('input[type="file"]');
+            stepImageInput.name = `step_image_${index + 1}`;
         });
     }
 });

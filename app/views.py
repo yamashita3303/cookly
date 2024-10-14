@@ -7,6 +7,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from .forms import RecipeForm, IngredientForm, StepForm, CommentForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import CustomUser
 def index(request):
     context = {'user': request.user}
@@ -162,7 +163,7 @@ class CommentCreateView(View):
             return render(request, 'app/comment.html', context)
 
 # 料理の基本情報(タイトル、画像など)を追加するフォーム(form.html) 
-class RecipeCreateView(View):
+class RecipeCreateView(LoginRequiredMixin, View):
     # GETリクエストの処理
     def get(self, request):
         # インスタンスの作成

@@ -2,7 +2,7 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from django.db.models import Q
 from django.views import View
-from .models import Recipe, Ingredient, Step, Comment
+from .models import Recipe, Ingredient, Step, Rating
 from django.http import HttpResponse, HttpResponseRedirect
 from .forms import RecipeForm, IngredientForm, StepForm, CommentForm
 from django.contrib.auth import login, logout, authenticate
@@ -153,6 +153,21 @@ class CommentCreateView(View):
             comment = form.save(commit=False)
             comment.user = request.user  # ログインユーザーをセット
             comment.recipe = recipe
+
+        # 星評価を保存するための処理
+            rating_value = request.POST.get('rating')  # POSTデータから 'rating' を取得
+
+
+            if rating_value:
+                try:
+                    rating_value = int(rating_value)  # 'rating' の値を整数に変換
+                    comment.rating = rating_value  # コメントに評価を紐付ける
+                    
+                except ValueError:
+                    
+                    # 変換に失敗した場合の処理（例: 'rating' が不正な場合）
+                    pass
+
             comment.save()
             return redirect('app:detail', post_id=recipe.id)
         else:

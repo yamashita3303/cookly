@@ -27,6 +27,20 @@ class Recipe(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     #更新日
     updated_at = models.DateField(verbose_name="更新日", auto_now=True)
+    
+    def average_rating(self):
+        ratings = self.ratings.all()
+        if ratings:
+            return sum(rating.rating for rating in ratings) / len(ratings)
+        return 0
+
+class Rating(models.Model):
+    recipe = models.ForeignKey(Recipe, related_name='ratings', on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    rating = models.IntegerField()  # 1から5の値を想定
+
+    class Meta:
+        unique_together = ('recipe', 'user')  # 同じユーザーが同じレシピに対して1度しか評価できないように
 
 #材料のテーブル
 class Ingredient(models.Model):
@@ -54,7 +68,7 @@ class Step(models.Model):
 class Comment(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     recipe = models.ForeignKey(Recipe, related_name='comment', on_delete=models.CASCADE)
-
+    rating = models.OneToOneField(Rating, on_delete=models.CASCADE, null=True, blank=True)  # 1対1で評価を関連付け
     #コメントしたユーザー名
     #日時
     created_at = models.DateTimeField(auto_now_add=True)
@@ -68,3 +82,4 @@ class Comment(models.Model):
         FOUR_STAR = 'four', '★★★★'
         FIVE_STAR = 'five', '★★★★★'
     review = models.CharField(max_length=10, choices=Review.choices, verbose_name="レビュー")
+    rating = models.IntegerField(default=0)  # 1から5の値を想定

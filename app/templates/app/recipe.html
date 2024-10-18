@@ -2,9 +2,6 @@
 {% load static %}
 
 <!-- 追加のCSSを読み込むブロック -->
-{% block extra_styles %}
-    <link rel="stylesheet" href="{% static 'app/css/recipe.css' %}">
-{% endblock %}
 
 {% block body %}
 <!-- Recipeの内容を入れるコンテナ -->
@@ -13,7 +10,9 @@
     <div class="recipe-left">
         <img src="{{ recipe_chose.recipe_image.url }}" alt="Recipe Image" class="recipe-image">
     </div>
-
+    
+      
+      
     <!-- 右側には料理のタイトル、説明文、閲覧回数 -->
     <div class="recipe-right">
         <h2 class="recipe-title">{{ recipe_chose.recipe_title }}</h2>
@@ -22,6 +21,9 @@
         <p class="view-count">閲覧回数: {{ recipe_chose.vote }}</p>
     </div>
 </div>
+
+
+
 
 <div class="ingredient-step-container">
     <div class="ingredient-container">
@@ -79,6 +81,20 @@
         </p>
     </div>
 
+    <!-- 星評価の表示 -->
+    {% if comment.rating %}
+    <div class="stars">
+        <span>
+            <label for="review05" {% if comment.rating.rating >= 5 %}style="color: #F8C601;"{% endif %}>★</label>
+            <label for="review04" {% if comment.rating.rating >= 4 %}style="color: #F8C601;"{% endif %}>★</label>
+            <label for="review03" {% if comment.rating.rating >= 3 %}style="color: #F8C601;"{% endif %}>★</label>
+            <label for="review02" {% if comment.rating.rating >= 2 %}style="color: #F8C601;"{% endif %}>★</label>
+            <label for="review01" {% if comment.rating.rating >= 1 %}style="color: #F8C601;"{% endif %}>★</label>
+        </span>
+    </div>
+    {% else %}
+        <p>評価がありません。</p>
+    {% endif %}
     <p>{{ comment.comment }}</p>
     {% empty %}
         <p>コメントがありません。</p>

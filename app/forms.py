@@ -1,5 +1,6 @@
+from django import forms
 from django.forms import ModelForm
-from .models import Recipe, Ingredient, Step, Comment
+from .models import Recipe, Ingredient, Step, Comment, Rating
 
 class RecipeForm(ModelForm):
     class Meta:
@@ -36,3 +37,10 @@ class CommentForm(ModelForm):
             "comment",
             "review",
         ]
+class RatingForm(ModelForm):
+    class Meta:
+        model = Rating
+        fields = ['rating'] # 評価
+        widgets = {
+            'rating': forms.RadioSelect(choices=[(i, '★' * i) for i in range(1, 6)]),  # 1〜5の評価
+        }

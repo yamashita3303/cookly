@@ -8,6 +8,9 @@ from .forms import RecipeForm, IngredientForm, StepForm, CommentForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from .models import CustomUser
+import datetime
+import calendar
+
 def index(request):
     context = {'user': request.user}
     return render(request, 'index.html', context)
@@ -276,3 +279,28 @@ def mypage(request):
 # classをview関数に変換
 comments = CommentCreateView.as_view()
 recipe_create = RecipeCreateView.as_view()
+
+def recipe_calendar(request):
+    if request.method == 'POST':
+        yearmonth = request.POST.get('yearmonth')
+        year = yearmonth[0]+yearmonth[1]+yearmonth[2]+yearmonth[3]
+        month = yearmonth[5:]
+        calendar_month = calendar.monthcalendar(int(yearmonth[0]+yearmonth[1]+yearmonth[2]+yearmonth[3]),int(yearmonth[5:]))
+        context = {
+            "year":year,
+            "month":month,
+            "yearmonth":yearmonth,
+            "calendar_month":calendar_month,
+                   }
+    else:
+        currentDateTime = datetime.datetime.now()
+        date = currentDateTime.date()
+        year = date.strftime("%Y")
+        month = date.strftime("%m")
+        calendar_month = calendar.monthcalendar(int(year), int(month))
+        context = {
+            "year":year,
+            "month":month,
+            "calendar_month":calendar_month
+        }
+    return render(request, 'app/calendar.html', context)

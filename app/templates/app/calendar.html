@@ -1,0 +1,64 @@
+{% extends "base/base.html" %}
+{% block body %}
+
+<h2 style="text-align: center; margin-bottom: 20px;">
+  {% if year and month %}
+    {{ year }}年 {{ month }}月
+  {% else %}
+    カレンダー
+  {% endif %}
+</h2>
+
+<form action="{% url 'app:recipe_calendar' %}" method="post" style="margin-bottom: 20px;">
+    {% csrf_token %}
+    <label for="yearmonth">年月を選択:</label>
+    <input type="month" id="yearmonth" name="yearmonth" style="padding: 5px; margin-right: 10px;" />
+    <input type="submit" value="年月を変更" style="padding: 5px 15px; background-color: #4CAF50; color: white; border: none; cursor: pointer;">
+</form>
+
+<table style="width: 100%; border-collapse: collapse; text-align: center;">
+  <thead>
+    <tr>
+      <th>月</th>
+      <th>火</th>
+      <th>水</th>
+      <th>木</th>
+      <th>金</th>
+      <th>土</th>
+      <th>日</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for week in calendar_month %}
+      <tr>
+        {% for day in week %}
+          <td style="padding: 20px; border: 1px solid #ddd; width: 100px; height: 100px;
+          position: relative; text-align: right; vertical-align: top;
+          {% if forloop.counter == 6 %} color: blue; {% elif forloop.counter == 7 %} color: red; {% endif %}">
+            {% if day == 0 %}
+              <!-- 今月に含まれない日（0）は空白として表示 -->
+              &nbsp;
+            {% else %}
+            <span style="position: absolute; top: 5px;  left: 5px;">{{ day }}</span>
+            {% endif %}
+          </td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<script>
+  // 現在の年月を取得
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0'); // 月は0始まりなので+1する
+  const currentMonth = `${year}-${month}`;
+  const currentMin = `${year-5}-${month}`;
+
+  // input要素にデフォルト値を設定
+  document.getElementById('yearmonth').value = currentMonth;
+  document.getElementById('yearmonth').min = currentMin;
+</script>
+
+{% endblock %}

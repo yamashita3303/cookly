@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from .models import CustomUser
 import datetime
 import calendar
+from flaretool.holiday import JapaneseHolidaysOnline
 
 def index(request):
     context = {'user': request.user}
@@ -281,16 +282,31 @@ comments = CommentCreateView.as_view()
 recipe_create = RecipeCreateView.as_view()
 
 def recipe_calendar(request):
+    current_user = request.user
+    print(current_user)
+    holiday_name = []
+    holiday_date = []
     if request.method == 'POST':
         yearmonth = request.POST.get('yearmonth')
         year = yearmonth[0]+yearmonth[1]+yearmonth[2]+yearmonth[3]
         month = yearmonth[5:]
-        calendar_month = calendar.monthcalendar(int(yearmonth[0]+yearmonth[1]+yearmonth[2]+yearmonth[3]),int(yearmonth[5:]))
+
+        calendar_month = calendar.monthcalendar(int(year),int(month))
+        holidays = JapaneseHolidaysOnline()
+        if len(month) == 1:
+            month = "0" + month
+        holiday_list = holidays.get_holidays(year + month)
+        for holiday in holiday_list:
+            name, date = holiday
+            holiday_name.append(name)
+            holiday_date.append(date.day)
         context = {
             "year":year,
             "month":month,
             "yearmonth":yearmonth,
             "calendar_month":calendar_month,
+            "holiday_name":holiday_name,
+            "holiday_date":holiday_date
                    }
     else:
         currentDateTime = datetime.datetime.now()
@@ -298,9 +314,19 @@ def recipe_calendar(request):
         year = date.strftime("%Y")
         month = date.strftime("%m")
         calendar_month = calendar.monthcalendar(int(year), int(month))
+        holidays = JapaneseHolidaysOnline()
+        if len(month) == 1:
+            month = "0" + month
+        holiday_list = holidays.get_holidays(year + month)
+        for holiday in holiday_list:
+            name, date = holiday
+            holiday_name.append(name)
+            holiday_date.append(date.day)
         context = {
             "year":year,
             "month":month,
-            "calendar_month":calendar_month
+            "calendar_month":calendar_month,
+            "holiday_name":holiday_name,
+            "holiday_date":holiday_date
         }
     return render(request, 'app/calendar.html', context)

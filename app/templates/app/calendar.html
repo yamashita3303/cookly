@@ -32,14 +32,15 @@
     {% for week in calendar_month %}
       <tr>
         {% for day in week %}
-          <td style="padding: 20px; border: 1px solid #ddd; width: 100px; height: 100px;
-          position: relative; text-align: right; vertical-align: top;
+          <td style="padding: 20px; border: 1px solid #ddd; width: 100px; height: 100px; position: relative; text-align: right; vertical-align: top;
           {% if forloop.counter == 6 %} color: blue; {% elif forloop.counter == 7 %} color: red; {% endif %}">
             {% if day == 0 %}
-              <!-- 今月に含まれない日（0）は空白として表示 -->
               &nbsp;
             {% else %}
-            <span style="position: absolute; top: 5px;  left: 5px;">{{ day }}</span>
+              <div style="position: absolute; top: 5px; left: 5px;">
+                <span class="day-number">{{ day }}</span>
+                <span class="holiday-name" style="font-size: 12px; color: red; margin-left: 5px;"></span>
+              </div>
             {% endif %}
           </td>
         {% endfor %}
@@ -49,14 +50,32 @@
 </table>
 
 <script>
+  // 祝日データを取得
+  const holidays = {{ holiday_date|safe }};
+  const names = {{ holiday_name|safe }};
+  
+  // 祝日名をカレンダーに追加
+  document.querySelectorAll('td').forEach((cell) => {
+    const daySpan = cell.querySelector('.day-number');
+    const holidaySpan = cell.querySelector('.holiday-name');
+    if (daySpan) {
+      const day = parseInt(daySpan.textContent);
+      
+      if (holidays.includes(day)) {
+        const index = holidays.indexOf(day);
+        holidaySpan.textContent = names[index];
+        daySpan.style.color = 'red'; // 祝日の数字を赤に設定
+      }
+    }
+  });
+
   // 現在の年月を取得
   const today = new Date();
   const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0'); // 月は0始まりなので+1する
+  const month = String(today.getMonth() + 1).padStart(2, '0');
   const currentMonth = `${year}-${month}`;
-  const currentMin = `${year-5}-${month}`;
+  const currentMin = `${year - 5}-${month}`;
 
-  // input要素にデフォルト値を設定
   document.getElementById('yearmonth').value = currentMonth;
   document.getElementById('yearmonth').min = currentMin;
 </script>

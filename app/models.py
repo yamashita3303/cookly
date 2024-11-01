@@ -1,9 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
+class Allergy(models.Model):
+    allergy_name = models.CharField(max_length=50, verbose_name="アレルギー")
+
 class CustomUser(AbstractUser):
     user_icon = models.ImageField(upload_to='user_icon/', verbose_name="ユーザーアイコン")
-    pass
+    allergy = models.CharField(max_length=1000, default="なし")
 
 #料理全般の情報のテーブル
 class Recipe(models.Model):

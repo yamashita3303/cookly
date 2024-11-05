@@ -68,13 +68,27 @@ def signout(request):
     return redirect('app:index')
 
 def allergy(request):
+    allergies = Allergy.objects.all()
     if request.method == 'POST':
-        allergy_name = request.POST['allergy_name']
-        allergy = Allergy(allergy_name = allergy_name)
-        allergy.save()
-        return render(request, 'app/home.html', {'message': 'アレルギーを追加しました。'})
-    else:
-        return render(request, 'app/allergy.html')
+        delete_id = request.POST.get('delete_id')
+        allergy_id = request.POST.get('allergy_id')
+        allergy_name = request.POST.get('allergy_name')
+
+        if delete_id:
+            allergy = get_object_or_404(Allergy, id=delete_id)
+            allergy.delete()
+        elif allergy_id:
+            # 追加のidフィールドは隠しているためidに何かが入力されていれば編集
+            allergy = get_object_or_404(Allergy, id=allergy_id)
+            allergy.allergy_name = allergy_name
+            allergy.save()
+        else:
+            # idに何も入力されてなければ追加
+            if allergy_name:
+                Allergy.objects.create(allergy_name=allergy_name)
+        return redirect('app:allergy')
+    
+    return render(request, 'app/allergy.html', {'allergies': allergies})
 
 # レシピ一覧ページ(home.html)
 def recipe(request):

@@ -1,13 +1,27 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
 .resize-image {
-    width: 150px;
-    height: auto; /* アスペクト比を維持しながら高さを自動調整 */
+  width: 150px;
+  height: auto; /* アスペクト比を維持しながら高さを自動調整 */
 }
+
 .center-content {
-    display: flex;
-    flex-direction: column;  /* 縦方向に配置 */
-    align-items: center;      /* 子要素を中央揃え */
-    text-align: center;       /* テキストを中央揃え */
+  display: flex;
+  flex-direction: column;         /* 縦方向に配置 */
+  justify-content: center;        /* 縦方向に中央揃え */
+  align-items: center;            /* 子要素を水平方向中央揃え */
+  min-height: 100vh;              /* 画面全体の高さを確保 */
+  text-align: center;             /* テキストを中央揃え */
 }
+
 .center-content a {
-    margin: 10px 0;  /* リンクに上下の余白を追加 */
+  margin: 10px 0;                /* リンクに上下の余白を追加 */
 }

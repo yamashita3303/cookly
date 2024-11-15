@@ -2,13 +2,15 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from django.db.models import Q
 from django.views import View
-from .models import Recipe, Ingredient, Step, Rating
+from .models import Recipe, Ingredient, Step, Favorite
 from django.http import HttpResponse, HttpResponseRedirect
 from .forms import RecipeForm, IngredientForm, StepForm, CommentForm
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, logout, authenticate, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import CustomUser
+
+
 def index(request):
     context = {'user': request.user}
     return render(request, 'index.html', context)
@@ -104,6 +106,12 @@ def detail(request, post_id):
     # 閲覧数を1増やして保存
     recipes.vote += 1
     recipes.save()
+    
+    is_favorited = False
+    if request.user.is_authenticated:
+        from app.models import Favorite  # 追加
+        is_favorited = Favorite.objects.filter(user=request.user, item=recipes).exists()
+
 
     context = {
         "recipe_chose": recipes,
@@ -111,6 +119,7 @@ def detail(request, post_id):
         'steps': steps,
         "comments": comments,
         "user": recipes.user,
+        "is_favorited": is_favorited, 
     }
     return render(request, "app/recipe.html", context)
 
@@ -282,12 +291,25 @@ def recipe_delete(request, post_id):
 def mypage(request):
     user = request.user  # ログイン中のユーザーを取得
     recipes = user.recipe_set.all()  # ユーザーが投稿した全ての料理を取得
+    
+    favorite_recipes = Favorite.objects.filter(user=user).select_related('item')
 
     return render(request, 'app/mypage.html', {
         'user': user,
         'recipes': recipes,
+        'favorite_recipes': favorite_recipes,
     })
 
 # classをview関数に変換
 comments = CommentCreateView.as_view()
 recipe_create = RecipeCreateView.as_view()
+
+@login_required
+def toggle_favorite(request, recipe_id):
+    recipe = get_object_or_404(Recipe, id=recipe_id)
+    favorite, created = Favorite.objects.get_or_create(user=request.user, item=recipe)
+    if not created:
+        favorite.delete()  # 既にお気に入りに登録されている場合は解除
+    return redirect("app:detail", post_id=recipe.id)
+
+

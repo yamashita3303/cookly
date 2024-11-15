@@ -22,6 +22,20 @@
     </div>
 </div>
 
+{% if user.is_authenticated %}
+    <form method="post" action="{% url 'app:toggle_favorite' recipe_chose.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn {% if is_favorited %}btn-warning{% else %}btn-outline-warning{% endif %}">
+            {% if is_favorited %}
+                お気に入り解除
+            {% else %}
+                お気に入り
+            {% endif %}
+        </button>
+    </form>
+{% else %}
+    <p>お気に入り登録をするには、<a href="{% url 'login' %}">ログイン</a>してください。</p>
+{% endif %}
 
 
 
@@ -83,18 +97,20 @@
 
     <!-- 星評価の表示 -->
     {% if comment.rating %}
-    <div class="stars">
+    <div class="stars" data-rating="{{ comment.rating }}">
         <span>
-            <label for="review05" {% if comment.rating.rating >= 5 %}style="color: #F8C601;"{% endif %}>★</label>
-            <label for="review04" {% if comment.rating.rating >= 4 %}style="color: #F8C601;"{% endif %}>★</label>
-            <label for="review03" {% if comment.rating.rating >= 3 %}style="color: #F8C601;"{% endif %}>★</label>
-            <label for="review02" {% if comment.rating.rating >= 2 %}style="color: #F8C601;"{% endif %}>★</label>
-            <label for="review01" {% if comment.rating.rating >= 1 %}style="color: #F8C601;"{% endif %}>★</label>
+            <label for="review05">★</label>
+            <label for="review04">★</label>
+            <label for="review03">★</label>
+            <label for="review02">★</label>
+            <label for="review01">★</label>
         </span>
     </div>
     {% else %}
         <p>評価がありません。</p>
     {% endif %}
+
+
     <p>{{ comment.comment }}</p>
     {% empty %}
         <p>コメントがありません。</p>
@@ -103,4 +119,29 @@
     <a href="{% url 'app:comments' recipe_chose.id %}">コメント追加</a>
 </div>
 
+{% endblock %}
+
+{% block extra_styles %}
+    <style>
+        .stars {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+
+        .stars label {
+            color: #D2D2D2; /* 未選択の星をグレーに */
+            font-size: 30px;
+            padding: 0 5px;
+        }
+
+        /* data-ratingの値に基づいて星を色付け */
+        .stars[data-rating="5"] label:nth-child(-n+1),
+        .stars[data-rating="4"] label:nth-child(-n+2),
+        .stars[data-rating="3"] label:nth-child(-n+3),
+        .stars[data-rating="2"] label:nth-child(-n+4),
+        .stars[data-rating="1"] label:nth-child(-n+5) {
+            color: #F8C601; /* 選択された星を黄色に */
+        }
+    </style>
 {% endblock %}

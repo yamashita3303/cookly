@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth import get_user_model
+
 
 class CustomUser(AbstractUser):
     user_icon = models.ImageField(upload_to='user_icon/', verbose_name="ユーザーアイコン")
@@ -83,3 +85,11 @@ class Comment(models.Model):
         FIVE_STAR = 'five', '★★★★★'
     review = models.CharField(max_length=10, choices=Review.choices, verbose_name="レビュー")
     rating = models.IntegerField(default=0)  # 1から5の値を想定
+
+class Favorite(models.Model):
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    item = models.ForeignKey("Recipe", on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+      
+    def __str__(self):
+        return f"{self.user} - {self.item}"

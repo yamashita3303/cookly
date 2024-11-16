@@ -17,17 +17,12 @@ def signup(request):
     allergy_object = Allergy.objects.all()
     context = {"allergy_object":allergy_object}
     if request.method == 'POST':
-        first_name = request.POST['first_name']
-        last_name = request.POST['last_name']
         username = request.POST['username']
         email = request.POST['email']
         password = request.POST['password']
         allergy = request.POST.getlist('allergy')
         user_icon = request.FILES.get('user_icon')  # アイコンファイルを取得
-        print(user_icon)
         new_user = CustomUser(
-            first_name=first_name, 
-            last_name=last_name, 
             username=username, 
             email=email,
             user_icon=user_icon,  # アイコンを保存

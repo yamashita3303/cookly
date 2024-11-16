@@ -36,12 +36,6 @@
             margin-bottom: 10px; /* 行の間に余白 */
         }
 
-        .form-element-half {
-            width: 48%; /* 両方を合わせて約100% */
-            position: relative;
-            border-bottom: 2px solid rgba(0, 0, 0, 0.5);
-        }
-
         .form-element-half input {
             width: 100%;
             padding: 10px;
@@ -156,15 +150,7 @@
             <div id="step-one">
                 <label for="user_icon">アイコン写真:</label>
                 <input type="file" name="user_icon" id="user_icon"><br>
-
-                <div class="form-row">
-                    <div class="form-element-half">
-                        <input type="text" name="first_name" id="first_name" placeholder="名" required>
-                    </div>
-                    <div class="form-element-half">
-                        <input type="text" name="last_name" id="last_name" placeholder="姓" required>
-                    </div>
-                </div>
+                <img id="icon-preview" src="" alt="プレビュー画像" style="display: none; width: 100px; height: 100px; margin-top: 10px;">
 
                 <div class="form-element">
                     <span><i class="fa fa-user"></i></span>
@@ -212,6 +198,24 @@
     </div>
 
     <script>
+        document.getElementById('user_icon').addEventListener('change', function(event) {
+            const fileInput = event.target;
+            const file = fileInput.files[0];
+            const preview = document.getElementById('icon-preview');
+
+            if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block'; // 画像を表示
+            }
+            reader.readAsDataURL(file); // 画像をData URLとして読み込む
+            } else {
+            preview.src = '';
+            preview.style.display = 'none'; // 画像が選択されていない場合は非表示
+            }
+        });
+
         document.getElementById('next-button').addEventListener('click', function() {
             // 前半部分を非表示にして後半部分を表示
             document.getElementById('step-one').style.display = 'none';

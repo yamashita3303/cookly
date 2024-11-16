@@ -125,9 +125,6 @@
         }
 
         .image-placeholder {
-            width: 50px; /* 画像用の領域の幅 */
-            height: 50px; /* 画像用の領域の高さ */
-            border: 2px dashed #ccc; /* 枠線のスタイル */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -199,8 +196,7 @@
                             <input type="checkbox" name="allergy" value="{{ i.allergy_name }}" class="hidden-checkbox">
                             <div class="custom-checkbox">
                                 <div class="image-placeholder">
-                                    <!-- 画像が入るスペース -->
-                                    <span>画像</span>
+                                    <img src="{{ i.allergy_image.url }}" width="50" height="50">
                                 </div>
                                 {{ i.allergy_name }}
                             </div>

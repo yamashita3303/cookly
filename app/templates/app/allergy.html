@@ -10,11 +10,13 @@
 
 <body>
     <!-- アレルギーの追加・編集フォーム -->
-    <form id="allergyForm" method="post" action="{% url 'app:allergy' %}">
+    <form id="allergyForm" method="post" action="{% url 'app:allergy' %}" enctype="multipart/form-data">
         {% csrf_token %}
         <input type="hidden" name="allergy_id" id="allergy_id">
         <label for="allergy_name">アレルギー名:</label>
         <input type="text" name="allergy_name" id="allergy_name" required disabled>
+        <label for="allergy_image">アレルギー画像:</label>
+        <input type="file" name="allergy_image" id="allergy_image" accept="image/*">
         <button type="submit" id="saveButton" disabled>保存</button>
         <button type="button" onclick="clearForm()">キャンセル</button>
     </form>
@@ -25,6 +27,9 @@
     <ul>
         {% for allergy in allergies %}
             <li>
+                {% if allergy.allergy_image %}
+                    <img src="{{ allergy.allergy_image.url }}" alt="{{ allergy.allergy_name }}" width="100">
+                {% endif %}
                 {{ allergy.allergy_name }}
                 <button onclick="editAllergy({{ allergy.id }}, '{{ allergy.allergy_name }}')">編集</button>
                 <form method="post" action="{% url 'app:allergy' %}" style="display: inline;">

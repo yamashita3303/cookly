@@ -79,6 +79,11 @@ def allergy(request):
         delete_id = request.POST.get('delete_id')
         allergy_id = request.POST.get('allergy_id')
         allergy_name = request.POST.get('allergy_name')
+        allergy_image = request.FILES.get('allergy_image')
+        if allergy_image:
+            print(f"Image uploaded: {allergy_image.name}")
+        else:
+            print("No image uploaded")
 
         if delete_id:
             allergy = get_object_or_404(Allergy, id=delete_id)
@@ -87,11 +92,16 @@ def allergy(request):
             # 追加のidフィールドは隠しているためidに何かが入力されていれば編集
             allergy = get_object_or_404(Allergy, id=allergy_id)
             allergy.allergy_name = allergy_name
+            if allergy_image:
+                allergy.allergy_image = allergy_image
             allergy.save()
         else:
             # idに何も入力されてなければ追加
             if allergy_name:
-                Allergy.objects.create(allergy_name=allergy_name)
+                Allergy.objects.create(
+                    allergy_name=allergy_name,
+                    allergy_image=allergy_image
+                )
         return redirect('app:allergy')
     
     return render(request, 'app/allergy.html', {'allergies': allergies})

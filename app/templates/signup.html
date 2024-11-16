@@ -4,11 +4,23 @@
 {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'app/css/index.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="icon" href="media/icon/cookly_icon.ico" type="image/png">
     <link rel="shortcut icon" href="media/icon/cookly_icon.ico" type="image/png">
     <title>signup</title>
     <style>
-        .wrapper{
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+        }
+
+        .wrapper {
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -16,6 +28,109 @@
             margin: 0 auto;
             padding: 20px;
             min-height: 100vh;
+        }
+
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px; /* 行の間に余白 */
+        }
+
+        .form-element-half {
+            width: 48%; /* 両方を合わせて約100% */
+            position: relative;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.5);
+        }
+
+        .form-element-half input {
+            width: 100%;
+            padding: 10px;
+            margin: 0;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: rgba(0, 0, 0, 0.8);
+        }
+
+        .form-element-half input::placeholder {
+            color: rgba(0, 0, 0, 0.5);
+            font-size: 1em;
+            font-weight: 500;
+        }
+
+        .form-element {
+            width: 100%;
+            position: relative;
+            margin: 10px 0; /* 各入力フィールドの間に余白 */
+            border-bottom: 2px solid rgba(0, 0, 0, 0.5);
+        }
+
+        .form-element span {
+            display: inline-block;
+            width: 20px; /* アイコンの幅 */
+            color: rgba(0, 0, 0, 0.5);
+        }
+
+        .form-element input {
+            font-family: 'Fira Sans', sans-serif;
+            display: inline-block;
+            width: calc(100% - 30px); /* アイコンの幅を引いた幅 */
+            margin: 5px 0;
+            padding: 10px;
+            background: transparent;
+            outline: none;
+            border: none;
+            color: rgba(0, 0, 0, 0.8);
+        }
+
+        .form-element input::placeholder {
+            color: rgba(0, 0, 0, 0.5);
+            font-size: 1em;
+            font-weight: 500;
+        }
+
+        .btn-login {
+            position: relative;
+            margin: 20px 0;
+            width: 100%;
+            padding: 10px;
+            outline: none;
+            border: none;
+            border-radius: 25px;
+            text-transform: uppercase;
+            background: #39c9c2;
+            color: black;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .checkbox-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); /* 5列にする */
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .custom-checkbox {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border: 2px solid rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s, color 0.3s;
+            height: 120px;
+        }
+
+        .custom-checkbox.checked {
+            background-color: #39c9c2; /* チェック時の色 */
+            color: white; /* チェック時のテキスト色 */
+        }
+
+        .hidden-checkbox {
+            display: none; /* 実際のチェックボックスを隠す */
         }
     </style>
 </head>
@@ -32,28 +147,59 @@
             <label for="user_icon">アイコン写真:</label>
             <input type="file" name="user_icon" id="user_icon"><br>
 
-            <label for="first_name">名:</label>
-            <input type="text" name="first_name" id="first_name" required><br>
+            <div class="form-row">
+                <div class="form-element-half">
+                    <input type="text" name="first_name" id="first_name" placeholder="名" required>
+                </div>
             
-            <label for="last_name">姓:</label>
-            <input type="text" name="last_name" id="last_name" required><br>
+                <div class="form-element-half">
+                    <input type="text" name="last_name" id="last_name" placeholder="姓" required>
+                </div>
+            </div>
+        
+            <div class="form-element">
+                <span><i class="fa fa-user"></i></span>
+                <input type="text" name="username" id="username" placeholder="ユーザー名" required><br>
+            </div>
             
-            <label for="username">ユーザー名:</label>
-            <input type="text" name="username" id="username" required><br>
-            
-            <label for="email">メールアドレス:</label>
-            <input type="email" name="email" id="email" required><br>
-            
-            <label for="password">パスワード:</label>
-            <input type="password" name="password" id="password" required><br>
+            <div class="form-element">
+                <span><i class="fa fa-envelope"></i></span>
+                <input type="email" name="email" placeholder="メールアドレス" required><br>
+            </div>
 
-            {% for i in allergy_object %}
-                <input type="checkbox" name="allergy" id="allergy" value="{{ i.allergy_name }}">{{ i.allergy_name }}
-            {% endfor %}
+            <div class="form-element">
+                <span><i class="fa fa-lock"></i></span>
+                <input type="password" name="password" placeholder="パスワード" required><br>
+            </div>
+
+            <h2>アレルギーを選択してください</h2>
             
-            <button type="submit">サインアップ</button>
+            <div class="checkbox-container">
+                {% for i in allergy_object %}
+                    <label class="custom-checkbox-wrapper">
+                        <input type="checkbox" name="allergy" value="{{ i.allergy_name }}" class="hidden-checkbox">
+                        <div class="custom-checkbox">{{ i.allergy_name }}</div>
+                    </label>
+                {% endfor %}
+            </div>
+
+            <button type="submit" class="btn-login">サインアップ</button>
         </form>
         <p>既にアカウントをお持ちですか？ <a href="{% url 'app:signin' %}">ログインはこちら</a></p>
     </div>
+
+    <script>
+        document.querySelectorAll('.custom-checkbox-wrapper').forEach(wrapper => {
+            const hiddenCheckbox = wrapper.querySelector('.hidden-checkbox');
+            const customCheckbox = wrapper.querySelector('.custom-checkbox');
+    
+            // ボックスをクリックしたときに動作
+            wrapper.addEventListener('click', (event) => {
+                event.preventDefault();
+                hiddenCheckbox.checked = !hiddenCheckbox.checked; // チェック状態を反転
+                customCheckbox.classList.toggle('checked', hiddenCheckbox.checked); // 見た目を変更
+            });
+        });
+    </script>
 </body>
 </html>

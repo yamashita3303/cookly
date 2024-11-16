@@ -35,6 +35,12 @@ def signup(request):
         )
         new_user.set_password(password)  # パスワードのハッシュ化
         new_user.save()
+
+        # 新規登録後はその情報でログインでいいんじゃないかな
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user) 
+            return HttpResponseRedirect('/home/')
         
         # signup_success.htmlでアラートを表示し、リダイレクトさせる
         return render(request, 'signup_success.html', {'message': 'ユーザーの作成に成功しました'})

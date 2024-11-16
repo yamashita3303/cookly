@@ -106,13 +106,13 @@
 
         .checkbox-container {
             display: grid;
-            grid-template-columns: repeat(5, 1fr); /* 5列にする */
+            grid-template-columns: repeat(4, 1fr); /* 4列にする */
             gap: 10px;
             margin: 10px 0;
         }
 
         .custom-checkbox {
-            display: flex;
+            display: block;
             align-items: center;
             justify-content: center;
             padding: 10px;
@@ -122,6 +122,16 @@
             text-align: center;
             transition: background-color 0.3s, color 0.3s;
             height: 120px;
+        }
+
+        .image-placeholder {
+            width: 50px; /* 画像用の領域の幅 */
+            height: 50px; /* 画像用の領域の高さ */
+            border: 2px dashed #ccc; /* 枠線のスタイル */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px; /* 下の要素との余白 */
         }
 
         .custom-checkbox.checked {
@@ -144,51 +154,74 @@
         
         <form method="post"  enctype="multipart/form-data">
             {% csrf_token %}
-            <label for="user_icon">アイコン写真:</label>
-            <input type="file" name="user_icon" id="user_icon"><br>
 
-            <div class="form-row">
-                <div class="form-element-half">
-                    <input type="text" name="first_name" id="first_name" placeholder="名" required>
+            <!-- 前半部分 -->
+            <div id="step-one">
+                <label for="user_icon">アイコン写真:</label>
+                <input type="file" name="user_icon" id="user_icon"><br>
+
+                <div class="form-row">
+                    <div class="form-element-half">
+                        <input type="text" name="first_name" id="first_name" placeholder="名" required>
+                    </div>
+                    <div class="form-element-half">
+                        <input type="text" name="last_name" id="last_name" placeholder="姓" required>
+                    </div>
                 </div>
-            
-                <div class="form-element-half">
-                    <input type="text" name="last_name" id="last_name" placeholder="姓" required>
+
+                <div class="form-element">
+                    <span><i class="fa fa-user"></i></span>
+                    <input type="text" name="username" id="username" placeholder="ユーザー名" required><br>
                 </div>
-            </div>
-        
-            <div class="form-element">
-                <span><i class="fa fa-user"></i></span>
-                <input type="text" name="username" id="username" placeholder="ユーザー名" required><br>
-            </div>
-            
-            <div class="form-element">
-                <span><i class="fa fa-envelope"></i></span>
-                <input type="email" name="email" placeholder="メールアドレス" required><br>
+                
+                <div class="form-element">
+                    <span><i class="fa fa-envelope"></i></span>
+                    <input type="email" name="email" placeholder="メールアドレス" required><br>
+                </div>
+
+                <div class="form-element">
+                    <span><i class="fa fa-lock"></i></span>
+                    <input type="password" name="password" placeholder="パスワード" required><br>
+                </div>
+
+                <!-- 次へボタン -->
+                <button type="button" id="next-button" class="btn-login">次へ</button>
             </div>
 
-            <div class="form-element">
-                <span><i class="fa fa-lock"></i></span>
-                <input type="password" name="password" placeholder="パスワード" required><br>
-            </div>
+            <!-- 後半部分 -->
+            <div id="step-two" style="display: none;">
+                <h2>アレルギーを選択してください</h2>
+                
+                <div class="checkbox-container">
+                    {% for i in allergy_object %}
+                        <label class="custom-checkbox-wrapper">
 
-            <h2>アレルギーを選択してください</h2>
-            
-            <div class="checkbox-container">
-                {% for i in allergy_object %}
-                    <label class="custom-checkbox-wrapper">
-                        <input type="checkbox" name="allergy" value="{{ i.allergy_name }}" class="hidden-checkbox">
-                        <div class="custom-checkbox">{{ i.allergy_name }}</div>
-                    </label>
-                {% endfor %}
-            </div>
+                            <input type="checkbox" name="allergy" value="{{ i.allergy_name }}" class="hidden-checkbox">
+                            <div class="custom-checkbox">
+                                <div class="image-placeholder">
+                                    <!-- 画像が入るスペース -->
+                                    <span>画像</span>
+                                </div>
+                                {{ i.allergy_name }}
+                            </div>
+                        </label>
+                    {% endfor %}
+                </div>
 
-            <button type="submit" class="btn-login">サインアップ</button>
+                <!-- サインアップボタン -->
+                <button type="submit" class="btn-login">サインアップ</button>
+            </div>
         </form>
         <p>既にアカウントをお持ちですか？ <a href="{% url 'app:signin' %}">ログインはこちら</a></p>
     </div>
 
     <script>
+        document.getElementById('next-button').addEventListener('click', function() {
+            // 前半部分を非表示にして後半部分を表示
+            document.getElementById('step-one').style.display = 'none';
+            document.getElementById('step-two').style.display = 'block';
+        });
+
         document.querySelectorAll('.custom-checkbox-wrapper').forEach(wrapper => {
             const hiddenCheckbox = wrapper.querySelector('.hidden-checkbox');
             const customCheckbox = wrapper.querySelector('.custom-checkbox');

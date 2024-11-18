@@ -7,9 +7,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from .forms import RecipeForm, IngredientForm, StepForm, CommentForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
-from .models import CustomUser
-import datetime, calendar, openai
+from .models import CustomUser, Inventorylog
+import datetime, calendar, openai, os
 from flaretool.holiday import JapaneseHolidaysOnline
+from dotenv import load_dotenv
+from django.http import JsonResponse
 
 def index(request):
     context = {'user': request.user}
@@ -329,3 +331,59 @@ def recipe_calendar(request):
             "holiday_date":holiday_date
         }
     return render(request, 'app/calendar.html', context)
+
+# 環境変数からAPIキーを読み込む
+load_dotenv()
+openai.api_key = os.getenv('OPENAI_API_KEY')  # .env からAPIキーを取得
+
+def ingredients_management(request):
+    user = request.user
+    if request.method == 'POST':
+        ingredient_name = request.POST.get('ingredient_name')
+        expiration_date = request.POST.get('expiration_date')
+        storage_method = gpt_search(ingredient_name)
+        
+        print("---------{}----------".format(ingredient_name))
+        print("---------{}----------".format(expiration_date))
+        print("---------{}----------".format(storage_method))
+        
+        # 保存処理
+        inventorylog = Inventorylog(
+            user=user,
+            ingredient_name=ingredient_name,
+            expiration_date=expiration_date,
+            storage_method=storage_method
+        )
+        inventorylog.save()
+        
+        return render(request, 'app/ingredients_management.html', {"message": "保存が完了しました！"})
+    else:
+        return render(request, "app/ingredients_management.html")
+
+def gpt_search(text):
+    try:
+        # プロンプトを作成
+        text += "の保存方法"
+        print(f"プロンプト: {text}")
+        
+        # ChatGPTにリクエストを送信
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",  # モデルを指定
+            messages=[
+                {"role": "system", "content": "あなたは食材の保存方法に関する専門家です。"},
+                {"role": "user", "content": text}
+            ],
+            max_tokens=100,
+            temperature=0.7,
+        )
+        
+        # 応答テキストを取得
+        response_text = response['choices'][0]['message']['content'].strip()
+        print(f"AIの応答: {response_text}")
+        return response_text
+    
+    except Exception as e:
+        # エラーが発生した場合の処理
+        error_message = f"エラーが発生しました: {e}"
+        print(error_message)
+        return error_message

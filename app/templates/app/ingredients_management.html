@@ -1,0 +1,11 @@
+<form method="post">
+    {% csrf_token %}
+    <label for="password">食品名:</label>
+    <input type="text" name="ingredient_name" id="ingredient_name" required><br>
+
+    <label for="password">賞味期限:</label>
+    <input type="date" name="expiration_date" id="expiration_date" required><br>
+        
+    <button type="submit">登録</button>
+</form>
+{{message}}

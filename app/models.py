@@ -68,3 +68,9 @@ class Comment(models.Model):
         FOUR_STAR = 'four', '★★★★'
         FIVE_STAR = 'five', '★★★★★'
     review = models.CharField(max_length=10, choices=Review.choices, verbose_name="レビュー")
+
+class Inventorylog(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    ingredient_name = models.CharField(max_length=120, verbose_name="食材名")
+    expiration_date = models.DateField(verbose_name="賞味期限")
+    storage_method = models.CharField(max_length=100, verbose_name="保存方法", default="未設定")

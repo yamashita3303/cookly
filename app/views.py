@@ -21,18 +21,18 @@ def signup(request):
         email = request.POST['email']
         password = request.POST['password']
         allergy_list = request.POST.getlist('allergy')
-        allergy_string = ','.join(allergy_list)
+        allergy_string = ','.join(allergy_list) # 要素を区別できるようにカンマで区切る
         user_icon = request.FILES.get('user_icon')  # アイコンファイルを取得
         new_user = CustomUser(
             username=username, 
             email=email,
-            user_icon=user_icon,  # アイコンを保存
+            user_icon=user_icon,
             allergy=allergy_string
         )
         new_user.set_password(password)  # パスワードのハッシュ化
         new_user.save()
 
-        # 新規登録後はその情報でログイン
+        # 新規登録後はその情報でログイン(デバッグ用)
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user) 
@@ -306,8 +306,11 @@ def recipe_delete(request, post_id):
 def mypage(request):
     user = request.user  # ログイン中のユーザーを取得
     recipes = user.recipe_set.all()  # ユーザーが投稿した全ての料理を取得
-    custom_user = get_object_or_404(CustomUser, email=user.email)
-    allergies = custom_user.allergy.split(',')
+    custom_user = get_object_or_404(CustomUser, email=user.email)   # allergyを取るためにメールアドレスの一致したユーザーを特定
+    if custom_user.allergy == "なし":
+        allergies = []
+    else:
+        allergies = custom_user.allergy.split(',')  # ユーザーのアレルギー食材を取得
 
     return render(request, 'app/mypage.html', {
         'user': user,

@@ -21,4 +21,6 @@ urlpatterns = [
     path("favorite/<int:recipe_id>/", views.toggle_favorite, name="toggle_favorite"),
     path('follow/<int:user_id>/', views.toggle_follow, name='toggle_follow'),
     path('author/<int:user_id>/', views.author_page, name='author_page'),
+    path('recipe/<int:recipe_id>/comment/<int:comment_id>/reply/', views.reply_to_comment, name='reply_to_comment'),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

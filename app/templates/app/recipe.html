@@ -112,6 +112,8 @@
             <small class="text-body-secondary">作成日：{{ comment.created_at|date:"Y/m/d" }}</small>
         </p>
     </div>
+    
+    
 
     <!-- 星評価の表示 -->
     {% if comment.rating %}
@@ -130,9 +132,29 @@
 
 
     <p>{{ comment.comment }}</p>
+    
+    <a href="{% url 'app:reply_to_comment' recipe_chose.id comment.id %}" class="btn btn-link">
+        返信
+    </a>
+
+    <!-- 返信一覧 -->
+    <div class="replies">
+        {% for reply in comment.replies.all %}
+        <div class="reply">
+            <p><strong>{{ reply.user.username }}</strong>: {{ reply.content }}</p>
+            <small>{{ reply.created_at|date:"Y/m/d H:i" }}</small>
+        </div>
+        {% empty %}
+           <p>返信がありません。</p>    
+        {% endfor %}
+    </div>
+    
     {% empty %}
         <p>コメントがありません。</p>
     {% endfor %}
+    
+    
+
 
     <a href="{% url 'app:comments' recipe_chose.id %}">コメント追加</a>
 </div>

@@ -2,7 +2,7 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from django.db.models import Q
 from django.views import View
-from .models import Recipe, Ingredient, Step, Favorite
+from .models import Recipe, Ingredient, Step, Favorite, Comment
 from django.http import HttpResponse, HttpResponseRedirect
 from .forms import RecipeForm, IngredientForm, StepForm, CommentForm
 from django.contrib.auth import login, logout, authenticate, get_user_model
@@ -336,4 +336,27 @@ def author_page(request, user_id):
         'recipes': recipes,
     }
     return render(request, 'app/author_page.html', context)
+
+
+@login_required
+def reply_to_comment(request, recipe_id, comment_id):
+    parent_comment = get_object_or_404(Comment, id=comment_id)
+    recipe = get_object_or_404(Recipe, id=recipe_id)
+
+    if request.method == 'POST':
+        content = request.POST.get('content')
+        if content:
+            Comment.objects.create(
+                user=request.user,
+                recipe=recipe,
+                parent=parent_comment,
+                content=content
+            )
+        return redirect('app:detail', post_id=recipe_id)
+
+    return render(request, 'app/reply.html', {
+        'parent_comment': parent_comment,
+        'recipe': recipe,
+    })
+
 

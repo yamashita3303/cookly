@@ -30,6 +30,15 @@
                 <p><strong>ユーザー名:</strong> {{ user.username }}</p>
                 <p><strong>名前:</strong> {{ user.first_name }} {{ user.last_name }}</p>
                 <p><strong>メールアドレス:</strong> {{ user.email }}</p>
+                {% if allergies %}
+                    <ul>
+                        {% for allergy in allergies %}
+                            <li>{{ allergy }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>登録されたアレルギーはありません</p>
+                {% endif %}
             </div>
         </div>
 

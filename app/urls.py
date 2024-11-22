@@ -19,4 +19,6 @@ urlpatterns = [
     path("comment/<int:recipe_id>", views.comments, name="comments"),
     path('mypage/', views.mypage, name='mypage'),
     path("favorite/<int:recipe_id>/", views.toggle_favorite, name="toggle_favorite"),
+    path('follow/<int:user_id>/', views.toggle_follow, name='toggle_follow'),
+    path('author/<int:user_id>/', views.author_page, name='author_page'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

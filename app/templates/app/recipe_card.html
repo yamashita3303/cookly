@@ -37,7 +37,11 @@
         <div class="mt-auto d-flex justify-content-between">
             <!-- ユーザー表示 -->
             <p class="card-text mb-0">
-                <small class="text-body-secondary">投稿者：{{ i.user }}</small>
+                <small class="text-body-secondary">
+                    投稿者：
+                    <a href="{% url 'app:author_page' i.user.id %}">
+                        {{ i.user }}</small>
+                    </a>
             </p>
 
             <!-- 作成日表示 -->

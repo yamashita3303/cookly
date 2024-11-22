@@ -8,7 +8,7 @@ from .forms import RecipeForm, IngredientForm, StepForm, CommentForm
 from django.contrib.auth import login, logout, authenticate, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import CustomUser
+from .models import CustomUser, Follow
 
 
 def index(request):
@@ -108,10 +108,11 @@ def detail(request, post_id):
     recipes.save()
     
     is_favorited = False
+    is_folloing = False
     if request.user.is_authenticated:
         from app.models import Favorite  # 追加
         is_favorited = Favorite.objects.filter(user=request.user, item=recipes).exists()
-
+        is_folloing = Follow.objects.filter(follower=request.user, followed=recipes.user).exists()
 
     context = {
         "recipe_chose": recipes,
@@ -120,6 +121,7 @@ def detail(request, post_id):
         "comments": comments,
         "user": recipes.user,
         "is_favorited": is_favorited, 
+        "is_following": is_folloing,
     }
     return render(request, "app/recipe.html", context)
 
@@ -293,12 +295,14 @@ def mypage(request):
     recipes = user.recipe_set.all()  # ユーザーが投稿した全ての料理を取得
     
     favorite_recipes = Favorite.objects.filter(user=user).select_related('item')
-
+    followed_authors = Follow.objects.filter(follower=user).select_related('followed')  # フォロー中の投稿者
     return render(request, 'app/mypage.html', {
         'user': user,
         'recipes': recipes,
         'favorite_recipes': favorite_recipes,
+        'followed_authors': followed_authors,
     })
+    return render(request, 'app/mypage.html', context)
 
 # classをview関数に変換
 comments = CommentCreateView.as_view()
@@ -312,4 +316,24 @@ def toggle_favorite(request, recipe_id):
         favorite.delete()  # 既にお気に入りに登録されている場合は解除
     return redirect("app:detail", post_id=recipe.id)
 
+@login_required
+def toggle_follow(request, user_id):
+    target_user = get_object_or_404(CustomUser, id=user_id)
+    if request.user == target_user:
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/')) # 自分自身をフォローできないようにリダイレクト
+
+    follow_obj, created = Follow.objects.get_or_create(follower=request.user, followed=target_user)
+    if not created:
+        follow_obj.delete()  # 既にフォローしていた場合は削除
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+def author_page(request, user_id):
+    author = get_object_or_404(CustomUser, id=user_id)
+    recipes = Recipe.objects.filter(user=author)  # 投稿者のレシピを取得
+
+    context = {
+        'author': author,
+        'recipes': recipes,
+    }
+    return render(request, 'app/author_page.html', context)
 

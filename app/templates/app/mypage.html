@@ -45,6 +45,18 @@
              <p>お気に入りがまだ登録されていません。</p>
            {% endfor %}
         </ul>
+        <h2>フォロー中の投稿者</h2>
+        <ul>
+            {% for follow in followed_authors %}
+              <li>
+                 <a href="{% url 'app:author_page' follow.followed.id %}">
+                    {{ follow.followed.username }}
+                 </a>
+             </li>
+            {% empty %}
+             <li>フォロー中の投稿者はいません。</li>
+            {% endfor %}
+        </ul>
 
 
 

@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import get_user_model
-
+from django.conf import settings
 
 class CustomUser(AbstractUser):
     user_icon = models.ImageField(upload_to='user_icon/', verbose_name="ユーザーアイコン")
@@ -93,3 +93,22 @@ class Favorite(models.Model):
       
     def __str__(self):
         return f"{self.user} - {self.item}"
+
+class Follow(models.Model):
+    follower = models.ForeignKey(
+        settings.AUTH_USER_MODEL,  # AbstractUserを直接参照しない
+        on_delete=models.CASCADE,
+        related_name='following'
+    )
+    followed = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='followers'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('follower', 'followed')
+
+    def __str__(self):
+        return f"{self.follower} follows {self.followed}"

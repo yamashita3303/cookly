@@ -17,7 +17,25 @@
     <div class="recipe-right">
         <h2 class="recipe-title">{{ recipe_chose.recipe_title }}</h2>
         <p class="recipe-detail">{{ recipe_chose.detail_text }}</p>
-        <p class="recipe-user">投稿者: {{ recipe_chose.user }}</p>
+        <p class="recipe-user">
+            投稿者: 
+            <a href="{% url 'app:author_page' recipe_chose.user.id %}">
+                {{ recipe_chose.user }}
+            </a>
+        </p>
+        {% if user.is_authenticated %}
+           {% if is_following %}
+             <form action="{% url 'app:toggle_follow' recipe_chose.user.id %}" method="post">
+               {% csrf_token %}
+               <button type="submit">フォロー解除</button>
+             </form>
+           {% else %}
+             <form action="{% url 'app:toggle_follow' recipe_chose.user.id %}" method="post">
+              {% csrf_token %}
+              <button type="submit">フォロー</button>
+             </form>
+           {% endif %}
+        {% endif %}
         <p class="view-count">閲覧回数: {{ recipe_chose.vote }}</p>
     </div>
 </div>

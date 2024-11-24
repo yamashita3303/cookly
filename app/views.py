@@ -120,12 +120,22 @@ def recipe(request):
         # すべてのレシピを取得
         all_recipes = Recipe.objects.all()
 
+    # ログイン中ならばアレルギーを取得する
+    if request.user.is_authenticated:  # ユーザーがログインしている場合
+        if request.user.allergy == "なし":
+            allergies = []
+        else:
+            allergies = request.user.allergy.split(',')
+    else:  # 未ログインのユーザーの場合
+        allergies = None
+
     # リストに似たオブジェクトになっている。
     context = {
         'popular_recipes': popular_recipes,
         'latest_recipes': latest_recipes,
         'all_recipes': all_recipes,
         'selected_genre': selected_genre,
+        'allergies': allergies,
     }
     return render(request, "app/home.html", context)
 

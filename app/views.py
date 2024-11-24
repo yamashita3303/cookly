@@ -306,11 +306,10 @@ def recipe_delete(request, post_id):
 def mypage(request):
     user = request.user  # ログイン中のユーザーを取得
     recipes = user.recipe_set.all()  # ユーザーが投稿した全ての料理を取得
-    custom_user = get_object_or_404(CustomUser, email=user.email)   # allergyを取るためにメールアドレスの一致したユーザーを特定
-    if custom_user.allergy == "なし":
+    if user.allergy == "なし":
         allergies = []
     else:
-        allergies = custom_user.allergy.split(',')  # ユーザーのアレルギー食材を取得
+        allergies = user.allergy.split(',')
 
     return render(request, 'app/mypage.html', {
         'user': user,

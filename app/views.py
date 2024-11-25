@@ -284,14 +284,22 @@ recipe_create = RecipeCreateView.as_view()
 
 def recipe_calendar(request):
     current_user = request.user
-    print(current_user)
+    print("user = ",current_user)
     holiday_name = []
     holiday_date = []
+    inventory_log_name = []
+    inventory_log_date = []
     if request.method == 'POST':
         yearmonth = request.POST.get('yearmonth')
         year = yearmonth[0]+yearmonth[1]+yearmonth[2]+yearmonth[3]
         month = yearmonth[5:]
 
+        inventory_log = Inventorylog.objects.filter(user=current_user, expiration_date__year=year, expiration_date__month=month)
+        for inventory_log in inventory_log:
+            inventory_log_name.append(inventory_log.ingredient_name)
+            inventory_log_date.append(inventory_log.expiration_date.day)
+        print("inventory_log_name = {}".format(inventory_log_name))
+        print("inventory_log_date = {}".format(inventory_log_date))
         calendar_month = calendar.monthcalendar(int(year),int(month))
         holidays = JapaneseHolidaysOnline()
         if len(month) == 1:
@@ -307,13 +315,23 @@ def recipe_calendar(request):
             "yearmonth":yearmonth,
             "calendar_month":calendar_month,
             "holiday_name":holiday_name,
-            "holiday_date":holiday_date
+            "holiday_date":holiday_date,
+            "inventory_log_name":inventory_log_name,
+            "inventory_log_date":inventory_log_date,
                    }
     else:
         currentDateTime = datetime.datetime.now()
         date = currentDateTime.date()
         year = date.strftime("%Y")
         month = date.strftime("%m")
+        
+        inventory_log = Inventorylog.objects.filter(user=current_user, expiration_date__year=year, expiration_date__month=month)
+        for inventory_log in inventory_log:
+            inventory_log_name.append(inventory_log.ingredient_name)
+            inventory_log_date.append(inventory_log.expiration_date.day)
+        print("inventory_log_name = {}".format(inventory_log_name))
+        print("inventory_log_date = {}".format(inventory_log_date))
+
         calendar_month = calendar.monthcalendar(int(year), int(month))
         holidays = JapaneseHolidaysOnline()
         if len(month) == 1:
@@ -323,12 +341,16 @@ def recipe_calendar(request):
             name, date = holiday
             holiday_name.append(name)
             holiday_date.append(date.day)
+        print("holiday_name = {}".format(holiday_name))
+        print("holiday_date = {}".format(holiday_date))
         context = {
             "year":year,
             "month":month,
             "calendar_month":calendar_month,
             "holiday_name":holiday_name,
-            "holiday_date":holiday_date
+            "holiday_date":holiday_date,
+            "inventory_log_name":inventory_log_name,
+            "inventory_log_date":inventory_log_date,
         }
     return render(request, 'app/calendar.html', context)
 
@@ -343,9 +365,9 @@ def ingredients_management(request):
         expiration_date = request.POST.get('expiration_date')
         storage_method = gpt_search(ingredient_name)
         
-        print("---------{}----------".format(ingredient_name))
-        print("---------{}----------".format(expiration_date))
-        print("---------{}----------".format(storage_method))
+        print("ingredient_name = {}".format(ingredient_name))
+        print("expiration_date = {}".format(expiration_date))
+        print("storage_method = {}".format(storage_method))
         
         # 保存処理
         inventorylog = Inventorylog(
@@ -363,8 +385,8 @@ def ingredients_management(request):
 def gpt_search(text):
     try:
         # プロンプトを作成
-        text += "の保存方法"
-        print(f"プロンプト: {text}")
+        text += "の保存方法を150文字以内で"
+        print(f"プロンプト = {text}")
         
         # ChatGPTにリクエストを送信
         response = openai.ChatCompletion.create(
@@ -373,13 +395,13 @@ def gpt_search(text):
                 {"role": "system", "content": "あなたは食材の保存方法に関する専門家です。"},
                 {"role": "user", "content": text}
             ],
-            max_tokens=100,
+            max_tokens=300,
             temperature=0.7,
         )
         
         # 応答テキストを取得
         response_text = response['choices'][0]['message']['content'].strip()
-        print(f"AIの応答: {response_text}")
+        print(f"AIの応答 = {response_text}")
         return response_text
     
     except Exception as e:

@@ -73,4 +73,4 @@ class Inventorylog(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     ingredient_name = models.CharField(max_length=120, verbose_name="食材名")
     expiration_date = models.DateField(verbose_name="賞味期限")
-    storage_method = models.CharField(max_length=100, verbose_name="保存方法", default="未設定")
+    storage_method = models.CharField(max_length=300, verbose_name="保存方法", default="未設定")

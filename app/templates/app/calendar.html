@@ -1,7 +1,7 @@
 {% extends "base/base.html" %}
 {% block body %}
 
-<h2 style="text-align: center; margin-bottom: 20px;">
+<h2 style="text-align: center; font-family: Arial, sans-serif; margin-bottom: 30px; font-size: 24px; color: #333;">
   {% if year and month %}
     {{ year }}年 {{ month }}月
   {% else %}
@@ -9,37 +9,43 @@
   {% endif %}
 </h2>
 
-<form action="{% url 'app:recipe_calendar' %}" method="post" style="margin-bottom: 20px;">
+<div style="text-align: center; margin-bottom: 30px;">
+  <form action="{% url 'app:recipe_calendar' %}" method="post" style="display: inline-block;">
     {% csrf_token %}
-    <label for="yearmonth">年月を選択:</label>
-    <input type="month" id="yearmonth" name="yearmonth" style="padding: 5px; margin-right: 10px;" />
-    <input type="submit" value="年月を変更" style="padding: 5px 15px; background-color: #4CAF50; color: white; border: none; cursor: pointer;">
-</form>
+    <label for="yearmonth" style="font-family: Arial, sans-serif; font-size: 16px; margin-right: 10px;">
+      年月を選択:
+    </label>
+    <input type="month" id="yearmonth" name="yearmonth" 
+           style="padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 5px; margin-right: 10px;" />
+    <input type="submit" value="年月を変更" 
+           style="padding: 8px 20px; background-color: #4CAF50; color: white; font-size: 14px; border: none; border-radius: 5px; cursor: pointer;">
+  </form>
+</div>
 
-<table style="width: 100%; border-collapse: collapse; text-align: center;">
+<table style="width: 100%; border-collapse: collapse; text-align: center; font-family: Arial, sans-serif; font-size: 14px;">
   <thead>
-    <tr>
-      <th>月</th>
-      <th>火</th>
-      <th>水</th>
-      <th>木</th>
-      <th>金</th>
-      <th>土</th>
-      <th>日</th>
+    <tr style="background-color: #f9f9f9; color: #333;">
+      <th style="padding: 10px; border: 1px solid #ddd;">月</th>
+      <th style="padding: 10px; border: 1px solid #ddd;">火</th>
+      <th style="padding: 10px; border: 1px solid #ddd;">水</th>
+      <th style="padding: 10px; border: 1px solid #ddd;">木</th>
+      <th style="padding: 10px; border: 1px solid #ddd;">金</th>
+      <th style="padding: 10px; border: 1px solid #ddd; color: blue;">土</th>
+      <th style="padding: 10px; border: 1px solid #ddd; color: red;">日</th>
     </tr>
   </thead>
   <tbody>
     {% for week in calendar_month %}
       <tr>
         {% for day in week %}
-          <td style="padding: 20px; border: 1px solid #ddd; width: 100px; height: 100px; position: relative; text-align: right; vertical-align: top;
+          <td style="padding: 20px; border: 1px solid #ddd; width: 100px; height: 100px; position: relative; text-align: left; vertical-align: top; 
           {% if forloop.counter == 6 %} color: blue; {% elif forloop.counter == 7 %} color: red; {% endif %}">
             {% if day == 0 %}
               &nbsp;
             {% else %}
-              <div style="position: absolute; top: 5px; left: 5px;">
-                <span class="day-number">{{ day }}</span>
-                <span class="holiday-name" style="font-size: 12px; color: red; margin-left: 5px;"></span>
+              <div style="position: absolute; top: 8px; left: 8px;">
+                <span class="day-number" style="font-size: 16px; font-weight: bold;">{{ day }}</span>
+                <span class="holiday-name" style="font-size: 13px; color: red; margin-left: 5px;"></span>
               </div>
             {% endif %}
           </td>
@@ -53,21 +59,42 @@
   // 祝日データを取得
   const holidays = {{ holiday_date|safe }};
   const names = {{ holiday_name|safe }};
+
+  const inventoryDates = {{ inventory_log_date|safe }};
+  const inventoryNames = {{ inventory_log_name|safe }};
   
   // 祝日名をカレンダーに追加
   document.querySelectorAll('td').forEach((cell) => {
     const daySpan = cell.querySelector('.day-number');
     const holidaySpan = cell.querySelector('.holiday-name');
     if (daySpan) {
-      const day = parseInt(daySpan.textContent);
-      
-      if (holidays.includes(day)) {
-        const index = holidays.indexOf(day);
-        holidaySpan.textContent = names[index];
-        daySpan.style.color = 'red'; // 祝日の数字を赤に設定
-      }
+        const day = parseInt(daySpan.textContent);
+        
+        // 祝日処理
+        if (holidays.includes(day)) {
+            const index = holidays.indexOf(day);
+            holidaySpan.textContent = names[index];
+            daySpan.style.color = 'red'; // 祝日の数字を赤に設定
+        }
+
+        // 食材ログ処理
+        if (inventoryDates.includes(day)) {
+            const indexes = inventoryDates
+                .map((d, i) => (d === day ? i : null))
+                .filter((i) => i !== null); // 同日の全インデックスを取得
+            
+            indexes.forEach((index) => {
+                const inventoryLog = document.createElement('div');
+                inventoryLog.textContent = inventoryNames[index];
+                inventoryLog.style.fontSize = '13px';
+                inventoryLog.style.color = 'green';
+                inventoryLog.style.marginTop = '5px';
+                cell.appendChild(inventoryLog);
+            });
+        }
     }
-  });
+});
+
 
   // 現在の年月を取得
   const today = new Date();

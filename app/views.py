@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.db.models import Q
 from django.views import View
 from .models import Recipe, Ingredient, Step, Favorite, Comment
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from .forms import RecipeForm, IngredientForm, StepForm, CommentForm
 from django.contrib.auth import login, logout, authenticate, get_user_model
 from django.contrib.auth.decorators import login_required

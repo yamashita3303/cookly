@@ -103,20 +103,20 @@
     <!-- 下部にはユーザーと作成日を横並びで表示 -->
     <div class="mt-auto d-flex justify-content-between">
         <!-- ユーザー表示 -->
-        <p class="card-text mb-0">
+            <p class="card-text mb-0">
             <small class="text-body-secondary">投稿者：{{ comment.user }}</small>
-        </p>
+        </p> 
 
         <!-- 作成日表示 -->
-        <p class="card-text mb-0" style="margin-right: 0;">
+            <p class="card-text mb-0" style="margin-right: 0;">
             <small class="text-body-secondary">作成日：{{ comment.created_at|date:"Y/m/d" }}</small>
-        </p>
+        </p> 
     </div>
     
     
 
     <!-- 星評価の表示 -->
-    {% if comment.rating %}
+    {% if comment.rating and not comment.parent %}
     <div class="stars" data-rating="{{ comment.rating }}">
         <span>
             <label for="review05">★</label>
@@ -126,26 +126,26 @@
             <label for="review01">★</label>
         </span>
     </div>
-    {% else %}
-        <p>評価がありません。</p>
+    {% elif not comment.parent %}
+       <p>評価がありません。</p>
     {% endif %}
 
 
     <p>{{ comment.comment }}</p>
     
-    <a href="{% url 'app:reply_to_comment' recipe_chose.id comment.id %}" class="btn btn-link">
-        返信
-    </a>
-
+    {% if not comment.parent %}
+    <a href="{% url 'app:reply_to_comment' recipe_chose.id comment.id %}" class="btn btn-link">返信</a>
+    {% endif %}
+    
     <!-- 返信一覧 -->
-    <div class="replies">
+    <div class="replies" style="margin-left: 20px; border-left: 1px solid #ccc; padding-left: 10px;">
         {% for reply in comment.replies.all %}
         <div class="reply">
+
+
             <p><strong>{{ reply.user.username }}</strong>: {{ reply.content }}</p>
-            <small>{{ reply.created_at|date:"Y/m/d H:i" }}</small>
-        </div>
-        {% empty %}
-           <p>返信がありません。</p>    
+            <small>作成日: {{ reply.created_at|date:"Y/m/d H:i" }}</small>
+        </div> 
         {% endfor %}
     </div>
     

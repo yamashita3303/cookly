@@ -88,6 +88,10 @@ class Comment(models.Model):
     review = models.CharField(max_length=10, choices=Review.choices, verbose_name="レビュー")
     rating = models.IntegerField(default=0)  # 1から5の値を想定
 
+    def is_reply(self):
+        """返信かどうかを判定"""
+        return self.parent is not None
+
 class Favorite(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     item = models.ForeignKey("Recipe", on_delete=models.CASCADE)

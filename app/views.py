@@ -9,9 +9,11 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from .models import CustomUser, Inventorylog
 import datetime, calendar, openai, os
+from datetime import datetime
 from flaretool.holiday import JapaneseHolidaysOnline
 from dotenv import load_dotenv
 from django.http import JsonResponse
+from django.utils.timezone import now, make_aware
 
 def index(request):
     context = {'user': request.user}
@@ -320,7 +322,7 @@ def recipe_calendar(request):
             "inventory_log_date":inventory_log_date,
                    }
     else:
-        currentDateTime = datetime.datetime.now()
+        currentDateTime = datetime.now()
         date = currentDateTime.date()
         year = date.strftime("%Y")
         month = date.strftime("%m")
@@ -354,38 +356,48 @@ def recipe_calendar(request):
         }
     return render(request, 'app/calendar.html', context)
 
-# 環境変数からAPIキーを読み込む
+# .env ファイルを読み込む
 load_dotenv()
-openai.api_key = os.getenv('OPENAI_API_KEY')  # .env からAPIキーを取得
+
+# .env から OPENAI_API_KEY を取得
+openai.api_key = os.getenv('OPENAI_API_KEY')
 
 def ingredients_management(request):
     user = request.user
     if request.method == 'POST':
         ingredient_name = request.POST.get('ingredient_name')
         expiration_date = request.POST.get('expiration_date')
-        storage_method = gpt_search(ingredient_name)
         
         print("ingredient_name = {}".format(ingredient_name))
         print("expiration_date = {}".format(expiration_date))
-        print("storage_method = {}".format(storage_method))
+
+        expiration_date = datetime.strptime(expiration_date, '%Y-%m-%d')
+        expiration_date = make_aware(expiration_date)
         
-        # 保存処理
-        inventorylog = Inventorylog(
-            user=user,
-            ingredient_name=ingredient_name,
-            expiration_date=expiration_date,
-            storage_method=storage_method
-        )
-        inventorylog.save()
-        
-        return render(request, 'app/ingredients_management.html', {"message": "保存が完了しました！"})
+        if expiration_date < now():
+            print("-------")
+            return render(request, 'app/ingredients_management.html', {"message": "現在の日付より前は登録できません"})
+
+        else:
+            storage_method = gpt_search(ingredient_name)
+            print("storage_method = {}".format(storage_method))
+            # 保存処理
+            inventorylog = Inventorylog(
+                user=user,
+                ingredient_name=ingredient_name,
+                expiration_date=expiration_date,
+                storage_method=storage_method
+            )
+            inventorylog.save()
+            
+            return render(request, 'app/ingredients_management.html', {"message": "保存が完了しました！"})
     else:
         return render(request, "app/ingredients_management.html")
 
 def gpt_search(text):
     try:
         # プロンプトを作成
-        text += "の保存方法を150文字以内で"
+        text += "の保存方法を70字程度で"
         print(f"プロンプト = {text}")
         
         # ChatGPTにリクエストを送信
@@ -409,3 +421,17 @@ def gpt_search(text):
         error_message = f"エラーが発生しました: {e}"
         print(error_message)
         return error_message
+
+def food_management(request):
+    sort_order = request.GET.get('sort', 'select')  # Default is 'select'
+    print(sort_order)
+    if sort_order == 'select':
+        inventory_log = Inventorylog.objects.filter(expiration_date__gte=now()).order_by('expiration_date')
+    elif sort_order == 'delete':
+        inventory_log = Inventorylog.objects.filter(expiration_date__lt=now()).delete()
+        inventory_log = Inventorylog.objects.filter(expiration_date__gte=now()).order_by('expiration_date')
+    else:
+        inventory_log = Inventorylog.objects.all().order_by('expiration_date')
+    print(inventory_log)
+    context = {"inventory_log": inventory_log}
+    return render(request, "app/food_management.html", context)

@@ -20,4 +20,5 @@ urlpatterns = [
     path('mypage/', views.mypage, name='mypage'),
     path('calendar/', views.recipe_calendar, name='recipe_calendar'),
     path('ingredients_management/', views.ingredients_management, name='ingredients_management'),
+    path('food_management/', views.food_management, name='food_management'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

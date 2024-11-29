@@ -40,7 +40,6 @@ class Rating(models.Model):
     recipe = models.ForeignKey(Recipe, related_name='ratings', on_delete=models.CASCADE)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     rating = models.IntegerField()  # 1から5の値を想定
-
     class Meta:
         unique_together = ('recipe', 'user')  # 同じユーザーが同じレシピに対して1度しか評価できないように
 
@@ -91,6 +90,11 @@ class Comment(models.Model):
     def is_reply(self):
         """返信かどうかを判定"""
         return self.parent is not None
+    #星評価の計算
+    
+
+
+
 
 class Favorite(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)

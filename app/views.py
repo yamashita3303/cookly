@@ -1,6 +1,6 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
-from django.db.models import Q
+from django.db.models import Q, Avg
 from django.views import View
 from .models import Recipe, Ingredient, Step, Favorite, Comment
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
@@ -359,4 +359,12 @@ def reply_to_comment(request, recipe_id, comment_id):
         'recipe': recipe,
     })
 
+#星評価計算
+def home(request):
+    # レシピリストと平均評価を取得
+    recipes = Recipe.objects.all().annotate(average_rating=Avg('comments__rating__value'))
 
+    context = {
+        'recipes': recipes,
+    }
+    return render(request, 'app/home.html', context)

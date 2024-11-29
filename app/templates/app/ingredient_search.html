@@ -1,0 +1,30 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+<!-- 追加のCSSを読み込むブロック -->
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'app/css/home.css' %}">
+{% endblock %}
+
+{% block body %}
+
+{% if recipes_by_ingredient %}
+        <ul>
+            {% for ingredient, recipes in recipes_by_ingredient %}
+                <h3>{{ ingredient }}を使った料理</h3>
+                <div class="row">
+                    {% for recipe in recipes %}
+                    <!-- 3列で表示したかったらcol-md-4、4列ならcol-md-3 -->
+                    <div class="col-md-4 mb-4 d-flex align-items-stretch">
+                        <!-- 何度も書くのは面倒だからrecipe_card.htmlに格納 -->
+                        {% include 'app/recipe_card.html' with i=recipe %}
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>レシピが見つかりませんでした。</p>
+    {% endif %}
+
+{% endblock %}

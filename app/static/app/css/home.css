@@ -39,3 +39,8 @@
     background-color: #cce5ff;
     color: #6b705c;
 }
+
+.btn-delete-small {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+}

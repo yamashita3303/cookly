@@ -12,6 +12,7 @@ import datetime, calendar, openai, os
 from datetime import datetime
 from flaretool.holiday import JapaneseHolidaysOnline
 from dotenv import load_dotenv
+from collections import defaultdict
 from django.http import JsonResponse
 from django.utils.timezone import now, make_aware
 
@@ -423,15 +424,59 @@ def gpt_search(text):
         return error_message
 
 def food_management(request):
+    user = request.user
     sort_order = request.GET.get('sort', 'select')  # Default is 'select'
     print(sort_order)
     if sort_order == 'select':
-        inventory_log = Inventorylog.objects.filter(expiration_date__gte=now()).order_by('expiration_date')
+        inventory_log = Inventorylog.objects.filter(user=user, expiration_date__gte=now()).order_by('expiration_date')
     elif sort_order == 'delete':
-        inventory_log = Inventorylog.objects.filter(expiration_date__lt=now()).delete()
-        inventory_log = Inventorylog.objects.filter(expiration_date__gte=now()).order_by('expiration_date')
+        inventory_log = Inventorylog.objects.filter(user=user, expiration_date__lt=now()).delete()
+        inventory_log = Inventorylog.objects.filter(user=user, expiration_date__gte=now()).order_by('expiration_date')
     else:
-        inventory_log = Inventorylog.objects.all().order_by('expiration_date')
+        inventory_log = Inventorylog.objects.filter(user=user).order_by('expiration_date')
     print(inventory_log)
     context = {"inventory_log": inventory_log}
     return render(request, "app/food_management.html", context)
+
+#レシピの消去
+def food_management_delete(request, post_id):
+    try:
+        # Get the inventory item with the provided post_id
+        inventorylog = Inventorylog.objects.get(id=post_id)
+        inventorylog.delete()  # Delete the item
+        
+        # Show success message
+        messages.success(request, "消去しました。")
+    except Inventorylog.DoesNotExist:
+        messages.error(request, "指定されたレシピが見つかりません。")
+    
+    # Redirect back to the food management page
+    return redirect("/food_management/")
+
+def ingredient_search(request):
+    user = request.user
+    selected_date = request.GET.get('date')
+    
+    # 在庫ログから指定された日付のエントリを取得
+    inventorylog = Inventorylog.objects.filter(user=user, expiration_date=selected_date)    
+    # 在庫ログの食材名をもとにIngredientを検索
+    ingredient = Ingredient.objects.filter(material__in=[log.ingredient_name for log in inventorylog])
+    
+    # 食材ごとにレシピを分類
+    recipes_by_ingredient = defaultdict(list)
+    for ing in ingredient:
+        # Ingredientから関連レシピを取得
+        recipes = Recipe.objects.filter(id=ing.recipe.id).order_by('-vote')
+        print("^^^^{}^^^^".format(recipes))
+        recipes_by_ingredient[ing.material].extend(recipes)
+    
+    print("++++{}++++".format(recipes_by_ingredient))
+    
+    # コンテキストに分類済みデータを渡す
+    context = { 
+        "recipes_by_ingredient": recipes_by_ingredient.items,
+    }
+    if inventorylog.exists() == False:
+        return render(request, "app/ingredients_management.html", context)
+    else:
+        return render(request, "app/ingredient_search.html", context)

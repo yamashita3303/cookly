@@ -63,11 +63,14 @@
         }
 
         .expiration-date-column {
-            width: 30%; /* 賞味期限, 消費期限の幅 */
+            width: 20%; /* 賞味期限, 消費期限の幅 */
         }
 
         .storage-method {
             width: 45%; /* 保存方法の幅 */
+        }
+        .ingredient-deldete {
+            width: 10%; /* 保存方法の幅 */
         }
 
         /* 賞味期限と消費期限を一行で表示 */
@@ -78,6 +81,31 @@
         .text-center {
             text-align: center;
         }
+
+        .vertical-text {
+            writing-mode: horizontal-tb;  /* 横書き */
+            text-align: center; /* 中央揃え */
+            transform: none; /* 変形をリセット */
+        }
+
+        /* Enhanced button style */
+        .btn-danger {
+            background-color: #e74c3c;
+            border: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        /* Centering the delete button and making the row more compact */
+        .table td.text-center {
+            vertical-align: middle;
+            padding: 10px;
+        }
+
     </style>
 </head>
 <body>
@@ -94,6 +122,7 @@
                         <th class="ingredient-name text-center">食材名</th>
                         <th class="expiration-date-column text-center">賞味期限, 消費期限</th>
                         <th class="storage-method text-center">保存方法</th>
+                        <th class="ingredient-deldete text-center">削除</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -104,6 +133,13 @@
                                 <span class="expiration-date">{{ i.expiration_date|date:"Y年m月d日" }}</span>
                             </td>
                             <td class="storage-method">{{ i.storage_method}}</td>
+                            <td class="text-center">
+                                <!-- 削除ボタン -->
+                                <form method="POST" action="{% url 'app:food_management_delete' post_id=i.id %}" onsubmit="return confirm('本当に削除してもよろしいですか？');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">削除</button>
+                                </form>
+                            </td>                            
                         </tr>
                     {% endfor %}
                 </tbody>

@@ -2,9 +2,6 @@
 {% load static %}
 
 <!-- 追加のCSSを読み込むブロック -->
-{% block extra_styles %}
-    <link rel="stylesheet" href="{% static 'app/css/recipe.css' %}">
-{% endblock %}
 
 {% block body %}
 <!-- Recipeの内容を入れるコンテナ -->
@@ -14,14 +11,57 @@
         <img src="{{ recipe_chose.recipe_image.url }}" alt="Recipe Image" class="recipe-image">
     </div>
 
+
+
     <!-- 右側には料理のタイトル、説明文、閲覧回数 -->
     <div class="recipe-right">
         <h2 class="recipe-title">{{ recipe_chose.recipe_title }}</h2>
         <p class="recipe-detail">{{ recipe_chose.detail_text }}</p>
-        <p class="recipe-user">投稿者: {{ recipe_chose.user }}</p>
+        <p class="recipe-user">
+            <!--投稿者:
+            <a href="{% url 'app:author_page' recipe_chose.user.id %}">
+                {{ recipe_chose.user }}
+            </a>-->
+            <small class="text-body-secondary">
+                <a href="{% url 'app:author_page' recipe_chose.user.id %}" class="hidden-link">
+                    投稿者：{{ recipe_chose.user }}</small>
+            </a>
+        </p>
+        {% if user.is_authenticated %}
+        <form method="post" action="{% url 'app:toggle_follow' recipe_chose.user.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn {% if is_following %}btn-dark{% else %}btn-outline-dark{% endif %}">
+                {% if is_following %}
+                フォロー解除
+                {% else %}
+                フォロー
+                {% endif %}
+            </button>
+        </form>
+        {% else %}
+        <p>フォローするには、<a href="{% url 'login' %}">ログイン</a>してください。</p>
+        {% endif %}
+
         <p class="view-count">閲覧回数: {{ recipe_chose.vote }}</p>
     </div>
 </div>
+
+{% if user.is_authenticated %}
+<form method="post" action="{% url 'app:toggle_favorite' recipe_chose.id %}">
+    {% csrf_token %}
+    <button type="submit" class="btn {% if is_favorited %}btn-warning{% else %}btn-outline-warning{% endif %}">
+        {% if is_favorited %}
+        お気に入り解除
+        {% else %}
+        お気に入り
+        {% endif %}
+    </button>
+</form>
+{% else %}
+<p>お気に入り登録をするには、<a href="{% url 'login' %}">ログイン</a>してください。</p>
+{% endif %}
+
+
 
 <div class="ingredient-step-container">
     <div class="ingredient-container">
@@ -30,14 +70,14 @@
         <table class="table table-striped ingredient-table">
             <tbody>
                 {% for ingredient in ingredient_text %}
-                    <tr>
-                        <td class="ingredient-name">{{ ingredient.material }}</td>
-                        <td class="ingredient-amount">{{ ingredient.amount }}</td>
-                    </tr>
+                <tr>
+                    <td class="ingredient-name">{{ ingredient.material }}</td>
+                    <td class="ingredient-amount">{{ ingredient.amount }}</td>
+                </tr>
                 {% empty %}
-                    <tr>
-                        <td colspan="2">材料がありません。</td>
-                    </tr>
+                <tr>
+                    <td colspan="2">材料がありません。</td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -47,17 +87,17 @@
         <h2 class="step-title">作り方</h2>
         <hr class="divider">
         {% for step in steps %}
-            <div class="step">
-                <p class="step-text">ステップ {{ step.step_number }}: {{ step.step_text }}</p>
+        <div class="step">
+            <p class="step-text">ステップ {{ step.step_number }}: {{ step.step_text }}</p>
 
-                {% if step.step_image %}
-                    <img src="{{ step.step_image.url }}" alt="Step Image" class="step-image">
-                {% endif %}
+            {% if step.step_image %}
+            <img src="{{ step.step_image.url }}" alt="Step Image" class="step-image">
+            {% endif %}
 
-                <!-- 動画には対応させてないため省略 -->
-            </div>
+            <!-- 動画には対応させてないため省略 -->
+        </div>
         {% empty %}
-            <p>作り方がありません。</p>
+        <p>作り方がありません。</p>
         {% endfor %}
     </div>
 </div>
@@ -79,12 +119,99 @@
         </p>
     </div>
 
+
+
+    <!-- 星評価の表示 -->
+    {% if comment.rating and not comment.parent %}
+    <div class="stars" data-rating="{{ comment.rating }}">
+        <span>
+            <label for="review05">★</label>
+            <label for="review04">★</label>
+            <label for="review03">★</label>
+            <label for="review02">★</label>
+            <label for="review01">★</label>
+        </span>
+    </div>
+    {% elif not comment.parent %}
+    <p>評価がありません。</p>
+    {% endif %}
+
+
     <p>{{ comment.comment }}</p>
+
+    {% if not comment.parent %}
+    <a href="{% url 'app:reply_to_comment' recipe_chose.id comment.id %}" class="btn btn-link">返信</a>
+    {% endif %}
+
+    <!-- 返信一覧 -->
+    <div class="replies" style="margin-left: 20px; border-left: 1px solid #ccc; padding-left: 10px;">
+        {% for reply in comment.replies.all %}
+        <div class="reply">
+
+
+            <p><strong>{{ reply.user.username }}</strong>: {{ reply.content }}</p>
+
+        </div>
+        {% endfor %}
+    </div>
+
     {% empty %}
-        <p>コメントがありません。</p>
+    <p>コメントがありません。</p>
     {% endfor %}
+
+
+
 
     <a href="{% url 'app:comments' recipe_chose.id %}">コメント追加</a>
 </div>
+
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .stars {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+    }
+
+    .stars label {
+        color: #D2D2D2;
+        /* 未選択の星をグレーに */
+        font-size: 30px;
+        padding: 0 5px;
+    }
+
+    /* data-ratingの値に基づいて星を色付け */
+    .stars[data-rating="5"] label:nth-child(-n+1),
+    .stars[data-rating="4"] label:nth-child(-n+2),
+    .stars[data-rating="3"] label:nth-child(-n+3),
+    .stars[data-rating="2"] label:nth-child(-n+4),
+    .stars[data-rating="1"] label:nth-child(-n+5) {
+        color: #F8C601;
+        /* 選択された星を黄色に */
+    }
+</style>
+
+<!--投稿者リンクのcss-->
+
+
+    <style>
+        .hidden-link {
+            text-decoration: none;
+            /* 下線を消す */
+            color: inherit;
+            /* 親要素の色に従う（通常のテキストと同じ色に） */
+            cursor: pointer;
+            /* 指マークに */
+        }
+
+        .hidden-link:hover {
+            text-decoration: none;
+            /* ホバー時もリンクっぽくしない */
+            color: inherit;
+            /* 色変えない */
+        }
+    </style>
 
 {% endblock %}

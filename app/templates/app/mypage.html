@@ -32,6 +32,33 @@
                 <p><strong>メールアドレス:</strong> {{ user.email }}</p>
             </div>
         </div>
+        
+        <h2>お気に入り一覧</h2>
+        <ul>
+           {% for favorite in favorite_recipes %}
+              <li>
+                  <a href="{% url 'app:detail' favorite.item.id %}">
+                       {{ favorite.item.recipe_title }}
+                 </a>
+             </li>
+           {% empty %}
+             <p>お気に入りがまだ登録されていません。</p>
+           {% endfor %}
+        </ul>
+        <h2>フォロー中の投稿者</h2>
+        <ul>
+            {% for follow in followed_authors %}
+              <li>
+                 <a href="{% url 'app:author_page' follow.followed.id %}">
+                    {{ follow.followed.username }}
+                 </a>
+             </li>
+            {% empty %}
+             <li>フォロー中の投稿者はいません。</li>
+            {% endfor %}
+        </ul>
+
+
 
         <!-- ログインユーザーが登録したレシピ一覧 -->
         <div class="row">

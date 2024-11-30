@@ -1,13 +1,16 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
-from django.db.models import Q
+from django.db.models import Q, Avg
 from django.views import View
-from .models import Recipe, Ingredient, Step, Comment, Allergy
-from django.http import HttpResponse, HttpResponseRedirect
+from .models import Recipe, Ingredient, Step, Favorite, Comment, Allergy
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from .forms import RecipeForm, IngredientForm, StepForm, CommentForm
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, logout, authenticate, get_user_model
 from django.contrib.auth.decorators import login_required
-from .models import CustomUser
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import CustomUser, Follow
+
+
 def index(request):
     context = {'user': request.user}
     return render(request, 'index.html', context)
@@ -116,6 +119,13 @@ def detail(request, post_id):
     # 閲覧数を1増やして保存
     recipes.vote += 1
     recipes.save()
+    
+    is_favorited = False
+    is_folloing = False
+    if request.user.is_authenticated:
+        from app.models import Favorite  # 追加
+        is_favorited = Favorite.objects.filter(user=request.user, item=recipes).exists()
+        is_folloing = Follow.objects.filter(follower=request.user, followed=recipes.user).exists()
 
     context = {
         "recipe_chose": recipes,
@@ -123,6 +133,8 @@ def detail(request, post_id):
         'steps': steps,
         "comments": comments,
         "user": recipes.user,
+        "is_favorited": is_favorited, 
+        "is_following": is_folloing,
     }
     return render(request, "app/recipe.html", context)
 
@@ -165,6 +177,21 @@ class CommentCreateView(View):
             comment = form.save(commit=False)
             comment.user = request.user  # ログインユーザーをセット
             comment.recipe = recipe
+
+        # 星評価を保存するための処理
+            rating_value = request.POST.get('rating')  # POSTデータから 'rating' を取得
+
+
+            if rating_value:
+                try:
+                    rating_value = int(rating_value)  # 'rating' の値を整数に変換
+                    comment.rating = rating_value  # コメントに評価を紐付ける
+                    
+                except ValueError:
+                    
+                    # 変換に失敗した場合の処理（例: 'rating' が不正な場合）
+                    pass
+
             comment.save()
             return redirect('app:detail', post_id=recipe.id)
         else:
@@ -175,7 +202,7 @@ class CommentCreateView(View):
             return render(request, 'app/comment.html', context)
 
 # 料理の基本情報(タイトル、画像など)を追加するフォーム(form.html) 
-class RecipeCreateView(View):
+class RecipeCreateView(LoginRequiredMixin, View):
     # GETリクエストの処理
     def get(self, request):
         # インスタンスの作成
@@ -203,7 +230,6 @@ class RecipeCreateView(View):
         # ステップ情報を取得
         step_numbers = request.POST.getlist('step_number')
         step_texts = request.POST.getlist('step_text')
-        step_images = request.FILES.getlist('step_image')
         step_videos = request.FILES.getlist('step_video')
 
         step_form = StepForm()
@@ -227,7 +253,7 @@ class RecipeCreateView(View):
             # ステップ情報を保存
             for i in range(len(step_texts)):
                 step_text = step_texts[i]
-                step_image = step_images[i] if i < len(step_images) else None
+                step_image = request.FILES.get(f'step_image_{i+1}', None)
                 step_video = step_videos[i] if i < len(step_videos) else None
 
                 step = Step(
@@ -280,12 +306,78 @@ def recipe_delete(request, post_id):
 def mypage(request):
     user = request.user  # ログイン中のユーザーを取得
     recipes = user.recipe_set.all()  # ユーザーが投稿した全ての料理を取得
-
+    
+    favorite_recipes = Favorite.objects.filter(user=user).select_related('item')
+    followed_authors = Follow.objects.filter(follower=user).select_related('followed')  # フォロー中の投稿者
     return render(request, 'app/mypage.html', {
         'user': user,
         'recipes': recipes,
+        'favorite_recipes': favorite_recipes,
+        'followed_authors': followed_authors,
     })
+    return render(request, 'app/mypage.html', context)
 
 # classをview関数に変換
 comments = CommentCreateView.as_view()
 recipe_create = RecipeCreateView.as_view()
+
+@login_required
+def toggle_favorite(request, recipe_id):
+    recipe = get_object_or_404(Recipe, id=recipe_id)
+    favorite, created = Favorite.objects.get_or_create(user=request.user, item=recipe)
+    if not created:
+        favorite.delete()  # 既にお気に入りに登録されている場合は解除
+    return redirect("app:detail", post_id=recipe.id)
+
+@login_required
+def toggle_follow(request, user_id):
+    target_user = get_object_or_404(CustomUser, id=user_id)
+    if request.user == target_user:
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/')) # 自分自身をフォローできないようにリダイレクト
+
+    follow_obj, created = Follow.objects.get_or_create(follower=request.user, followed=target_user)
+    if not created:
+        follow_obj.delete()  # 既にフォローしていた場合は削除
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+def author_page(request, user_id):
+    author = get_object_or_404(CustomUser, id=user_id)
+    recipes = Recipe.objects.filter(user=author)  # 投稿者のレシピを取得
+
+    context = {
+        'author': author,
+        'recipes': recipes,
+    }
+    return render(request, 'app/author_page.html', context)
+
+
+@login_required
+def reply_to_comment(request, recipe_id, comment_id):
+    parent_comment = get_object_or_404(Comment, id=comment_id)
+    recipe = get_object_or_404(Recipe, id=recipe_id)
+
+    if request.method == 'POST':
+        content = request.POST.get('content')
+        if content:
+            Comment.objects.create(
+                user=request.user,
+                recipe=recipe,
+                parent=parent_comment,
+                content=content
+            )
+        return redirect('app:detail', post_id=recipe_id)
+
+    return render(request, 'app/reply.html', {
+        'parent_comment': parent_comment,
+        'recipe': recipe,
+    })
+
+#星評価計算
+def home(request):
+    # レシピリストと平均評価を取得
+    recipes = Recipe.objects.all().annotate(average_rating=Avg('comments__rating__value'))
+
+    context = {
+        'recipes': recipes,
+    }
+    return render(request, 'app/home.html', context)

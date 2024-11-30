@@ -2,14 +2,20 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from django.db.models import Q, Avg
 from django.views import View
-from .models import Recipe, Ingredient, Step, Favorite, Comment, Allergy
+from .models import Recipe, Ingredient, Step, Favorite, Comment, Allergy, Inventorylog
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from .forms import RecipeForm, IngredientForm, StepForm, CommentForm
 from django.contrib.auth import login, logout, authenticate, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import CustomUser, Follow
-
+import datetime, calendar, openai, os
+from datetime import datetime
+from flaretool.holiday import JapaneseHolidaysOnline
+from dotenv import load_dotenv
+from collections import defaultdict
+from django.http import JsonResponse
+from django.utils.timezone import now, make_aware
 
 def index(request):
     context = {'user': request.user}
@@ -422,3 +428,199 @@ def home(request):
         'recipes': recipes,
     }
     return render(request, 'app/home.html', context)
+
+def recipe_calendar(request):
+    current_user = request.user
+    print("user = ",current_user)
+    holiday_name = []
+    holiday_date = []
+    inventory_log_name = []
+    inventory_log_date = []
+    if request.method == 'POST':
+        yearmonth = request.POST.get('yearmonth')
+        year = yearmonth[0]+yearmonth[1]+yearmonth[2]+yearmonth[3]
+        month = yearmonth[5:]
+
+        inventory_log = Inventorylog.objects.filter(user=current_user, expiration_date__year=year, expiration_date__month=month)
+        for inventory_log in inventory_log:
+            inventory_log_name.append(inventory_log.ingredient_name)
+            inventory_log_date.append(inventory_log.expiration_date.day)
+        print("inventory_log_name = {}".format(inventory_log_name))
+        print("inventory_log_date = {}".format(inventory_log_date))
+        calendar_month = calendar.monthcalendar(int(year),int(month))
+        holidays = JapaneseHolidaysOnline()
+        if len(month) == 1:
+            month = "0" + month
+        holiday_list = holidays.get_holidays(year + month)
+        for holiday in holiday_list:
+            name, date = holiday
+            holiday_name.append(name)
+            holiday_date.append(date.day)
+        context = {
+            "year":year,
+            "month":month,
+            "yearmonth":yearmonth,
+            "calendar_month":calendar_month,
+            "holiday_name":holiday_name,
+            "holiday_date":holiday_date,
+            "inventory_log_name":inventory_log_name,
+            "inventory_log_date":inventory_log_date,
+                   }
+    else:
+        currentDateTime = datetime.now()
+        date = currentDateTime.date()
+        year = date.strftime("%Y")
+        month = date.strftime("%m")
+        
+        inventory_log = Inventorylog.objects.filter(user=current_user, expiration_date__year=year, expiration_date__month=month)
+        for inventory_log in inventory_log:
+            inventory_log_name.append(inventory_log.ingredient_name)
+            inventory_log_date.append(inventory_log.expiration_date.day)
+        print("inventory_log_name = {}".format(inventory_log_name))
+        print("inventory_log_date = {}".format(inventory_log_date))
+
+        calendar_month = calendar.monthcalendar(int(year), int(month))
+        holidays = JapaneseHolidaysOnline()
+        if len(month) == 1:
+            month = "0" + month
+        holiday_list = holidays.get_holidays(year + month)
+        for holiday in holiday_list:
+            name, date = holiday
+            holiday_name.append(name)
+            holiday_date.append(date.day)
+        print("holiday_name = {}".format(holiday_name))
+        print("holiday_date = {}".format(holiday_date))
+        context = {
+            "year":year,
+            "month":month,
+            "calendar_month":calendar_month,
+            "holiday_name":holiday_name,
+            "holiday_date":holiday_date,
+            "inventory_log_name":inventory_log_name,
+            "inventory_log_date":inventory_log_date,
+        }
+    return render(request, 'app/calendar.html', context)
+
+# .env ファイルを読み込む
+load_dotenv()
+
+# .env から OPENAI_API_KEY を取得
+openai.api_key = os.getenv('OPENAI_API_KEY')
+
+def ingredients_management(request):
+    user = request.user
+    if request.method == 'POST':
+        ingredient_name = request.POST.get('ingredient_name')
+        expiration_date = request.POST.get('expiration_date')
+        
+        print("ingredient_name = {}".format(ingredient_name))
+        print("expiration_date = {}".format(expiration_date))
+
+        expiration_date = datetime.strptime(expiration_date, '%Y-%m-%d')
+        expiration_date = make_aware(expiration_date)
+        
+        if expiration_date < now():
+            print("-------")
+            return render(request, 'app/ingredients_management.html', {"message": "現在の日付より前は登録できません"})
+
+        else:
+            storage_method = gpt_search(ingredient_name)
+            print("storage_method = {}".format(storage_method))
+            # 保存処理
+            inventorylog = Inventorylog(
+                user=user,
+                ingredient_name=ingredient_name,
+                expiration_date=expiration_date,
+                storage_method=storage_method
+            )
+            inventorylog.save()
+            
+            return render(request, 'app/ingredients_management.html', {"message": "保存が完了しました！"})
+    else:
+        return render(request, "app/ingredients_management.html")
+
+def gpt_search(text):
+    try:
+        # プロンプトを作成
+        text += "の保存方法を70字程度で"
+        print(f"プロンプト = {text}")
+        
+        # ChatGPTにリクエストを送信
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",  # モデルを指定
+            messages=[
+                {"role": "system", "content": "あなたは食材の保存方法に関する専門家です。"},
+                {"role": "user", "content": text}
+            ],
+            max_tokens=300,
+            temperature=0.7,
+        )
+        
+        # 応答テキストを取得
+        response_text = response['choices'][0]['message']['content'].strip()
+        print(f"AIの応答 = {response_text}")
+        return response_text
+    
+    except Exception as e:
+        # エラーが発生した場合の処理
+        error_message = f"エラーが発生しました: {e}"
+        print(error_message)
+        return error_message
+
+def food_management(request):
+    user = request.user
+    sort_order = request.GET.get('sort', 'select')  # Default is 'select'
+    print(sort_order)
+    if sort_order == 'select':
+        inventory_log = Inventorylog.objects.filter(user=user, expiration_date__gte=now()).order_by('expiration_date')
+    elif sort_order == 'delete':
+        inventory_log = Inventorylog.objects.filter(user=user, expiration_date__lt=now()).delete()
+        inventory_log = Inventorylog.objects.filter(user=user, expiration_date__gte=now()).order_by('expiration_date')
+    else:
+        inventory_log = Inventorylog.objects.filter(user=user).order_by('expiration_date')
+    print(inventory_log)
+    context = {"inventory_log": inventory_log}
+    return render(request, "app/food_management.html", context)
+
+#レシピの消去
+def food_management_delete(request, post_id):
+    try:
+        # Get the inventory item with the provided post_id
+        inventorylog = Inventorylog.objects.get(id=post_id)
+        inventorylog.delete()  # Delete the item
+        
+        # Show success message
+        messages.success(request, "消去しました。")
+    except Inventorylog.DoesNotExist:
+        messages.error(request, "指定されたレシピが見つかりません。")
+    
+    # Redirect back to the food management page
+    return redirect("/food_management/")
+
+def ingredient_search(request):
+    user = request.user
+    selected_date = request.GET.get('date')
+    
+    # 在庫ログから指定された日付のエントリを取得
+    inventorylog = Inventorylog.objects.filter(user=user, expiration_date=selected_date)    
+    # 在庫ログの食材名をもとにIngredientを検索
+    ingredient = Ingredient.objects.filter(material__in=[log.ingredient_name for log in inventorylog])
+    
+    # 食材ごとにレシピを分類
+    recipes_by_ingredient = defaultdict(list)
+    for ing in ingredient:
+        # Ingredientから関連レシピを取得
+        recipes = Recipe.objects.filter(id=ing.recipe.id).order_by('-vote')
+        print("^^^^{}^^^^".format(recipes))
+        recipes_by_ingredient[ing.material].extend(recipes)
+    
+    print("++++{}++++".format(recipes_by_ingredient))
+    
+    # コンテキストに分類済みデータを渡す
+    context = { 
+        "recipes_by_ingredient": recipes_by_ingredient.items,
+    }
+    if inventorylog.exists() == False:
+        return render(request, "app/ingredients_management.html", context)
+    else:
+        return render(request, "app/ingredient_search.html", context)

@@ -1,0 +1,143 @@
+{% extends "base/base.html" %}
+{% block body %}
+
+<h2 style="text-align: center; font-family: Arial, sans-serif; margin-bottom: 30px; font-size: 24px; color: #333;">
+  {% if year and month %}
+    {{ year }}年 {{ month }}月
+  {% else %}
+    カレンダー
+  {% endif %}
+</h2>
+
+<div style="text-align: center; margin-bottom: 30px;">
+  <form action="{% url 'app:recipe_calendar' %}" method="post" style="display: inline-block;">
+    {% csrf_token %}
+    <label for="yearmonth" style="font-family: Arial, sans-serif; font-size: 16px; margin-right: 10px;">
+      年月を選択:
+    </label>
+    <input type="month" id="yearmonth" name="yearmonth" 
+           style="padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 5px; margin-right: 10px;" />
+    <input type="submit" value="年月を変更" 
+           style="padding: 8px 20px; background-color: #4CAF50; color: white; font-size: 14px; border: none; border-radius: 5px; cursor: pointer;">
+  </form>
+</div>
+
+<table style="width: 100%; border-collapse: collapse; text-align: center; font-family: Arial, sans-serif; font-size: 14px;">
+  <thead>
+    <tr style="background-color: #f9f9f9; color: #333;">
+      <th style="padding: 10px; border: 1px solid #ddd;">月</th>
+      <th style="padding: 10px; border: 1px solid #ddd;">火</th>
+      <th style="padding: 10px; border: 1px solid #ddd;">水</th>
+      <th style="padding: 10px; border: 1px solid #ddd;">木</th>
+      <th style="padding: 10px; border: 1px solid #ddd;">金</th>
+      <th style="padding: 10px; border: 1px solid #ddd; color: blue;">土</th>
+      <th style="padding: 10px; border: 1px solid #ddd; color: red;">日</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for week in calendar_month %}
+      <tr>
+        {% for day in week %}
+          <td style="padding: 20px; border: 1px solid #ddd; width: 100px; height: 100px; position: relative; text-align: left; vertical-align: top; 
+          {% if forloop.counter == 6 %} color: blue; {% elif forloop.counter == 7 %} color: red; {% endif %}">
+            {% if day == 0 %}
+              &nbsp;
+            {% else %}
+             
+              <div style="position: absolute; top: 8px; left: 8px;">
+                <span class="day-number" style="font-size: 16px; font-weight: bold;">{{ day }}</span>
+                <span class="holiday-name" style="font-size: 13px; color: red; margin-left: 5px;"></span>
+              </div>
+                                     
+            {% endif %}
+          </td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<script>
+  // 祝日データを取得
+  const holidays = {{ holiday_date|safe }};
+  const names = {{ holiday_name|safe }};
+  
+  const inventoryDates = {{ inventory_log_date|safe }};
+  const inventoryNames = {{ inventory_log_name|safe }};
+  
+  // 現在の日付を取得
+  const today = new Date();
+  const todayYear = today.getFullYear();
+  const todayMonth = today.getMonth() + 1; // JavaScriptの月は0から始まるので+1
+  const todayDate = today.getDate();
+
+  document.querySelectorAll('td').forEach((cell) => {
+    const daySpan = cell.querySelector('.day-number');
+    const holidaySpan = cell.querySelector('.holiday-name');
+    
+    if (daySpan) {
+      const day = parseInt(daySpan.textContent);
+      
+      // 祝日処理
+      if (holidays.includes(day)) {
+        const index = holidays.indexOf(day);
+        holidaySpan.textContent = names[index];
+        daySpan.style.color = 'red'; // 祝日の数字を赤に設定
+      }
+
+      // 食材ログ処理
+      if (inventoryDates.includes(day)) {
+        const indexes = inventoryDates
+          .map((d, i) => (d === day ? i : null))
+          .filter((i) => i !== null); // 同日の全インデックスを取得
+        
+        indexes.forEach((index) => {
+          const inventoryLog = document.createElement('div');
+          inventoryLog.textContent = inventoryNames[index];
+          inventoryLog.style.fontSize = '13px';
+          inventoryLog.style.color = 'green';
+          inventoryLog.style.marginTop = '5px';
+          cell.appendChild(inventoryLog);
+        });
+      }
+
+      // 今日の日付の背景をハイライト
+      const calendarYear = {{ year }};
+      const calendarMonth = {{ month }};
+      if (calendarYear === todayYear && calendarMonth === todayMonth && day === todayDate) {
+        cell.style.backgroundColor = '#dcdcdc'; // 黄色でハイライト
+        cell.style.border = '2px solid #f5f5f5'; // 境界を少し濃い黄色に
+      }
+      
+      // クリックイベントを設定
+      cell.addEventListener('click', () => {
+        // 現在表示している年月を取得
+        const year = {{ year }};
+        const month = {{ month }};
+        
+        // クリックされた日付を取得
+        const selectedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        
+        // リンク先URLを設定（例: `/events/YYYY-MM-DD`）
+        const targetUrl = `/ingredient_search?date=${selectedDate}`;
+        console.log('リダイレクト先URL:', targetUrl);
+        
+        // リダイレクト
+        window.location.href = targetUrl;
+      });
+    }
+  });
+
+  // 現在の年月を取得
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const currentMonth = `${year}-${month}`;
+  const currentMin = `${year - 5}-${month}`;
+
+  document.getElementById('yearmonth').value = currentMonth;
+  document.getElementById('yearmonth').min = currentMin;
+</script>
+
+
+
+{% endblock %}

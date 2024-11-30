@@ -75,6 +75,10 @@
                 <div class="col-md-4 mb-4 d-flex align-items-stretch">
                     {% include 'app/recipe_card.html' with i=recipe %}
                 </div>
+                {% if i.user == request.user %}
+                    <a href="{% url 'app:edit' i.id %}" class="btn btn-outline-primary ">編集</a>
+                    <a href="{% url 'app:delete' i.id %}" class="btn btn-outline-danger btn-sm">削除</a>
+                {% endif %}
             {% empty %}
                 <p>まだ料理を投稿していません。</p>
             {% endfor %}

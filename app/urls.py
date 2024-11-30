@@ -23,5 +23,9 @@ urlpatterns = [
     path('follow/<int:user_id>/', views.toggle_follow, name='toggle_follow'),
     path('author/<int:user_id>/', views.author_page, name='author_page'),
     path('recipe/<int:recipe_id>/comment/<int:comment_id>/reply/', views.reply_to_comment, name='reply_to_comment'),
-
+    path('calendar/', views.recipe_calendar, name='recipe_calendar'),
+    path('ingredients_management/', views.ingredients_management, name='ingredients_management'),
+    path('food_management/', views.food_management, name='food_management'),
+    path('food_management/delete/<int:post_id>/', views.food_management_delete, name='food_management_delete'),
+    path('ingredient_search/', views.ingredient_search, name='ingredient_search'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

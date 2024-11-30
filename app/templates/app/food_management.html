@@ -1,0 +1,172 @@
+{% extends "base/base.html" %}
+{% block body %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Log</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* 全体のフォントサイズと行間を調整 */
+        body {
+            font-size: 1.1rem; /* 基本のフォントサイズを少し大きく */
+            line-height: 1.6;  /* 行間を広くして読みやすく */
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        /* テーブルのデザイン */
+        .table {
+            font-size: 1.2rem; /* テーブルのフォントサイズを少し大きく */
+        }
+
+        .table thead th {
+            background-color: #8a8a8a;
+            color: white;
+            font-weight: bold;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: #f9f9f9;
+        }
+        .table-striped tbody tr:nth-of-type(even) {
+            background-color: #e9f5f6;
+        }
+
+        /* 賞味期限や消費期限の文字に強調を加える */
+        .expiration-date {
+            font-weight: bold;
+            color: #d9534f; /* 赤色に変更 */
+            font-size: 1.3rem; /* フォントサイズを大きく */
+        }
+
+        /* ボタンのスタイル */
+        .btn {
+            font-size: 1rem;
+        }
+
+        /* テーブル内の文字の見やすさ */
+        td {
+            font-size: 1.1rem; /* テーブルの文字を少し大きく */
+            vertical-align: middle;
+        }
+
+        /* 各列の幅を固定 */
+        .ingredient-name {
+            width: 25%; /* 食材名の幅 */
+        }
+
+        .expiration-date-column {
+            width: 20%; /* 賞味期限, 消費期限の幅 */
+        }
+
+        .storage-method {
+            width: 45%; /* 保存方法の幅 */
+        }
+        .ingredient-deldete {
+            width: 10%; /* 保存方法の幅 */
+        }
+
+        /* 賞味期限と消費期限を一行で表示 */
+        .expiration-date span {
+            display: block; /* 一行に収める */
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .vertical-text {
+            writing-mode: horizontal-tb;  /* 横書き */
+            text-align: center; /* 中央揃え */
+            transform: none; /* 変形をリセット */
+        }
+
+        /* Enhanced button style */
+        .btn-danger {
+            background-color: #e74c3c;
+            border: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        /* Centering the delete button and making the row more compact */
+        .table td.text-center {
+            vertical-align: middle;
+            padding: 10px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="d-flex justify-content-end mb-3">
+            <a href="?sort=delete" class="btn btn-outline-danger" id="sort-delete">期限外の食材を消去</a>
+            <a href="?sort=all" class="btn btn-outline-primary me-2" id="sort-all">すべて表示</a>
+            <a href="?sort=select" class="btn btn-outline-secondary" id="sort-select">期限内順</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th class="ingredient-name text-center">食材名</th>
+                        <th class="expiration-date-column text-center">賞味期限, 消費期限</th>
+                        <th class="storage-method text-center">保存方法</th>
+                        <th class="ingredient-deldete text-center">削除</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in inventory_log %}
+                        <tr>
+                            <td class="ingredient-name text-center">{{ i.ingredient_name }}</td>
+                            <td class="expiration-date-column text-center">
+                                <span class="expiration-date">{{ i.expiration_date|date:"Y年m月d日" }}</span>
+                            </td>
+                            <td class="storage-method">{{ i.storage_method}}</td>
+                            <td class="text-center">
+                                <!-- 削除ボタン -->
+                                <form method="POST" action="{% url 'app:food_management_delete' post_id=i.id %}" onsubmit="return confirm('本当に削除してもよろしいですか？');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">削除</button>
+                                </form>
+                            </td>                            
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script>
+        // Sort table when clicked
+        document.getElementById('sort-delete').addEventListener('click', () => sortTable(true));
+        document.getElementById('sort-all').addEventListener('click', () => sortTable(true));
+        document.getElementById('sort-select').addEventListener('click', () => sortTable(false));
+    
+        function sortTable(ascending) {
+            const table = document.querySelector('.table tbody');
+            const rows = Array.from(table.rows);
+    
+            rows.sort((a, b) => {
+                const dateA = new Date(a.cells[1].textContent.trim());
+                const dateB = new Date(b.cells[1].textContent.trim());
+                return ascending ? dateA - dateB : dateB - dateA;
+            });
+    
+            // Re-append sorted rows
+            rows.forEach(row => table.appendChild(row));
+        }
+    </script>
+</body>
+{% endblock %}

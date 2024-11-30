@@ -81,14 +81,6 @@ class Comment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     #コメント
     comment = models.TextField(max_length=200)
-    #評価
-    class Review(models.TextChoices):
-        ONE_STAR = 'one', '★'
-        TWO_STAR = 'two', '★★'
-        THREE_STAR = 'three', '★★★'
-        FOUR_STAR = 'four', '★★★★'
-        FIVE_STAR = 'five', '★★★★★'
-    review = models.CharField(max_length=10, choices=Review.choices, verbose_name="レビュー")
     rating = models.IntegerField(default=0)  # 1から5の値を想定
 
     def is_reply(self):

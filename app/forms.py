@@ -35,7 +35,6 @@ class CommentForm(ModelForm):
         model = Comment
         fields = [
             "comment",
-            "review",
         ]
 class RatingForm(ModelForm):
     class Meta:

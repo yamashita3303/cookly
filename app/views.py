@@ -19,24 +19,26 @@ def signup(request):
     allergy_object = Allergy.objects.all()
     context = {"allergy_object":allergy_object}
     if request.method == 'POST':
-        first_name = request.POST['first_name']
-        last_name = request.POST['last_name']
         username = request.POST['username']
         email = request.POST['email']
         password = request.POST['password']
-        allergy = request.POST.getlist('allergy')
+        allergy_list = request.POST.getlist('allergy')
+        allergy_string = ','.join(allergy_list) # 要素を区別できるようにカンマで区切る
         user_icon = request.FILES.get('user_icon')  # アイコンファイルを取得
-        print(user_icon)
         new_user = CustomUser(
-            first_name=first_name, 
-            last_name=last_name, 
             username=username, 
             email=email,
-            user_icon=user_icon,  # アイコンを保存
-            allergy=allergy
+            user_icon=user_icon,
+            allergy=allergy_string
         )
         new_user.set_password(password)  # パスワードのハッシュ化
         new_user.save()
+
+        # 新規登録後はその情報でログイン(デバッグ用)
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user) 
+            return HttpResponseRedirect('/home/')
         
         # signup_success.htmlでアラートを表示し、リダイレクトさせる
         return render(request, 'signup_success.html', {'message': 'ユーザーの作成に成功しました'})
@@ -70,13 +72,37 @@ def signout(request):
     return redirect('app:index')
 
 def allergy(request):
+    allergies = Allergy.objects.all()
     if request.method == 'POST':
-        allergy_name = request.POST['allergy_name']
-        allergy = Allergy(allergy_name = allergy_name)
-        allergy.save()
-        return render(request, 'app/home.html', {'message': 'アレルギーを追加しました。'})
-    else:
-        return render(request, 'app/allergy.html')
+        delete_id = request.POST.get('delete_id')
+        allergy_id = request.POST.get('allergy_id')
+        allergy_name = request.POST.get('allergy_name')
+        allergy_image = request.FILES.get('allergy_image')
+        if allergy_image:
+            print(f"Image uploaded: {allergy_image.name}")
+        else:
+            print("No image uploaded")
+
+        if delete_id:
+            allergy = get_object_or_404(Allergy, id=delete_id)
+            allergy.delete()
+        elif allergy_id:
+            # 追加のidフィールドは隠しているためidに何かが入力されていれば編集
+            allergy = get_object_or_404(Allergy, id=allergy_id)
+            allergy.allergy_name = allergy_name
+            if allergy_image:
+                allergy.allergy_image = allergy_image
+            allergy.save()
+        else:
+            # idに何も入力されてなければ追加
+            if allergy_name:
+                Allergy.objects.create(
+                    allergy_name=allergy_name,
+                    allergy_image=allergy_image
+                )
+        return redirect('app:allergy')
+    
+    return render(request, 'app/allergy.html', {'allergies': allergies})
 
 # レシピ一覧ページ(home.html)
 def recipe(request):
@@ -96,12 +122,22 @@ def recipe(request):
         # すべてのレシピを取得
         all_recipes = Recipe.objects.all()
 
+    # ログイン中ならばアレルギーを取得する
+    if request.user.is_authenticated:  # ユーザーがログインしている場合
+        if request.user.allergy == "なし":
+            allergies = []
+        else:
+            allergies = request.user.allergy.split(',')
+    else:  # 未ログインのユーザーの場合
+        allergies = None
+
     # リストに似たオブジェクトになっている。
     context = {
         'popular_recipes': popular_recipes,
         'latest_recipes': latest_recipes,
         'all_recipes': all_recipes,
         'selected_genre': selected_genre,
+        'allergies': allergies,
     }
     return render(request, "app/home.html", context)
 
@@ -306,12 +342,17 @@ def recipe_delete(request, post_id):
 def mypage(request):
     user = request.user  # ログイン中のユーザーを取得
     recipes = user.recipe_set.all()  # ユーザーが投稿した全ての料理を取得
+    if user.allergy == "なし":
+        allergies = []
+    else:
+        allergies = user.allergy.split(',')
     
     favorite_recipes = Favorite.objects.filter(user=user).select_related('item')
     followed_authors = Follow.objects.filter(follower=user).select_related('followed')  # フォロー中の投稿者
     return render(request, 'app/mypage.html', {
         'user': user,
         'recipes': recipes,
+        'allergies': allergies,
         'favorite_recipes': favorite_recipes,
         'followed_authors': followed_authors,
     })

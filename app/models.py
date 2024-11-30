@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 
 class Allergy(models.Model):
+    allergy_image = models.ImageField(upload_to='allergies/', blank=True, null=True, verbose_name="アレルギー食材イラスト")
     allergy_name = models.CharField(max_length=50, verbose_name="アレルギー")
 
 class CustomUser(AbstractUser):

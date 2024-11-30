@@ -1,21 +1,76 @@
-{% extends "base/base.html" %}
-{% load static %}
-{% block extra_styles %}
+<!DOCTYPE html>
+<html lang="ja">
 <head>
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="media/recipes/cookly_icon.png" type="image/x-icon">
-    <title>allergy_add</title>
+    <title>allergy_edit</title>
 </head>
-{% endblock %}
 
-{% block body %}
-    <form method="post"  enctype="multipart/form-data">
+<body>
+    <!-- アレルギーの追加・編集フォーム -->
+    <form id="allergyForm" method="post" action="{% url 'app:allergy' %}" enctype="multipart/form-data">
         {% csrf_token %}
-        <label for="allergy_name">アレルギー:</label>
-        <input type="text" name="allergy_name"><br>
-
-        <button type="submit">追加</button>
+        <input type="hidden" name="allergy_id" id="allergy_id">
+        <label for="allergy_name">アレルギー名:</label>
+        <input type="text" name="allergy_name" id="allergy_name" required disabled>
+        <label for="allergy_image">アレルギー画像:</label>
+        <input type="file" name="allergy_image" id="allergy_image" accept="image/*">
+        <button type="submit" id="saveButton" disabled>保存</button>
+        <button type="button" onclick="clearForm()">キャンセル</button>
     </form>
-{% endblock %}
+
+    <h2>登録済みアレルギー項目</h2>
+    <p>※削除をすると入力欄に何も書けなくなります</p>
+    <p>※リロードすれば治るよ</p>
+    <ul>
+        {% for allergy in allergies %}
+            <li>
+                {% if allergy.allergy_image %}
+                    <img src="{{ allergy.allergy_image.url }}" alt="{{ allergy.allergy_name }}" width="100">
+                {% endif %}
+                {{ allergy.allergy_name }}
+                <button onclick="editAllergy({{ allergy.id }}, '{{ allergy.allergy_name }}')">編集</button>
+                <form method="post" action="{% url 'app:allergy' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="delete_id" value="{{ allergy.id }}">
+                    <button type="submit" onclick="return confirm('本当に削除しますか？')">削除</button>
+                </form>
+            </li>
+        {% empty %}
+            <p>現在、登録されているアレルギー項目はありません。</p>
+        {% endfor %}
+    </ul>
+    <button onclick="addAllergy()">追加</button>
+
+    <script>
+        // 編集モードに切り替える
+        function editAllergy(id, name) {
+            document.getElementById('allergy_id').value = id;
+            document.getElementById('allergy_name').value = name;
+            document.getElementById('allergy_name').disabled = false;
+            document.getElementById('saveButton').disabled = false;
+        }
+
+        // フォームをクリアして追加モードに戻す
+        function clearForm() {
+            document.getElementById('allergy_id').value = '';
+            document.getElementById('allergy_name').value = '';
+            document.getElementById('allergy_name').disabled = true;
+            document.getElementById('saveButton').disabled = true;
+        }
+
+        function addAllergy() {
+            document.getElementById('allergy_id').value = '';
+            document.getElementById('allergy_name').value = '';
+            document.getElementById('allergy_name').disabled = false;
+            document.getElementById('saveButton').disabled = false;
+        }
+        
+        window.onload = function() {
+            clearForm();
+        };
+    </script>
+</body>
+</html>

@@ -20,7 +20,16 @@
 
             <!-- 星評価表示 -->
             <p class="card-text mb-0">
-                <small class="text-body-secondary">ここに星評価が入る</small>
+                <small class="text-body-secondary">
+                    <!-- annotateで追加した平均評価を表示したいがどれも0と表示される -->
+                    {% if i.average_rating is none %}
+                        未評価
+                    {% elif i.average_rating == 0 %}
+                        評価はありますが、まだ低評価です
+                    {% else %}
+                        {{ i.average_rating }}
+                    {% endif %}
+                </small>
             </p>
         </div>
 

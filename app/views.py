@@ -123,10 +123,16 @@ def recipe(request):
     # ジャンルでのフィルタリング
     if selected_genre:
         # 選択されたジャンルでフィルターをかける
-        all_recipes = Recipe.objects.filter(genre=selected_genre)
+        all_recipes = Recipe.objects.filter(genre=selected_genre).annotate(average_rating=Avg('comment__rating'))
     else:
         # すべてのレシピを取得
-        all_recipes = Recipe.objects.all()
+        all_recipes = Recipe.objects.all().annotate(average_rating=Avg('comment__rating'))
+
+    # レシピタイトルと平均評価をコンソール上に表示（デバッグ用）
+    all_recipes_list = list(all_recipes)
+    for recipe in all_recipes_list:
+        # 星5が1.0、星1が5.0と表示される
+        print(f"Recipe: {recipe.recipe_title}, Average Rating: {recipe.average_rating}")
 
     # ログイン中ならばアレルギーを取得する
     if request.user.is_authenticated:  # ユーザーがログインしている場合

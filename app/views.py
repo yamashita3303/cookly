@@ -116,7 +116,6 @@ def recipe(request):
     selected_genre = request.GET.get('genre')
 
     # 人気料理、最新の料理の上位10個だけ取得
-    # 評価の星はもうちょっと考えたいからいったん閲覧数順で並び替え
     popular_recipes = Recipe.objects.annotate(average_rating=Avg('comment__rating')).order_by('-average_rating')[:10]
     latest_recipes = Recipe.objects.all().annotate(average_rating=Avg('comment__rating')).order_by('-created_at')[:10]
 
@@ -135,7 +134,19 @@ def recipe(request):
         else:
             allergies = request.user.allergy.split(',')
     else:  # 未ログインのユーザーの場合
-        allergies = None
+        allergies = []
+
+    # 各レシピに対してアレルギー食材を含むかどうかをチェック
+    def check_allergy_flag(recipes):
+        for recipe in recipes:
+            # アレルギー食材を含む場合、allergy_flagをTrueに設定
+            recipe.allergy_flag = Ingredient.objects.filter(recipe=recipe, material__in=allergies).exists()
+        return recipes
+
+    # 人気レシピ、最新レシピ、全レシピにアレルギー判定を追加
+    popular_recipes = check_allergy_flag(popular_recipes)
+    latest_recipes = check_allergy_flag(latest_recipes)
+    all_recipes = check_allergy_flag(all_recipes)
 
     # リストに似たオブジェクトになっている。
     context = {

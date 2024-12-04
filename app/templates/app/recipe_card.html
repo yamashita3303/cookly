@@ -4,7 +4,7 @@
     <img src="{{ i.recipe_image.url }}" class="card-img-top" alt="{{ i.recipe_title }}"
         style="height: 200px; object-fit: cover;">
 
-    <div class="card-body d-flex flex-column">
+    <div class="card-body d-flex flex-column {% if i.allergy_flag %}bg-danger text-white{% else %}bg-light{% endif %}">
         <!-- 上部にはジャンルと星評価を横並びで配置 -->
         <div class="d-flex justify-content-between mt-0">
             <!-- ジャンル表示 -->
@@ -24,8 +24,6 @@
                     <!-- annotateで追加した平均評価を表示したいがどれも0と表示される -->
                     {% if i.average_rating is none %}
                         未評価
-                    {% elif i.average_rating == 0 %}
-                        評価はありますが、まだ低評価です
                     {% else %}
                         {{ i.average_rating }}
                     {% endif %}

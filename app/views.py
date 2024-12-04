@@ -116,8 +116,8 @@ def recipe(request):
     selected_genre = request.GET.get('genre')
 
     # 人気料理、最新の料理の上位10個だけ取得
-    popular_recipes = Recipe.objects.annotate(average_rating=Avg('comment__rating')).order_by('-average_rating')[:10]
-    latest_recipes = Recipe.objects.all().annotate(average_rating=Avg('comment__rating')).order_by('-created_at')[:10]
+    popular_recipes = Recipe.objects.annotate(average_rating=Avg('comment__rating')).order_by('-average_rating')[:3]
+    latest_recipes = Recipe.objects.all().annotate(average_rating=Avg('comment__rating')).order_by('-created_at')[:3]
 
     # ジャンルでのフィルタリング
     if selected_genre:

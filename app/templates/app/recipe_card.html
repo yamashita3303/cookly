@@ -21,11 +21,54 @@
             <!-- 星評価表示 -->
             <p class="card-text mb-0">
                 <small class="text-body-secondary">
-                    <!-- annotateで追加した平均評価を表示したいがどれも0と表示される -->
                     {% if i.average_rating is none %}
                         未評価
                     {% else %}
                         {{ i.average_rating }}
+                        <!-- 一つ目の星 -->
+                        {% if i.average_rating >= 1 %}
+                            <i class="fa-solid fa-star" style="color: #FFD43B;"></i>
+                        {% elif i.average_rating >= 0.5 %}
+                            <i class="fa-solid fa-star-half-stroke" style="color: #FFD43B;"></i>
+                        {% else %}
+                            <i class="fa-regular fa-star" style="color: #FFD43B;"></i>
+                        {% endif %}
+
+                        <!-- 二つ目の星 -->
+                        {% if i.average_rating >= 2 %}
+                            <i class="fa-solid fa-star" style="color: #FFD43B;"></i>
+                        {% elif i.average_rating >= 1.5 %}
+                            <i class="fa-solid fa-star-half-stroke" style="color: #FFD43B;"></i>
+                        {% else %}
+                            <i class="fa-regular fa-star" style="color: #FFD43B;"></i>
+                        {% endif %}
+
+                        <!-- 三つ目の星 -->
+                        {% if i.average_rating >= 3 %}
+                            <i class="fa-solid fa-star" style="color: #FFD43B;"></i>
+                        {% elif i.average_rating >= 2.5 %}
+                            <i class="fa-solid fa-star-half-stroke" style="color: #FFD43B;"></i>
+                        {% else %}
+                            <i class="fa-regular fa-star" style="color: #FFD43B;"></i>
+                        {% endif %}
+
+                        <!-- 四つ目の星 -->
+                        {% if i.average_rating >= 4 %}
+                            <i class="fa-solid fa-star" style="color: #FFD43B;"></i>
+                        {% elif i.average_rating >= 3.5 %}
+                            <i class="fa-solid fa-star-half-stroke" style="color: #FFD43B;"></i>
+                        {% else %}
+                            <i class="fa-regular fa-star" style="color: #FFD43B;"></i>
+                        {% endif %}
+
+                        <!-- 五つ目の星 -->
+                        {% if i.average_rating >= 5 %}
+                            <i class="fa-solid fa-star" style="color: #FFD43B;"></i>
+                        {% elif i.average_rating >= 4.5 %}
+                            <i class="fa-solid fa-star-half-stroke" style="color: #FFD43B;"></i>
+                        {% else %}
+                            <i class="fa-regular fa-star" style="color: #FFD43B;"></i>
+                        {% endif %}
                     {% endif %}
                 </small>
             </p>

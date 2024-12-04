@@ -117,7 +117,7 @@ def recipe(request):
 
     # 人気料理、最新の料理の上位10個だけ取得
     # 評価の星はもうちょっと考えたいからいったん閲覧数順で並び替え
-    popular_recipes = Recipe.objects.annotate(average_rating=Avg('comment__rating')).order_by('average_rating')[:10]
+    popular_recipes = Recipe.objects.annotate(average_rating=Avg('comment__rating')).order_by('-average_rating')[:10]
     latest_recipes = Recipe.objects.all().annotate(average_rating=Avg('comment__rating')).order_by('-created_at')[:10]
 
     # ジャンルでのフィルタリング

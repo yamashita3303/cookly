@@ -117,8 +117,8 @@ def recipe(request):
 
     # 人気料理、最新の料理の上位10個だけ取得
     # 評価の星はもうちょっと考えたいからいったん閲覧数順で並び替え
-    popular_recipes = Recipe.objects.all().order_by('-vote')[:10]
-    latest_recipes = Recipe.objects.all().order_by('-created_at')[:10]
+    popular_recipes = Recipe.objects.annotate(average_rating=Avg('comment__rating')).order_by('average_rating')[:10]
+    latest_recipes = Recipe.objects.all().annotate(average_rating=Avg('comment__rating')).order_by('-created_at')[:10]
 
     # ジャンルでのフィルタリング
     if selected_genre:
@@ -127,12 +127,6 @@ def recipe(request):
     else:
         # すべてのレシピを取得
         all_recipes = Recipe.objects.all().annotate(average_rating=Avg('comment__rating'))
-
-    # レシピタイトルと平均評価をコンソール上に表示（デバッグ用）
-    all_recipes_list = list(all_recipes)
-    for recipe in all_recipes_list:
-        # 星5が1.0、星1が5.0と表示される
-        print(f"Recipe: {recipe.recipe_title}, Average Rating: {recipe.average_rating}")
 
     # ログイン中ならばアレルギーを取得する
     if request.user.is_authenticated:  # ユーザーがログインしている場合

@@ -625,25 +625,38 @@ def ingredient_search(request):
     selected_date = request.GET.get('date')
     
     # 在庫ログから指定された日付のエントリを取得
-    inventorylog = Inventorylog.objects.filter(user=user, expiration_date=selected_date)    
+    inventorylog = Inventorylog.objects.filter(user=user, expiration_date=selected_date)
     # 在庫ログの食材名をもとにIngredientを検索
     ingredient = Ingredient.objects.filter(material__in=[log.ingredient_name for log in inventorylog])
     
+    # ログイン中ならばアレルギーを取得する
+    if request.user.is_authenticated:  # ユーザーがログインしている場合
+        if request.user.allergy == "なし":
+            allergies = []
+        else:
+            allergies = request.user.allergy.split(',')
+    else:  # 未ログインのユーザーの場合
+        allergies = []
+
     # 食材ごとにレシピを分類
     recipes_by_ingredient = defaultdict(list)
     for ing in ingredient:
         # Ingredientから関連レシピを取得
         recipes = Recipe.objects.filter(id=ing.recipe.id).annotate(average_rating=Avg('comment__rating')).order_by('-vote')
-        print("^^^^{}^^^^".format(recipes))
+        
+        # 各レシピにアレルギーフラグを設定
+        for recipe in recipes:
+            recipe.allergy_flag = Ingredient.objects.filter(recipe=recipe, material__in=allergies).exists()
+        
         recipes_by_ingredient[ing.material].extend(recipes)
     
     print("++++{}++++".format(recipes_by_ingredient))
     
     # コンテキストに分類済みデータを渡す
     context = { 
-        "recipes_by_ingredient": recipes_by_ingredient.items,
+        "recipes_by_ingredient": recipes_by_ingredient.items(),
     }
-    if inventorylog.exists() == False:
+    if not inventorylog.exists():
         return render(request, "app/ingredients_management.html", context)
     else:
         return render(request, "app/ingredient_search.html", context)

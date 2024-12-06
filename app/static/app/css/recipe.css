@@ -38,8 +38,12 @@
 }
 
 .recipe-detail {
-    flex: 6;
-    border: 0.5px solid black;
+    font-size: 16px;
+    line-height: 1.5;
+    padding: 10px;
+    border-left: 4px solid #007bff;
+    background: #f0f8ff;
+    margin-bottom: 15px;
 }
 
 .view-count {
@@ -59,7 +63,7 @@
 .ingredient-container,
 .step-container {
     flex: 1;
-    margin: 0 10px;
+    margin: 20px 50px 20px auto;
 }
 
 .ingredient-title,
@@ -101,3 +105,25 @@
     height: auto;
     margin-bottom: 20px;
 }
+
+.comment-container {
+    max-width: 800px;
+    margin: 20px auto;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.comment-container h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 5px;
+}
+
+.comment-container p {
+    margin: 10px 0;
+    font-size: 14px;
+}
+

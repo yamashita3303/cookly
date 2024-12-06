@@ -73,7 +73,6 @@ class Step(models.Model):
 class Comment(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     recipe = models.ForeignKey(Recipe, related_name='comment', on_delete=models.CASCADE)
-    rating = models.OneToOneField(Rating, on_delete=models.CASCADE, null=True, blank=True)  # 1対1で評価を関連付け
     parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')  # 親コメント
     content = models.TextField(default="")
     #コメントしたユーザー名
@@ -81,7 +80,7 @@ class Comment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     #コメント
     comment = models.TextField(max_length=200)
-    rating = models.IntegerField(default=0)  # 1から5の値を想定
+    rating = models.IntegerField(null=True, blank=True)  # 1から5の値を想定
 
     def is_reply(self):
         """返信かどうかを判定"""

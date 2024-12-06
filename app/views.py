@@ -23,14 +23,15 @@ def index(request):
 
 def signup(request):
     allergy_object = Allergy.objects.all()
-    context = {"allergy_object":allergy_object}
+    context = {"allergy_object": allergy_object}
     if request.method == 'POST':
         username = request.POST['username']
         email = request.POST['email']
         password = request.POST['password']
         allergy_list = request.POST.getlist('allergy')
-        allergy_string = ','.join(allergy_list) # 要素を区別できるようにカンマで区切る
+        allergy_string = ','.join(allergy_list)  # 要素を区別できるようにカンマで区切る
         user_icon = request.FILES.get('user_icon')  # アイコンファイルを取得
+        
         new_user = CustomUser(
             username=username, 
             email=email,
@@ -43,7 +44,7 @@ def signup(request):
         # 新規登録後はその情報でログイン(デバッグ用)
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            login(request, user) 
+            login(request, user)
             return HttpResponseRedirect('/home/')
         
         # signup_success.htmlでアラートを表示し、リダイレクトさせる

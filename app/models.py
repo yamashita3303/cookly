@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from PIL import Image, ImageDraw
 from django.contrib.auth import get_user_model
 from django.conf import settings
 
@@ -10,6 +11,34 @@ class Allergy(models.Model):
 class CustomUser(AbstractUser):
     user_icon = models.ImageField(upload_to='user_icon/', verbose_name="ユーザーアイコン")
     allergy = models.CharField(max_length=1000, default="なし")
+
+    def save(self, *args, **kwargs):
+        # 通常の保存処理
+        super().save(*args, **kwargs)
+        
+        # 画像の丸トリミング処理
+        if self.user_icon:
+            img_path = self.user_icon.path
+            img = Image.open(img_path).convert("RGBA")
+
+            # 画像のサイズを取得して正方形にトリミング
+            size = min(img.size)  # 幅と高さのうち小さい方を選ぶ
+            left = (img.width - size) // 2
+            top = (img.height - size) // 2
+            right = left + size
+            bottom = top + size
+            img = img.crop((left, top, right, bottom))  # 中央で正方形にトリミング
+
+            # 正方形の円形マスクを作成
+            mask = Image.new("L", (size, size), 0)
+            draw = ImageDraw.Draw(mask)
+            draw.ellipse((0, 0, size, size), fill=255)
+
+            # マスクを画像に適用
+            img.putalpha(mask)
+
+            # PNG形式で保存
+            img.save(img_path, "PNG")
 
 #料理全般の情報のテーブル
 class Recipe(models.Model):

@@ -23,7 +23,7 @@
                 <h4>ユーザー情報</h4>
                 {% if user.user_icon %}
                     <p><strong>アイコン:</strong></p>
-                    <img src="{{ user.user_icon.url }}" alt="ユーザーアイコン" class="img-thumbnail" style="max-width: 150px;">
+                    <img src="{{ user.user_icon.url }}" alt="ユーザーアイコン" style="max-width: 150px;">
                 {% else %}
                     <p>アイコンが設定されていません</p>
                 {% endif %}

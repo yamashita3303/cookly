@@ -110,7 +110,13 @@
                     <input type="text" name="keyword">
                     <button type="submit" class="btn btn-outline-success">検索</button>
                 </form>
-                <a href="{% url 'app:signout' %}" class="btn btn-outline-danger">ログアウト</a> <!-- ログアウトをボタンに -->
+                {% if user.is_authenticated %}
+                    <a href="{% url 'app:signout' %}" class="btn btn-outline-danger">ログアウト</a>
+                {% else %}
+                    <a href="{% url 'app:signup' %}" class="btn btn-outline-primary">新規作成</a>
+                    <a href="{% url 'app:signin' %}" class="btn btn-outline-success">ログイン</a>
+                {% endif %}
+
             </div>
 
             <!-- 下側のヘッダー -->

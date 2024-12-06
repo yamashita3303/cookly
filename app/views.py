@@ -223,7 +223,7 @@ def search_recipes(request):
     
     return render(request, 'app/home.html', {'search_recipes': search_recipes})
 
-class CommentCreateView(View):
+class CommentCreateView(LoginRequiredMixin, View):
     # GETリクエストの処理
     def get(self, request, recipe_id):
         recipe = get_object_or_404(Recipe, id=recipe_id)
@@ -359,6 +359,7 @@ def recipe_edit(request, post_id):
     return render(request, 'app/recipe_edit.html', {'form': form, 'recipe': recipe})
 
 #レシピの消去
+@login_required
 def recipe_delete(request, post_id):
     # 指定されたIDのレシピを取得
     recipes = Recipe.objects.get(id=post_id)
@@ -452,6 +453,7 @@ def home(request):
     }
     return render(request, 'app/home.html', context)
 
+@login_required
 def recipe_calendar(request):
     current_user = request.user
     print("user = ",current_user)
@@ -530,6 +532,7 @@ load_dotenv()
 # .env から OPENAI_API_KEY を取得
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
+@login_required
 def ingredients_management(request):
     user = request.user
     if request.method == 'POST':
@@ -562,6 +565,7 @@ def ingredients_management(request):
     else:
         return render(request, "app/ingredients_management.html")
 
+@login_required
 def gpt_search(text):
     try:
         # プロンプトを作成
@@ -590,6 +594,7 @@ def gpt_search(text):
         print(error_message)
         return error_message
 
+@login_required
 def food_management(request):
     user = request.user
     sort_order = request.GET.get('sort', 'select')  # Default is 'select'
@@ -605,7 +610,8 @@ def food_management(request):
     context = {"inventory_log": inventory_log}
     return render(request, "app/food_management.html", context)
 
-#レシピの消去
+#食材の消去
+@login_required
 def food_management_delete(request, post_id):
     try:
         # Get the inventory item with the provided post_id
@@ -620,6 +626,7 @@ def food_management_delete(request, post_id):
     # Redirect back to the food management page
     return redirect("/food_management/")
 
+@login_required
 def ingredient_search(request):
     user = request.user
     selected_date = request.GET.get('date')

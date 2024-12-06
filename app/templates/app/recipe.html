@@ -1,8 +1,6 @@
 {% extends "base/base.html" %}
 {% load static %}
 
-<!-- 追加のCSSを読み込むブロック -->
-
 {% block body %}
 <!-- Recipeの内容を入れるコンテナ -->
 <div class="recipe-container">
@@ -168,6 +166,7 @@
 {% endblock %}
 
 {% block extra_styles %}
+<link rel="stylesheet" href="{% static 'app/css/recipe.css' %}">
 <style>
     .stars {
         display: flex;

@@ -1,0 +1,97 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+<!-- 追加のCSSを読み込むブロック -->
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'app/css/home.css' %}">
+{% endblock %}
+
+{% block body %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h3>マイページ</h3>
+
+        <!-- ユーザー情報を表示 -->
+        <div class="card mt-3">
+            <div class="card-body">
+                <h4>ユーザー情報</h4>
+                {% if user.user_icon %}
+                    <p><strong>アイコン:</strong></p>
+                    <img src="{{ user.user_icon.url }}" alt="ユーザーアイコン" class="img-thumbnail" style="max-width: 150px;">
+                {% else %}
+                    <p>アイコンが設定されていません</p>
+                {% endif %}
+                <p><strong>ユーザー名:</strong> {{ user.username }}</p>
+                <!-- <p><strong>名前:</strong> {{ user.first_name }} {{ user.last_name }}</p> -->
+                <p><strong>メールアドレス:</strong> {{ user.email }}</p>
+                {% if allergies %}
+                    <ul>
+                        {% for allergy in allergies %}
+                            <li>{{ allergy }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>登録されたアレルギーはありません</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <h2>お気に入り一覧</h2>
+        <ul>
+           {% for favorite in favorite_recipes %}
+              <li>
+                  <a href="{% url 'app:detail' favorite.item.id %}">
+                       {{ favorite.item.recipe_title }}
+                 </a>
+             </li>
+           {% empty %}
+             <p>お気に入りがまだ登録されていません。</p>
+           {% endfor %}
+        </ul>
+        <h2>フォロー中の投稿者</h2>
+        <ul>
+            {% for follow in followed_authors %}
+              <li>
+                 <a href="{% url 'app:author_page' follow.followed.id %}">
+                    {{ follow.followed.username }}
+                 </a>
+             </li>
+            {% empty %}
+             <li>フォロー中の投稿者はいません。</li>
+            {% endfor %}
+        </ul>
+
+
+
+        <!-- ログインユーザーが登録したレシピ一覧 -->
+        <div class="row">
+            {% for recipe in recipes %}
+                <div class="col-md-4 mb-4 d-flex align-items-stretch">
+                    {% include 'app/recipe_card.html' with i=recipe %}
+                </div>
+                {% if i.user == request.user %}
+                    <a href="{% url 'app:edit' i.id %}" class="btn btn-outline-primary ">編集</a>
+                    <a href="{% url 'app:delete' i.id %}" class="btn btn-outline-danger btn-sm">削除</a>
+                {% endif %}
+            {% empty %}
+                <p>まだ料理を投稿していません。</p>
+            {% endfor %}
+        </div>
+        <script>
+            // ジャンルを選択すると自動的にフォームを送信
+            document.getElementById('genre').addEventListener('change', function() {
+                document.getElementById('genreForm').submit();
+            });
+        </script>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+{% endblock %}

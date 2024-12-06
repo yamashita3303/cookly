@@ -1,0 +1,46 @@
+.card {
+    min-height: 100%; /* カードの高さを常に一定にする */
+}
+
+.card-text {
+    overflow: hidden; /* カードの大きさを超えたら非表示 */
+    text-overflow: ellipsis; /* 見えなくなった部分は"…"と表示 */
+}
+
+ /* 料理名(リンク)の設定 */
+.card-title a {
+    font-weight: bold;
+    color: black;
+    text-decoration: none;
+}
+
+.card-title a:hover {
+    color: black;
+}
+
+
+ /* ジャンルに使うバッジの色 */
+.badge-main {
+    background-color: #ffebcc; /* 背景の色 */
+    color: #6b705c; /* 文字の色 */
+}
+
+.badge-side {
+    background-color: #ffffcc;
+    color: #6b705c;
+}
+
+.badge-course {
+    background-color: #ffcccb;
+    color: #6b705c;
+}
+
+.badge-dessert {
+    background-color: #cce5ff;
+    color: #6b705c;
+}
+
+.btn-delete-small {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+}

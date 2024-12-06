@@ -1,0 +1,28 @@
+{% extends "base/base.html" %}
+{% block body %}
+
+<form method="post" class="mt-4 p-4 border rounded shadow-sm bg-light">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="ingredient_name" class="form-label">食品名:</label>
+        <input type="text" name="ingredient_name" id="ingredient_name" 
+               class="form-control" placeholder="例: トマト" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="expiration_date" class="form-label">賞味期限:</label>
+        <input type="date" name="expiration_date" id="expiration_date" 
+               class="form-control" required>
+    </div>
+
+    <button type="submit" class="btn btn-success w-100" style="padding: 5px 15px; background-color: #4CAF50; color: white; border: none; cursor: pointer;">登録</button>
+</form>
+
+<!-- メッセージ表示部分 -->
+{% if message %}
+<div class="alert alert-info mt-3" role="alert">
+    {{ message }}
+</div>
+{% endif %}
+
+{% endblock %}

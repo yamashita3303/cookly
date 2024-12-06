@@ -1,0 +1,15 @@
+{% extends "base/base.html" %}
+
+{% block body %}
+<h1>{{ author.username }} さんのレシピ一覧</h1>
+<ul>
+    {% for recipe in recipes %}
+        <li>
+            <a href="{% url 'app:detail' recipe.id %}">{{ recipe.recipe_title }}</a>
+        </li>
+    {% empty %}
+        <li>この投稿者のレシピはありません。</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

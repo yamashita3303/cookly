@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        
+        <meta charset="utf-8" />
+        <link rel="icon" href="media/icon/cookly_icon.ico" type="image/png">
+        <link rel="shortcut icon" href="media/icon/cookly_icon.ico" type="image/png">
+        <title>Cookly</title>
+        <!-- BootstrapのCSSをインクルード -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        
+        <!-- Font Awesome(アイコン)のCSSをインクルード -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+        
+        <!-- 追加のCSSを読み込むブロック -->
+        {% block extra_styles %}
+        {% endblock %}
+
+        <!-- ヘッダーのCSS -->
+        <style>
+            .resize-image {
+                width: 80px;
+                height: auto; /* アスペクト比を維持しながら高さを自動調整 */
+            }
+
+            /* 背景色 */
+            header {
+                background-color: #00ccb2;
+            }
+
+            /* 上側のヘッダー */
+            .header-top {
+                background-color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 10px 30px;
+                border-bottom: 1px solid white; /* 下に境界線を追加 */
+            }
+
+            .header-top .navbar-brand {
+                color: black;
+                font-size: 2.0rem;
+                font-weight: bold;
+                text-decoration: none;
+            }
+            .header-top .navbar-brand:hover {
+                color: black;
+            }
+
+
+            /* 検索ボックス */
+            .header-top .search-box {
+                display: flex;
+                margin-left: 70px;             /* アイコンと検索ボックスの間にスペースを追加 */
+                margin-right: 600px;             /* 検索ボックスとログアウトの間にスペースを追加 */
+            }
+            
+            .header-top .search-box input {
+                height: 38px;                  /* テキストボックスの高さ（てきとー） */
+                border-radius: 0.25rem;        /* 角を丸く */
+                border: 1px solid black;
+                padding: 0 10px;               /* テキストボックス内に余白をつける */
+            }
+
+            .header-top .search-box button {
+                margin-top: 0;                  /* form.cssで変更したボタンの設定を修正 */
+                margin-left: 10px;              /* ボタンの左側に隙間を追加 */
+                height: 38px;                   /* テキストボックスの高さと揃える */
+                border-radius: 0.25rem;
+                padding: 0 15px;
+            }
+
+
+             /* 下側ヘッダーのスタイル */
+             .header-bottom {
+                background-color: #00ccb2;
+                padding: 10px 0;
+            }
+
+            .header-bottom .container text-center {
+                max-width: 1200px;
+                margin: 0 auto;
+                display: flex;
+                justify-content: center;    /* リンクを中央に配置 */
+            }
+
+            .header-bottom .nav-link {
+                color: white;
+                text-decoration: none;
+            }
+
+            .header-bottom .nav-link:hover {
+                color: white;
+                text-decoration: none;
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- ヘッダー部分 -->
+        <header>
+            <!-- 上側のヘッダー -->
+            <div class="header-top">
+                {% load static %}
+                <a href="/home/">
+                    <img src="/media/icon/cookly_icon.png" alt="cookly_icon" class="resize-image">
+                <a>
+                <form method="GET" action="{% url 'app:searchrecipes' %}" class="search-box">
+                    <input type="text" name="keyword">
+                    <button type="submit" class="btn btn-outline-success">検索</button>
+                </form>
+                <a href="{% url 'app:signout' %}" class="btn btn-outline-danger">ログアウト</a> <!-- ログアウトをボタンに -->
+            </div>
+
+            <!-- 下側のヘッダー -->
+            <div class="header-bottom">
+                <!-- グリッドで自動的に分割する -->
+                <div class="container text-center">
+                    <div class="row">
+                        <div class="col">
+                            <a href="{% url 'app:recipe' %}" class="nav-link">ホーム</a>
+                        </div>
+                        <div class="col">
+                            <a href="{% url 'app:recipe_create' %}" class="nav-link">料理追加</a>
+                        </div>
+                        <div class="col">
+                            <a href="{% url 'app:ingredients_management' %}" class="nav-link">食材登録</a>
+                        </div>
+                        <div class="col">
+                            <a href="{% url 'app:food_management' %}" class="nav-link">食材管理</a>
+                        </div>
+                        <div class="col">
+                            <a href="{% url 'app:recipe_calendar' %}" class="nav-link">献立</a>
+                        </div>
+                        <div class="col">
+                            <a href="{% url 'app:mypage' %}" class="nav-link">マイページ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- メイン部分 -->
+        <main class="container mt-4">
+            {% block body %}
+            {% endblock %}
+        </main>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- 追加のjsを読み込むブロック -->
+        {% block extra_scripts %}
+        {% endblock %}
+
+        <!-- BootstrapのJSと依存するライブラリ（jQuery、Popper.js） -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        
+    </body>
+</html>

@@ -1,15 +1,59 @@
 {% extends "base/base.html" %}
 
 {% block body %}
-<h1>{{ author.username }} さんのレシピ一覧</h1>
-<ul>
-    {% for recipe in recipes %}
-        <li>
-            <a href="{% url 'app:detail' recipe.id %}">{{ recipe.recipe_title }}</a>
-        </li>
-    {% empty %}
-        <li>この投稿者のレシピはありません。</li>
-    {% endfor %}
-</ul>
+<div class="container mt-5">
+    <!-- ユーザー情報を表示 -->
+    <div class="card mt-3">
+        <div class="card-body">
+            <h4>ユーザー情報</h4>
+            {% if author.user_icon %}
+                <img src="{{ author.user_icon.url }}" alt="ユーザーアイコン" class="img-thumbnail" style="max-width: 150px;">
+            {% else %}
+                <p>アイコンが設定されていません</p>
+            {% endif %}
+            <p><strong>ユーザー名:</strong> {{ author.username }}</p>
+        </div>
+    </div>
+    <h3>{{ author.username }}さんのレシピ一覧</h3>
+    <ul>
+        {% for recipe in recipes %}
+            <div class="row">
+                {% for recipe in recipes %}
+                    <div class="col-md-4 mb-4 d-flex align-items-stretch">
+                        {% include 'app/recipe_card.html' with i=recipe %}
+                    </div>
+                {% empty %}
+                    <p>まだ料理を投稿していません。</p>
+                {% endfor %}
+            </div>
+        {% empty %}
+            <li>この投稿者のレシピはありません。</li>
+        {% endfor %}
+    </ul>
+    <h3>{{ author.username }}さんのお気に入り一覧</h3>
+        <ul>
+           {% for favorite in favorite_recipes %}
+              <li>
+                  <a href="{% url 'app:detail' favorite.item.id %}">
+                       {{ favorite.item.recipe_title }}
+                 </a>
+             </li>
+           {% empty %}
+             <p>お気に入りがまだ登録されていません。</p>
+           {% endfor %}
+        </ul>
+        <h3>{{ author.username }}さんのフォロー中の投稿者</h3>
+        <ul>
+            {% for follow in followed_authors %}
+              <li>
+                 <a href="{% url 'app:author_page' follow.followed.id %}">
+                    {{ follow.followed.username }}
+                 </a>
+             </li>
+            {% empty %}
+             <li>フォロー中の投稿者はいません。</li>
+            {% endfor %}
+        </ul>
+</div>
 
 {% endblock %}

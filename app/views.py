@@ -414,10 +414,14 @@ def toggle_follow(request, user_id):
 def author_page(request, user_id):
     author = get_object_or_404(CustomUser, id=user_id)
     recipes = Recipe.objects.filter(user=author).annotate(average_rating=Avg('comment__rating'))  # 投稿者のレシピを取得
+    favorite_recipes = Favorite.objects.filter(user=author).select_related('item')
+    followed_authors = Follow.objects.filter(follower=author).select_related('followed')
 
     context = {
         'author': author,
         'recipes': recipes,
+        'favorite_recipes': favorite_recipes,
+        'followed_authors': followed_authors,
     }
     return render(request, 'app/author_page.html', context)
 

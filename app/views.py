@@ -542,11 +542,7 @@ def ingredients_management(request):
         expiration_date = datetime.strptime(expiration_date, '%Y-%m-%d')
         expiration_date = make_aware(expiration_date)
         
-        if expiration_date < now():
-            print("-------")
-            return render(request, 'app/ingredients_management.html', {"message": "現在の日付より前は登録できません"})
-
-        else:
+        if expiration_date >= now().replace(hour=0, minute=0, second=0, microsecond=0):
             storage_method = gpt_search(ingredient_name)
             print("storage_method = {}".format(storage_method))
             # 保存処理
@@ -557,8 +553,12 @@ def ingredients_management(request):
                 storage_method=storage_method
             )
             inventorylog.save()
-            
+
             return render(request, 'app/ingredients_management.html', {"message": "保存が完了しました！"})
+
+        else:
+            print("-------")
+            return render(request, 'app/ingredients_management.html', {"message": "現在の日付より前は登録できません"})
     else:
         return render(request, "app/ingredients_management.html")
 

@@ -39,23 +39,27 @@
         {% else %}
         <p>フォローするには、<a href="{% url 'login' %}">ログイン</a>してください。</p>
         {% endif %}
+
+        <br>
+
+        {% if user.is_authenticated %}
+        <form method="post" action="{% url 'app:toggle_favorite' recipe_chose.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn {% if is_favorited %}btn-warning{% else %}btn-outline-warning{% endif %}">
+                {% if is_favorited %}
+                お気に入り解除
+                {% else %}
+                お気に入り
+                {% endif %}
+            </button>
+        </form>
+        {% else %}
+        <p>お気に入り登録をするには、<a href="{% url 'login' %}">ログイン</a>してください。</p>
+        {% endif %}
     </div>
 </div>
 
-{% if user.is_authenticated %}
-<form method="post" action="{% url 'app:toggle_favorite' recipe_chose.id %}">
-    {% csrf_token %}
-    <button type="submit" class="btn {% if is_favorited %}btn-warning{% else %}btn-outline-warning{% endif %}">
-        {% if is_favorited %}
-        お気に入り解除
-        {% else %}
-        お気に入り
-        {% endif %}
-    </button>
-</form>
-{% else %}
-<p>お気に入り登録をするには、<a href="{% url 'login' %}">ログイン</a>してください。</p>
-{% endif %}
+
 
 
 
@@ -99,7 +103,6 @@
 </div>
 
 <div class="comment-container">
-    <!-- comment.htmlとくっつける？一旦保留 -->
     <h2>コメント</h2>
     {% for comment in comments %}
     <!-- 下部にはユーザーと作成日を横並びで表示 -->

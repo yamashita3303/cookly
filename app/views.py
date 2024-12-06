@@ -114,8 +114,10 @@ def allergy(request):
 def recipe(request):
     # GETリクエストからジャンルを取得
     selected_genre = request.GET.get('genre')
+    min_rating = request.GET.get('min_rating')  # 最低評価
+    exclude_allergies = request.GET.get('exclude_allergies') == "on"
 
-    # 人気料理、最新の料理の上位10個だけ取得
+    # 人気料理、最新の料理の上位3個だけ取得
     popular_recipes = Recipe.objects.annotate(average_rating=Avg('comment__rating')).order_by('-average_rating')[:3]
     latest_recipes = Recipe.objects.all().annotate(average_rating=Avg('comment__rating')).order_by('-created_at')[:3]
 
@@ -126,6 +128,10 @@ def recipe(request):
     else:
         # すべてのレシピを取得
         all_recipes = Recipe.objects.all().annotate(average_rating=Avg('comment__rating'))
+
+    # 最低評価でフィルタリング
+    if min_rating:
+        all_recipes = [recipe for recipe in all_recipes if recipe.average_rating and recipe.average_rating >= float(min_rating)]
 
     # ログイン中ならばアレルギーを取得する
     if request.user.is_authenticated:  # ユーザーがログインしている場合
@@ -148,12 +154,18 @@ def recipe(request):
     latest_recipes = check_allergy_flag(latest_recipes)
     all_recipes = check_allergy_flag(all_recipes)
 
+    # アレルギーを含むレシピを除外
+    if exclude_allergies:
+        all_recipes = [recipe for recipe in all_recipes if not recipe.allergy_flag]
+
     # リストに似たオブジェクトになっている。
     context = {
         'popular_recipes': popular_recipes,
         'latest_recipes': latest_recipes,
         'all_recipes': all_recipes,
         'selected_genre': selected_genre,
+        'min_rating': min_rating,
+        'exclude_allergies': exclude_allergies,
         'allergies': allergies,
     }
     return render(request, "app/home.html", context)

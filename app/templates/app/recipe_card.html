@@ -24,7 +24,7 @@
                     {% if i.average_rating is none %}
                         未評価
                     {% else %}
-                        {{ i.average_rating }}
+                        {{ i.average_rating|floatformat:1 }}
                         <!-- 一つ目の星 -->
                         {% if i.average_rating >= 1 %}
                             <i class="fa-solid fa-star" style="color: #FFD43B;"></i>

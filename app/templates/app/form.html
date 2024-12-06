@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block body %}
-<form method="POST" enctype="multipart/form-data">
+<form method="POST" class="custom-form" enctype="multipart/form-data">
     {% csrf_token %} <!-- 絶対必要 -->
     
     <!-- 料理タイトル -->

@@ -194,7 +194,7 @@ def detail(request, post_id):
 # レシピ検索ページ(searchrecipes.html)
 def search_recipes(request):
     # Recipeモデルの全てのインスタンスを取得
-    recipes = Recipe.objects.all()
+    recipes = Recipe.objects.all().annotate(average_rating=Avg('comment__rating'))
 
     # 検索機能の処理
     # 入力したキーワードが含まれる料理名でフィルタリング
@@ -358,7 +358,7 @@ def recipe_delete(request, post_id):
 @login_required
 def mypage(request):
     user = request.user  # ログイン中のユーザーを取得
-    recipes = user.recipe_set.all()  # ユーザーが投稿した全ての料理を取得
+    recipes = user.recipe_set.all().annotate(average_rating=Avg('comment__rating'))  # ユーザーが投稿した全ての料理を取得
     if user.allergy == "なし":
         allergies = []
     else:
@@ -400,7 +400,7 @@ def toggle_follow(request, user_id):
 
 def author_page(request, user_id):
     author = get_object_or_404(CustomUser, id=user_id)
-    recipes = Recipe.objects.filter(user=author)  # 投稿者のレシピを取得
+    recipes = Recipe.objects.filter(user=author).annotate(average_rating=Avg('comment__rating'))  # 投稿者のレシピを取得
 
     context = {
         'author': author,
@@ -621,7 +621,7 @@ def ingredient_search(request):
     recipes_by_ingredient = defaultdict(list)
     for ing in ingredient:
         # Ingredientから関連レシピを取得
-        recipes = Recipe.objects.filter(id=ing.recipe.id).order_by('-vote')
+        recipes = Recipe.objects.filter(id=ing.recipe.id).annotate(average_rating=Avg('comment__rating')).order_by('-vote')
         print("^^^^{}^^^^".format(recipes))
         recipes_by_ingredient[ing.material].extend(recipes)
     

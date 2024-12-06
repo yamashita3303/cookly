@@ -2,9 +2,10 @@
 {% load static %}
 
 <!-- 追加のCSSを読み込むブロック -->
-{% block extra_styles %}
+ <!-- レシピカードの情報しか入れていないため不要 -->
+<!-- {% block extra_styles %}
     <link rel="stylesheet" href="{% static 'app/css/home.css' %}">
-{% endblock %}
+{% endblock %} -->
 
 {% block body %}
 {% if search_recipes %}

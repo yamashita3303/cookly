@@ -570,7 +570,6 @@ def ingredients_management(request):
     else:
         return render(request, "app/ingredients_management.html")
 
-@login_required
 def gpt_search(text):
     try:
         # プロンプトを作成

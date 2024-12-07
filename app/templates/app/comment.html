@@ -1,7 +1,6 @@
 {% extends "base/base.html" %}
 {% block body %}
 
-<h2>ここはcomment.htmlです</h2>
 <form method="POST">
     {% csrf_token %}
     {{ form.as_p }}
